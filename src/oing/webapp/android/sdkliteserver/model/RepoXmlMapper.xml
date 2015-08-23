@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RepoXml">
+    <resultMap id="resultMap_RepoXml_all" type="RepoXml">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="dateCreate" column="date_create"/>
+        <result property="dateLastModified" column="date_last_modified"/>
+    </resultMap>
+    <select id="getAll" resultMap="resultMap_RepoXml_all">
+        SELECT * FROM repo_xml
+    </select>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <typeAliases>
+        <typeAlias alias="RepoXml" type="oing.webapp.android.sdkliteserver.model.RepoXml"/>
+    </typeAliases>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="MANAGED">
+                <property name="closeConnection" value="false"/>
+            </transactionManager>
+            <dataSource type="POOLED"></dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="oing/webapp/android/sdkliteserver/model/RepoXmlMapper.xml"/>
+    </mappers>
+</configuration>

@@ -1,0 +1,23 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="AndroidSDKLiteServer:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/AndroidSDKLiteServer_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="AndroidSDKLiteServer/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="AndroidSDKLiteServer" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="jodd-3.6.6" />
+          <element id="library" level="project" name="sqlite-jdbc-3.8.11.1" />
+          <element id="library" level="project" name="com.fasterxml.jackson.core:jackson-databind:2.6.0" />
+          <element id="library" level="project" name="druid-1.0.15" />
+          <element id="library" level="project" name="mybatis-3.3.0" />
+          <element id="library" level="project" name="mybatis-spring-1.2.3" />
+          <element id="library" level="project" name="springframework-4.2.0" />
+          <element id="library" level="project" name="fastjson-1.2.6" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

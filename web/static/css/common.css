@@ -1,0 +1,18 @@
+.table-in-a-card thead th:nth-child(1){
+    padding-left: 12px;
+}
+.table-in-a-card thead th:nth-last-child(1) {
+    text-align: right;
+    padding-right: 12px;
+}
+.table-in-a-card tbody td:nth-child(1){
+    padding-left: 12px;
+}
+.table-in-a-card tbody td:nth-last-child(1) {
+    text-align: right;
+    padding-right: 12px;
+}
+
+.btn-less-padding{
+    padding: 0px 12px;
+}
