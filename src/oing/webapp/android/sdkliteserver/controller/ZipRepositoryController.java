@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/repository/zip/")
 public class ZipRepositoryController {
-    @RequestMapping(method = RequestMethod.GET)
-    public String _index(HttpServletRequest request) {
-        return "repository/zip/index";
-    }
+	@RequestMapping(method = RequestMethod.GET)
+	public String _index(HttpServletRequest request) {
+		return "repository/zip/index";
+	}
 }

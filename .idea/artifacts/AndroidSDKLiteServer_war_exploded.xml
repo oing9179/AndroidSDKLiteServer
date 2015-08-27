@@ -11,11 +11,13 @@
           <element id="library" level="project" name="jodd-3.6.6" />
           <element id="library" level="project" name="sqlite-jdbc-3.8.11.1" />
           <element id="library" level="project" name="com.fasterxml.jackson.core:jackson-databind:2.6.0" />
-          <element id="library" level="project" name="druid-1.0.15" />
           <element id="library" level="project" name="mybatis-3.3.0" />
-          <element id="library" level="project" name="mybatis-spring-1.2.3" />
           <element id="library" level="project" name="springframework-4.2.0" />
           <element id="library" level="project" name="fastjson-1.2.6" />
+          <element id="library" level="project" name="jstl-1.2" />
+          <element id="library" level="project" name="apache-commons" />
+          <element id="library" level="project" name="log4j-2.3" />
+          <element id="library" level="project" name="slf4j-api-1.7.12" />
         </element>
       </element>
     </root>

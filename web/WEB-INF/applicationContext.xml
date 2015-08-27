@@ -7,19 +7,18 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
-       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
     <context:component-scan base-package="oing.webapp.android.sdkliteserver"/>
     <mvc:annotation-driven/>
     <mvc:default-servlet-handler/>
 
-    <context:property-placeholder location="WEB-INF/jdbc.properties" file-encoding="UTF8"/>
+    <context:property-placeholder location="WEB-INF/config.properties" file-encoding="UTF8"/>
     <!-- DataSource and TransactionManager -->
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="url" value="${jdbc.url}"/>
-        <property name="driverClassName" value="org.sqlite.JDBC"/>
+    <bean id="dataSource" class="oing.webapp.android.sdkliteserver.dao.DataRepositoryDataSource">
+        <property name="databaseLocation" value="${database.location}"/>
     </bean>
     <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
@@ -38,7 +37,7 @@
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="configLocation" value="WEB-INF/mybatis-config.xml"/>
         <property name="dataSource" ref="dataSource"/>
-        <!--<property name="mapperLocations" value="classpath:oing/webapp/android/sdkliteserver/model/*Mapper.xml"/>-->
+        <!--<property name="mapperLocations" value="classpath:oing/webapp/android/sdkliteserver/parameter/*Mapper.xml"/>-->
     </bean>
     <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg index="0" ref="sqlSessionFactory"/>

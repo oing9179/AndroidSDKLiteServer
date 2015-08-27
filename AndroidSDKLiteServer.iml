@@ -14,16 +14,6 @@
     <facet type="Spring" name="Spring">
       <configuration />
     </facet>
-    <facet type="web" name="Web2">
-      <configuration>
-        <descriptors>
-          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/.idea/compiler.xml" />
-        </descriptors>
-        <webroots>
-          <root url="file://$MODULE_DIR$/.idea" relative="/WEB-INF" />
-        </webroots>
-      </configuration>
-    </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
@@ -36,10 +26,12 @@
     <orderEntry type="library" name="jodd-3.6.6" level="project" />
     <orderEntry type="library" name="sqlite-jdbc-3.8.11.1" level="project" />
     <orderEntry type="library" name="com.fasterxml.jackson.core:jackson-databind:2.6.0" level="project" />
-    <orderEntry type="library" name="druid-1.0.15" level="project" />
     <orderEntry type="library" name="mybatis-3.3.0" level="project" />
-    <orderEntry type="library" name="mybatis-spring-1.2.3" level="project" />
     <orderEntry type="library" name="springframework-4.2.0" level="project" />
     <orderEntry type="library" name="fastjson-1.2.6" level="project" />
+    <orderEntry type="library" name="jstl-1.2" level="project" />
+    <orderEntry type="library" name="log4j-2.3" level="project" />
+    <orderEntry type="library" name="slf4j-api-1.7.12" level="project" />
+    <orderEntry type="library" name="apache-commons" level="project" />
   </component>
 </module>

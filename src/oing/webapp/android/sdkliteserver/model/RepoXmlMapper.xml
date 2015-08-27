@@ -6,10 +6,32 @@
     <resultMap id="resultMap_RepoXml_all" type="RepoXml">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
-        <result property="dateCreate" column="date_create"/>
+        <result property="dateCreate" column="date_create" jdbcType="BIGINT"/>
         <result property="dateLastModified" column="date_last_modified"/>
     </resultMap>
-    <select id="getAll" resultMap="resultMap_RepoXml_all">
-        SELECT * FROM repo_xml
+
+    <select id="selectAll" resultMap="resultMap_RepoXml_all">
+		SELECT * FROM repo_xml
+	</select>
+
+    <select id="selectById" resultType="RepoXml">
+		SELECT * FROM repo_xml WHERE id=#{id}
+	</select>
+
+    <select id="selectByName" resultType="RepoXml">
+        SELECT * FROM repo_xml WHERE `name`=#{name}
     </select>
+
+    <select id="existsByName" resultType="boolean">
+		SELECT COUNT(id) FROM repo_xml WHERE name=#{name}
+	</select>
+
+    <insert id="insert" parameterType="RepoXml">
+		INSERT INTO repo_xml(name, date_create, date_last_modified)
+		  VALUES(#{name}, #{dateCreate}, #{dateLastModified})
+	</insert>
+    <insert id="copyExistingXmlFilesIntoNewXmlRepo">
+		INSERT INTO repo_xml_file(id_repo_xml, file_name, url)
+		  SELECT #{toId} as `id_repo_xml`,`file_name`,`url` FROM repo_xml_file WHERE id=#{fromId};
+	</insert>
 </mapper>
