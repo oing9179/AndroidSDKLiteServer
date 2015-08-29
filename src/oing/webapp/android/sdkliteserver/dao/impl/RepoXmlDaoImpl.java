@@ -38,11 +38,16 @@ public class RepoXmlDaoImpl extends BaseDao implements RepoXmlDao {
 	}
 
 	@Override
-	public int copyExistingXmlFilesIntoExistingXmlRepo(Long fromId, Long toId) {
+	public int copyExistingRecordsForNewXmlRepo(Long fromId, Long toId) {
 		HashMap<String, Object> mMapParams = new HashMap<>(2);
 		mMapParams.put("fromId", fromId);
 		mMapParams.put("toId", toId);
 		return super.insert("copyExistingXmlFilesIntoNewXmlRepo", mMapParams);
+	}
+
+	@Override
+	public int deleteById(Long id) {
+		return super.delete("deleteById", id);
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package oing.webapp.android.sdkliteserver.controller;
 
-import com.alibaba.fastjson.JSON;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryService;
+import oing.webapp.android.sdkliteserver.service.ZipRepositoryService;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +21,8 @@ public class XmlRepositoryController {
 	private static Logger mLogger = LoggerFactory.getLogger(XmlRepositoryController.class);
 	@Autowired
 	private XmlRepositoryService xmlRepositoryService;
+	@Autowired
+	private ZipRepositoryService zipRepositoryService;
 
 	/**
 	 * Show all xml repository
@@ -29,7 +31,7 @@ public class XmlRepositoryController {
 	public String _index(ModelMap modelMap) {
 		List<RepoXml> lListRepoXml = xmlRepositoryService.getAll();
 
-		modelMap.put("data", JSON.toJSONString(lListRepoXml));
+		modelMap.put("xmlRepositories", lListRepoXml);
 		return "repository/xml/index";
 	}
 
@@ -50,21 +52,44 @@ public class XmlRepositoryController {
 		 */
 		try {
 			Validate.matchesPattern(repositoryName, "^\\w{6,32}$",
-					"At least 6 chars, at most 32 chars, alphabets numbers and underscores are allowed.");
+					"Validation failed: repository name: At least 6 chars, at most 32 chars, alphabets numbers and underscores are allowed.");
 		} catch (IllegalArgumentException e) {
-			mLogger.info("New repository name does not match the regex pattern \"^\\w{6,32}$\"", e);
+			mLogger.info(e.toString(), e);
 			modelMap.put("errorMessage", e);
 		}
 		if (modelMap.containsKey("errorMessage")) return "/repository/xml/creation";
-		// Validation complete, create xml repository.
+		// After validation succeed.
 		try {
 			xmlRepositoryService.repositoryCreate_step1(repositoryName, createFrom);
 			xmlRepositoryService.repositoryCreate_step2(repositoryName, createFrom);
 		} catch (Exception e) {
-			mLogger.error("Failed to process service: XmlRepositoryService.repositoryCreate.", e);
+			mLogger.info(e.toString(), e);
 			modelMap.put("errorMessage", e);
 		}
 		if (modelMap.containsKey("errorMessage")) return "/repository/xml/creation";
+		return "redirect:/repository/xml/";
+	}
+
+	@RequestMapping(value = "/deletion.do", method = RequestMethod.GET)
+	public String deletion_view(ModelMap modelMap, @RequestParam Long id) {
+		modelMap.put("xmlRepository", xmlRepositoryService.getById(id));
+		modelMap.put("zipRepositories", zipRepositoryService.getDependsRepoXmlId(id));
+		return "repository/xml/deletion";
+	}
+
+	@RequestMapping(value = "/deletion.do", method = RequestMethod.POST)
+	public String deletion(ModelMap modelMap, @RequestParam Long repositoryId, @RequestParam String repositoryName) {
+		try {
+			xmlRepositoryService.repositoryDelete(repositoryId, repositoryName);
+		} catch (Exception e) {
+			mLogger.error(e.toString(), e);
+			modelMap.put("errorMessage", e);
+		}
+		if (modelMap.containsKey("errorMessage")) {
+			modelMap.put("xmlRepository", xmlRepositoryService.getById(repositoryId));
+			modelMap.put("zipRepositories", zipRepositoryService.getDependsRepoXmlId(repositoryId));
+			return "repository/xml/deletion";
+		}
 		return "redirect:/repository/xml/";
 	}
 }

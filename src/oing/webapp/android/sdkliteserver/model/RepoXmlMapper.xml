@@ -10,16 +10,18 @@
         <result property="dateLastModified" column="date_last_modified"/>
     </resultMap>
 
+    <sql id="RepoXml_columns_full">`id`, `name`, `date_create`, `date_last_modified`</sql>
+
     <select id="selectAll" resultMap="resultMap_RepoXml_all">
-		SELECT * FROM repo_xml
+		SELECT <include refid="RepoXml_columns_full"/> FROM repo_xml
 	</select>
 
-    <select id="selectById" resultType="RepoXml">
-		SELECT * FROM repo_xml WHERE id=#{id}
+    <select id="selectById" resultMap="resultMap_RepoXml_all">
+		SELECT <include refid="RepoXml_columns_full"/> FROM repo_xml WHERE id=#{id}
 	</select>
 
-    <select id="selectByName" resultType="RepoXml">
-        SELECT * FROM repo_xml WHERE `name`=#{name}
+    <select id="selectByName" resultMap="resultMap_RepoXml_all">
+        SELECT <include refid="RepoXml_columns_full"/> FROM repo_xml WHERE `name`=#{name}
     </select>
 
     <select id="existsByName" resultType="boolean">
@@ -34,4 +36,8 @@
 		INSERT INTO repo_xml_file(id_repo_xml, file_name, url)
 		  SELECT #{toId} as `id_repo_xml`,`file_name`,`url` FROM repo_xml_file WHERE id=#{fromId};
 	</insert>
+
+    <delete id="deleteById">
+        DELETE FROM repo_xml WHERE id=#{id}
+    </delete>
 </mapper>

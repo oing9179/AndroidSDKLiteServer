@@ -2,7 +2,10 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/docs/init_sqlite3_database.sql" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/src/oing/webapp/android/sdkliteserver/model/RepoXmlFileMapper.xml" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/src/oing/webapp/android/sdkliteserver/model/RepoXmlMapper.xml" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/src/oing/webapp/android/sdkliteserver/model/RepoZipMapper.xml" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/src/oing/webapp/android/sdkliteserver/model/SdkArchiveMapper.xml" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/web/WEB-INF/init_sqlite3_database.sql" dialect="SQLite" />
   </component>
 </project>

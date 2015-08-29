@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SdkArchive">
+    <resultMap id="resultMap_SdkArchive_all" type="SdkArchive">
+        <id property="id" column="id"/>
+        <result property="idRepoXmlFile" column="id_repo_xml_file"/>
+        <result property="displayName" column="display_name"/>
+        <result property="description" column="description"/>
+        <result property="version" column="version"/>
+        <result property="apiLevel" column="api_level"/>
+        <result property="isObsolete" column="is_obsolete"/>
+        <result property="url" column="url"/>
+        <result property="checksumType" column="checksum_type"/>
+        <result property="checksum" column="checksum"/>
+        <result property="size" column="size"/>
+        <result property="hostOs" column="host_os"/>
+        <result property="hostBits" column="host_bits"/>
+    </resultMap>
+
+    <sql id="SdkArchive_columns_full">
+        id, id_repo_xml_file, display_name, description, version, api_level,
+        is_obsolete, url, checksum_type, `size`, host_os, host_bits
+    </sql>
+</mapper>

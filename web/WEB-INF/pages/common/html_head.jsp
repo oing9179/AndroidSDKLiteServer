@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="jstlc" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="jstlfmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%
     String contextPath = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + "/";
@@ -12,7 +13,7 @@
 <link type="text/css" rel="stylesheet" href="static/css/MaterialIcons.css"/>
 <link type="text/css" rel="stylesheet" href="static/css/common.css"/>
 <style type="text/css">
-    .select-dropdown + .dropdown-content.select-dropdown{
+    .select-dropdown + .dropdown-content.select-dropdown {
         max-height: 150px;
     }
 </style>

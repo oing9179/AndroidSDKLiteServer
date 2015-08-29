@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A class that simplify(a joke) statement executions.
@@ -35,7 +34,7 @@ public abstract class BaseDao {
 	 * @param parameter     A parameter object to pass to the statement.
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T> List<T> selectList(String statementName, Objects parameter) {
+	protected <T> List<T> selectList(String statementName, Object parameter) {
 		return (List<T>) sqlSession.selectList(getMapperNamespace() + "." + statementName, parameter);
 	}
 

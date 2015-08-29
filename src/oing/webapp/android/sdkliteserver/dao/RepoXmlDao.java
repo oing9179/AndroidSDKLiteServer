@@ -29,17 +29,24 @@ public interface RepoXmlDao {
 	RepoXml selectByName(String name);
 
 	/**
-	 * Copy existing xml file into an existing xml repo
+	 * Copy existing records for new xml repository in table "repo_xml_file"
+	 * copyExistingRecordsForNewXmlRepo
 	 *
 	 * @param fromId The source xml repository id.
 	 * @param toId   The destination xml repository id.
 	 */
-	int copyExistingXmlFilesIntoExistingXmlRepo(Long fromId, Long toId);
+	int copyExistingRecordsForNewXmlRepo(Long fromId, Long toId);
 
 	/**
 	 * Add a RepoXml to database.
 	 *
-	 * @return Number of lines affected.
+	 * @return Number of rows affected.
 	 */
 	int insert(RepoXml repoXml);
+
+	/**
+	 * Delete a RepoXml from database by ID.<br/>
+	 * @return Number of rows affected.
+	 */
+	int deleteById(Long id);
 }

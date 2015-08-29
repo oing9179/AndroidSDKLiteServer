@@ -36,7 +36,7 @@ CREATE TABLE "main"."sdk_archive" (
 	"version"  TEXT,
 	"revision"  TEXT,
 	"api_level"  INTEGER,
-	"is_obsolute"  INTEGER NOT NULL,
+	"is_obsolete"  INTEGER NOT NULL,
 	"url"  TEXT NOT NULL,
 	"checksum_type"  TEXT,
 	"checksum"  TEXT,

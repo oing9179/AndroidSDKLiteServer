@@ -5,9 +5,6 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
-<div style="padding:6px;">
-    <div class="container">
-    </div>
-</div>
+<div class="container"></div>
 </body>
 </html>

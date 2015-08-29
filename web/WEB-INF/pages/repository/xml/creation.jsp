@@ -14,11 +14,10 @@
     <form class="card" action="/repository/xml/creation.do" method="post">
         <div class="card-content">
             <span class="card-title black-text">Create XML Repository</span>
-
             <div class="divider" style="margin: 0 -20px;"></div>
             <div class="row">
                 <div class="input-field col s12 m12 l6">
-                    <input id="inputRepoName" type="text" name="repositoryName"
+                    <input id="inputRepoName" type="text" name="repositoryName" class="validate"
                            title="Alphabets, numbers and underscores are allowed, at least 6 characters."
                            required="required" maxlength="32" pattern="^\w{6,32}$"/>
                     <label for="inputRepoName">XML repository name</label>
@@ -35,7 +34,7 @@
             </div>
             <div class="row" style="margin-bottom: 0px; display: ${errorMessage != null ? "inherit" : "none"}">
                 <div class="card">
-                    <div class="card-content red white-text">${errorMessage}</div>
+                    <div class="card-content red darken-4 white-text">${errorMessage}</div>
                 </div>
             </div>
         </div>
@@ -43,8 +42,8 @@
             <button type="submit" class="btn btn-less-padding waves-effect waves-light">
                 <i class="material-icons left">done</i>Submit
             </button>
-            <a href="/repository/xml/" class="btn btn-less-padding waves-effect waves-light white-text red"
-               style="margin-right: 0;">
+            <a href="/repository/xml/" style="margin-right: 0;"
+               class="btn btn-less-padding waves-effect white grey-text text-darken-4">
                 <i class="material-icons left">close</i>Cancel
             </a>
         </div>

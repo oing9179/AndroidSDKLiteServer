@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RepoXmlFile">
+    <resultMap id="resultMap_RepoXmlFile_all" type="RepoXmlFile">
+        <id property="id" column="id"/>
+        <result property="idRepoXml" column="id_repo_xml"/>
+        <result property="fileName" column="file_name"/>
+        <result property="url" column="url"/>
+    </resultMap>
+
+    <sql id="RepoXmlFile_columns_full">`id`, `id_repo_xml`, `file_name`, `url`</sql>
+
+    <delete id="deleteDependsRepoXmlId">
+        DELETE FROM repo_xml_file WHERE id_repo_xml=#{idRepoXml}
+    </delete>
+</mapper>

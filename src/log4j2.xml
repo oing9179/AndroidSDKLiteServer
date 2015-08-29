@@ -19,7 +19,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <!--<Logger name="org.mybatis.spring" level="off"></Logger>-->
+        <Logger name="org.mybatis.spring" level="off"></Logger>
         <Root level="debug">
             <AppenderRef ref="rollingFileAppender"/>
             <AppenderRef ref="rollingFileAppender_verbose"/>
