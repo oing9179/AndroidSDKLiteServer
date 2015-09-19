@@ -1,8 +1,8 @@
 package oing.webapp.android.sdkliteserver.controller;
 
 import oing.webapp.android.sdkliteserver.model.RepoXml;
-import oing.webapp.android.sdkliteserver.service.XmlRepositoryService;
-import oing.webapp.android.sdkliteserver.service.ZipRepositoryService;
+import oing.webapp.android.sdkliteserver.service.XmlRepositoryListService;
+import oing.webapp.android.sdkliteserver.service.ZipRepositoryListService;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,19 +17,19 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/repository/xml/")
-public class XmlRepositoryController {
-	private static Logger mLogger = LoggerFactory.getLogger(XmlRepositoryController.class);
+public class XmlRepositoryListController {
+	private static Logger mLogger = LoggerFactory.getLogger(XmlRepositoryListController.class);
 	@Autowired
-	private XmlRepositoryService xmlRepositoryService;
+	private XmlRepositoryListService xmlRepositoryListService;
 	@Autowired
-	private ZipRepositoryService zipRepositoryService;
+	private ZipRepositoryListService zipRepositoryListService;
 
 	/**
 	 * Show all xml repository
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public String _index(ModelMap modelMap) {
-		List<RepoXml> lListRepoXml = xmlRepositoryService.getAll();
+		List<RepoXml> lListRepoXml = xmlRepositoryListService.getAll();
 
 		modelMap.put("xmlRepositories", lListRepoXml);
 		return "repository/xml/index";
@@ -37,13 +37,14 @@ public class XmlRepositoryController {
 
 	@RequestMapping(value = "/creation.do", method = RequestMethod.GET)
 	public String creation_view(ModelMap modelMap) {
-		modelMap.put("xmlRepositories", xmlRepositoryService.getAll());
+		modelMap.put("xmlRepositories", xmlRepositoryListService.getAll());
 		return "repository/xml/creation";
 	}
 
 	@RequestMapping(value = "/creation.do", method = RequestMethod.POST)
 	public String creation(ModelMap modelMap,
-						   @RequestParam String repositoryName, @RequestParam(required = false) Long createFrom) {
+						   @RequestParam("name") String name,
+						   @RequestParam(value = "createFrom", required = false) Long createFrom) {
 		/**
 		 * Validate:
 		 * 1. At least 6 characters.
@@ -51,19 +52,19 @@ public class XmlRepositoryController {
 		 * 3. Alphabets, numbers and underscores are allowed.
 		 */
 		try {
-			Validate.matchesPattern(repositoryName, "^\\w{6,32}$",
+			Validate.matchesPattern(name, "^\\w{6,32}$",
 					"Validation failed: repository name: At least 6 chars, at most 32 chars, alphabets numbers and underscores are allowed.");
 		} catch (IllegalArgumentException e) {
 			mLogger.info(e.toString(), e);
 			modelMap.put("errorMessage", e);
 		}
 		if (modelMap.containsKey("errorMessage")) return "/repository/xml/creation";
-		// After validation succeed.
+		// After validation complete, create xml repository.
 		try {
-			xmlRepositoryService.repositoryCreate_step1(repositoryName, createFrom);
-			xmlRepositoryService.repositoryCreate_step2(repositoryName, createFrom);
+			xmlRepositoryListService.create(name, createFrom);
 		} catch (Exception e) {
 			mLogger.info(e.toString(), e);
+			modelMap.put("xmlRepositories", xmlRepositoryListService.getAll());
 			modelMap.put("errorMessage", e);
 		}
 		if (modelMap.containsKey("errorMessage")) return "/repository/xml/creation";
@@ -71,23 +72,23 @@ public class XmlRepositoryController {
 	}
 
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.GET)
-	public String deletion_view(ModelMap modelMap, @RequestParam Long id) {
-		modelMap.put("xmlRepository", xmlRepositoryService.getById(id));
-		modelMap.put("zipRepositories", zipRepositoryService.getDependsRepoXmlId(id));
+	public String deletion_view(ModelMap modelMap, @RequestParam("id") Long id) {
+		modelMap.put("xmlRepository", xmlRepositoryListService.getById(id));
+		modelMap.put("zipRepositories", zipRepositoryListService.getDependsRepoXmlId(id));
 		return "repository/xml/deletion";
 	}
 
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.POST)
-	public String deletion(ModelMap modelMap, @RequestParam Long repositoryId, @RequestParam String repositoryName) {
+	public String deletion(ModelMap modelMap, @RequestParam("id") Long id, @RequestParam("name") String name) {
 		try {
-			xmlRepositoryService.repositoryDelete(repositoryId, repositoryName);
+			xmlRepositoryListService.delete(id, name);
 		} catch (Exception e) {
 			mLogger.error(e.toString(), e);
 			modelMap.put("errorMessage", e);
 		}
 		if (modelMap.containsKey("errorMessage")) {
-			modelMap.put("xmlRepository", xmlRepositoryService.getById(repositoryId));
-			modelMap.put("zipRepositories", zipRepositoryService.getDependsRepoXmlId(repositoryId));
+			modelMap.put("xmlRepository", xmlRepositoryListService.getById(id));
+			modelMap.put("zipRepositories", zipRepositoryListService.getDependsRepoXmlId(id));
 			return "repository/xml/deletion";
 		}
 		return "redirect:/repository/xml/";

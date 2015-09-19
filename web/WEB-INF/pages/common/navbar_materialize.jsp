@@ -10,10 +10,10 @@
         <div class="nav-wrapper indigo">
             <!-- brand logo for small screen -->
             <a href="" class="brand-logo waves-effect waves-light hide-on-small-and-down"
-               style="padding-left: 12px; padding-right: 12px;">Android SDK Lite Server</a>
+               style="padding:0 12px;">Android SDK Lite Server</a>
             <!-- brand logo for middle and large screen -->
             <a href="" class="brand-logo waves-effect waves-light hide-on-med-and-up"
-               style="font-size: 20px; padding:0px 20px;">Android SDK Lite Server</a>
+               style="font-size: 20px; padding:0px 10px;">Android SDK Lite Server</a>
             <!-- toggle sidenav -->
             <a href="javascript:;" class="button-collapse" data-activates="sidenavLeftMain"><i class="material-icons">menu</i></a>
             <!-- navbar links -->

@@ -1,6 +1,20 @@
 package oing.webapp.android.sdkliteserver.dao;
 
+import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
+
+import java.util.List;
+
 public interface RepoXmlFileDao {
+	/**
+	 * Select from repo_xml_file depends on repo_xml.id
+	 */
+	List<RepoXmlFile> selectDependsRepoXmlId(Long idRepoXml);
+
+	/**
+	 * Add a RepoXmlFile to database.
+	 */
+	int insert(RepoXmlFile repoXmlFile);
+
 	/**
 	 * Delete from repo_xml_file where id_repo_xml=repo_xml.id
 	 */

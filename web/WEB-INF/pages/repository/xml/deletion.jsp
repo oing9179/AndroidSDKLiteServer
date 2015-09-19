@@ -16,6 +16,14 @@
             <span class="card-title red-text text-darken-4">Delete XML Repository</span>
             <div class="divider" style="margin: 0 -20px;"></div>
             <h5 class="red-text text-darken-4">You are going to delete xml repository: ${xmlRepository.name}</h5>
+            <div class="row" style="margin-bottom:0;">
+                <span class="col s12 m12 l6">Date of create:
+                    <jstlfmt:formatDate value="${xmlRepository.dateCreate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                </span>
+                <span class="col s12 m12 l6">Date of last modified:
+                    <jstlfmt:formatDate value="${xmlRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                </span>
+            </div>
             <div class="row">
                 <!-- Warning text -->
                 <div class="col s12 m12 l6" style="padding-top: 10px;">
@@ -48,9 +56,9 @@
                 </div>
             </div>
             <div class="row" style="margin-bottom: 0;">
-                <input type="hidden" name="repositoryId" value="${xmlRepository.id}"/>
-                <div class="input-field col s12 m12 l6 offset-l3">
-                    <input id="textBoxRepoName" type="text" name="repositoryName" class="validate"
+                <input type="hidden" name="id" value="${xmlRepository.id}"/>
+                <div class="input-field col s12 m8 offset-m2 l6 offset-l3">
+                    <input id="textBoxRepoName" type="text" name="name" class="validate"
                            required="required" pattern="^${xmlRepository.name}$"/>
                     <label for="textBoxRepoName">Type repository name to confirm.</label>
                 </div>
@@ -65,7 +73,7 @@
             <button type="submit" class="btn btn-less-padding waves-effect waves-light red white-text">
                 <i class="material-icons left">delete</i>Delete
             </button>
-            <a href="/repository/xml/" style="margin-right: 0;"
+            <a href="javascript:history.back();" style="margin-right: 0;"
                class="btn btn-less-padding waves-effect white grey-text text-darken-4">Cancel</a>
         </div>
     </form>

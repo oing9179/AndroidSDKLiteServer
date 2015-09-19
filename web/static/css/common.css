@@ -1,18 +1,15 @@
-.table-in-a-card thead th:nth-child(1){
-    padding-left: 12px;
-}
-.table-in-a-card thead th:nth-last-child(1) {
-    text-align: right;
-    padding-right: 12px;
-}
-.table-in-a-card tbody td:nth-child(1){
-    padding-left: 12px;
-}
-.table-in-a-card tbody td:nth-last-child(1) {
-    text-align: right;
-    padding-right: 12px;
-}
+/* Fix issues when <table> in a div.card */
+.table-in-a-card thead th:nth-child(1) {padding-left:12px;}
+.table-in-a-card thead th:nth-last-child(1) {text-align:right; padding-right:12px;}
+.table-in-a-card tbody td:nth-child(1) {padding-left:12px;}
+.table-in-a-card tbody td:nth-last-child(1) {text-align:right; padding-right:12px;}
 
-.btn-less-padding{
-    padding: 0px 12px;
-}
+.btn-less-padding {padding:0px 12px;}
+
+/* Fix: .select-dropdown in a div will covered by div's boundary */
+.select-dropdown + .dropdown-content.select-dropdown {max-height:150px;}
+
+/* Truncate some element's content safely.
+ * In fact, class ".truncate" provided by materializecss has a bug when I using in <td>.
+ */
+.truncate-nonblock {text-overflow:ellipsis; white-space:nowrap; overflow:hidden;}

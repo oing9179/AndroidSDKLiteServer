@@ -25,7 +25,8 @@
     </bean>
     <tx:advice id="txAdvice" transaction-manager="txManager">
         <tx:attributes>
-            <tx:method name="*" propagation="REQUIRED"/>
+            <!-- Rollback if any exception occurred. -->
+            <tx:method name="*" propagation="REQUIRED" rollback-for="Throwable"/>
         </tx:attributes>
     </tx:advice>
     <aop:config>
@@ -46,6 +47,10 @@
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/pages/"/>
         <property name="suffix" value=".jsp"/>
+    </bean>
+    <!-- Handles http multipart request "multipart/form-data" -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="-1"/>
     </bean>
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
         <property name="messageConverters">

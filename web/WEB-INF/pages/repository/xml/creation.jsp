@@ -16,12 +16,14 @@
             <span class="card-title black-text">Create XML Repository</span>
             <div class="divider" style="margin: 0 -20px;"></div>
             <div class="row">
+                <!-- form field: new repository name -->
                 <div class="input-field col s12 m12 l6">
-                    <input id="inputRepoName" type="text" name="repositoryName" class="validate"
+                    <input id="inputRepoName" type="text" name="name" class="validate"
                            title="Alphabets, numbers and underscores are allowed, at least 6 characters."
                            required="required" maxlength="32" pattern="^\w{6,32}$"/>
                     <label for="inputRepoName">XML repository name</label>
                 </div>
+                <!-- form field: create form existing repository -->
                 <div class="input-field col s12 m12 l6">
                     <select name="createFrom">
                         <option value="">&lt;No&gt;</option>

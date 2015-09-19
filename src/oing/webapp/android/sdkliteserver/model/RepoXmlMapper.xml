@@ -34,7 +34,7 @@
 	</insert>
     <insert id="copyExistingXmlFilesIntoNewXmlRepo">
 		INSERT INTO repo_xml_file(id_repo_xml, file_name, url)
-		  SELECT #{toId} as `id_repo_xml`,`file_name`,`url` FROM repo_xml_file WHERE id=#{fromId};
+		  SELECT #{toId} as `id_repo_xml`,`file_name`,`url` FROM repo_xml_file WHERE `id_repo_xml`=#{fromId}
 	</insert>
 
     <delete id="deleteById">

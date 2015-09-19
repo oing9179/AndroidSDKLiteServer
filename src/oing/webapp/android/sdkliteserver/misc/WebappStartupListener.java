@@ -1,5 +1,6 @@
 package oing.webapp.android.sdkliteserver.misc;
 
+import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;

@@ -12,6 +12,14 @@
 
     <sql id="RepoXmlFile_columns_full">`id`, `id_repo_xml`, `file_name`, `url`</sql>
 
+    <select id="selectByRepoXmlId" resultMap="resultMap_RepoXmlFile_all">
+        SELECT <include refid="RepoXmlFile_columns_full"/> FROM repo_xml_file WHERE id_repo_xml=#{id}
+    </select>
+
+    <insert id="insert" parameterType="RepoXmlFile">
+        INSERT INTO repo_xml_file(id_repo_xml, file_name, url) VALUES (#{idRepoXml}, #{fileName}, #{url})
+    </insert>
+
     <delete id="deleteDependsRepoXmlId">
         DELETE FROM repo_xml_file WHERE id_repo_xml=#{idRepoXml}
     </delete>

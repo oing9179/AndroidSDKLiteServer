@@ -1,4 +1,4 @@
-package oing.webapp.android.sdkliteserver.misc;
+package oing.webapp.android.sdkliteserver.utils;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
@@ -42,6 +42,14 @@ public class ConfigurationUtil implements ServletContextAware {
 		String lStrLocation = get("data_repository.location");
 		if (!lStrLocation.startsWith("/")) lStrLocation = servletContext.getRealPath("/" + lStrLocation);
 		return new File(lStrLocation);
+	}
+
+	public static File getXmlRepositoryDir(String repositoryName) {
+		return new File(getDataRepositoryDir(), "/xml/" + repositoryName);
+	}
+
+	public static File getZipRepositoryDir(String repositoryName) {
+		return new File(getDataRepositoryDir(), "/zip/" + repositoryName);
 	}
 
 	@Override

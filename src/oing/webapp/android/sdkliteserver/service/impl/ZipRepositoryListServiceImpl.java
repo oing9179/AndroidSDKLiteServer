@@ -2,14 +2,14 @@ package oing.webapp.android.sdkliteserver.service.impl;
 
 import oing.webapp.android.sdkliteserver.dao.RepoZipDao;
 import oing.webapp.android.sdkliteserver.model.RepoZip;
-import oing.webapp.android.sdkliteserver.service.ZipRepositoryService;
+import oing.webapp.android.sdkliteserver.service.ZipRepositoryListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class ZipRepositoryServiceImpl implements ZipRepositoryService {
+public class ZipRepositoryListServiceImpl implements ZipRepositoryListService {
 	@Autowired
 	private RepoZipDao repoZipDao;
 

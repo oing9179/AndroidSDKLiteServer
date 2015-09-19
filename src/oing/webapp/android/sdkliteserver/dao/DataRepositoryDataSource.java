@@ -1,6 +1,6 @@
 package oing.webapp.android.sdkliteserver.dao;
 
-import oing.webapp.android.sdkliteserver.misc.ConfigurationUtil;
+import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 
 import java.io.File;
