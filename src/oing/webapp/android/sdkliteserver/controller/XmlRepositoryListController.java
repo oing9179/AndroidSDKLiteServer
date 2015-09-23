@@ -35,12 +35,20 @@ public class XmlRepositoryListController {
 		return "repository/xml/index";
 	}
 
+	/**
+	 * Navigate to repository creation page.
+	 */
 	@RequestMapping(value = "/creation.do", method = RequestMethod.GET)
 	public String creation_view(ModelMap modelMap) {
 		modelMap.put("xmlRepositories", xmlRepositoryListService.getAll());
 		return "repository/xml/creation";
 	}
 
+	/**
+	 * Do create xml repository
+	 * @param name New xml repository name
+	 * @param createFrom Copy Data and Files from existing repository.
+	 */
 	@RequestMapping(value = "/creation.do", method = RequestMethod.POST)
 	public String creation(ModelMap modelMap,
 						   @RequestParam("name") String name,
@@ -71,6 +79,10 @@ public class XmlRepositoryListController {
 		return "redirect:/repository/xml/";
 	}
 
+	/**
+	 * Navigate to repository deletion page
+	 * @param id Repository ID
+	 */
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.GET)
 	public String deletion_view(ModelMap modelMap, @RequestParam("id") Long id) {
 		modelMap.put("xmlRepository", xmlRepositoryListService.getById(id));
@@ -78,6 +90,11 @@ public class XmlRepositoryListController {
 		return "repository/xml/deletion";
 	}
 
+	/**
+	 * Do repository deletion
+	 * @param id Repository ID
+	 * @param name Repository name for validation.
+	 */
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.POST)
 	public String deletion(ModelMap modelMap, @RequestParam("id") Long id, @RequestParam("name") String name) {
 		try {

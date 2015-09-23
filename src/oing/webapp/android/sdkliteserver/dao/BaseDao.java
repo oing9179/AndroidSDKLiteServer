@@ -96,10 +96,10 @@ public abstract class BaseDao {
 	}
 
 	/**
-	 * If the {@code parameter} has a property called "id"(which means a getter method "getId" in it)
+	 * If the {@code model} has a property called "id"(which means a getter method "getId" in it)
 	 * and the data type of that property is Long,
-	 * this method will update database record by that id by invoke {@link #insert(Object)}.
-	 * Otherwise insert it by invoke {@link #updateById(Object)}.
+	 * this method will update database record by that id by invoke {@link #updateById(Object)}.
+	 * Otherwise insert it by invoke {@link #insert(Object)}.
 	 *
 	 * @param model The parameter which will insert or update to database.
 	 * @return Number of rows affected.

@@ -15,9 +15,10 @@
                   method="post" onsubmit="return false;" enctype="multipart/form-data">
                 <div class="row">
                     <!-- CheckBox: force https -->
-                    <div class="col switch s12 m6 l6" style="padding-top:12px;"
+                    <div class="col switch s12 m12 l12" style="padding-top:12px;"
                          title="NOTE: This feature will disabled when proxy type is socks.">
-                        <label><input id="checkBoxForceHttps" name="isPreferHttpsConnection" type="checkbox"/>
+                        <label style="position:relative; top:-2px;">
+                            <input id="checkBoxForceHttps" name="isPreferHttpsConnection" type="checkbox"/>
                             <span class="lever"></span>
                         </label>Prefer HTTPS connection
                     </div>
@@ -88,6 +89,9 @@
         </div>
     </div>
 </div>
+<script id="templateToastError" type="text/x-handlebars-template">
+    <i class="material-icons left">error</i>{{text}}
+</script>
 <style type="text/css">
     /*
      * Progressbar background: HSV: H=const, S=-50, V=+28
@@ -131,6 +135,8 @@
 </style>
 <!-- script -->
 <script type="text/javascript">
+    var mCompiledTemplate_templateToastError;
+
     var TaskManager = {
         mJqXHRRequest: null,
         startTask: function () {
@@ -142,7 +148,8 @@
                     if (isNaN(parseInt($("#textBoxProxyInfo_port").val()))) throw new Error("Required: Proxy port");
                 }
             } catch (e) {
-                Materialize.toast("<i class='material-icons left'>error</i>" + e, 5000, "red darken-4");
+                var lJsonObj = {"text": e};
+                Materialize.toast(mCompiledTemplate_templateToastError(lJsonObj), 5000, "red darken-4");
                 throw e;
             }
             $form.hide();
@@ -159,10 +166,8 @@
                     TaskManager.updateProgressInfo(e.target.responseText);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    Materialize.toast(
-                            "<i class='material-icons left'>error</i> Error(" + textStatus + "): " + errorThrown,
-                            10000, "red darken-4"
-                    );
+                    var lJsonObj = {"text": "Error(" + textStatus + "): " + errorThrown};
+                    Materialize.toast(mCompiledTemplate_templateToastError(lJsonObj), 10000, "red darken-4");
                 },
                 complete: function (jqXHR, textStatus) {
                     $("#buttonAbortTask").hide();
@@ -198,9 +203,8 @@
                     // Update progress bar
                     var $divProgressBar = $("#divProgressBar");
                     var progress = lJsonArrResponse[lJsonArrResponse.length - 1]["progress"];
-                    $divProgressBar.removeClass("progressbar-red").removeClass("progressbar-blue")
-                            .removeClass("progressbar-green").find(".determinate,.indeterminate")
-                            .removeClass("indeterminate").removeClass("determinate");
+                    $divProgressBar.removeClass("progressbar-red progressbar-blue progressbar-green")
+                            .find(".determinate,.indeterminate").removeClass("indeterminate determinate");
                     if (progress == -1) {
                         // Progress bar goes to red.
                         $divProgressBar.addClass("progressbar-red").find("div").addClass("determinate");
@@ -222,6 +226,7 @@
     };
 
     function document_onReady() {
+        mCompiledTemplate_templateToastError = Handlebars.compile($("#templateToastError").html());
         $("#buttonAbortTask").bind("click", buttonAbortTask_onClick)
         $("#buttonStartTask").bind("click", buttonStartTask_onClick);
         $(document).ready(function () {

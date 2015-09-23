@@ -6,6 +6,11 @@ import java.util.List;
 
 public interface RepoXmlFileDao {
 	/**
+	 * Select from repo_xml_file by name
+	 */
+	RepoXmlFile selectByFileName(String name);
+
+	/**
 	 * Select from repo_xml_file depends on repo_xml.id
 	 */
 	List<RepoXmlFile> selectDependsRepoXmlId(Long idRepoXml);
@@ -14,6 +19,11 @@ public interface RepoXmlFileDao {
 	 * Add a RepoXmlFile to database.
 	 */
 	int insert(RepoXmlFile repoXmlFile);
+
+	/**
+	 * Insert or Update a repo_xml_file
+	 */
+	int insertOrUpdate(RepoXmlFile repoXmlFile);
 
 	/**
 	 * Delete from repo_xml_file where id_repo_xml=repo_xml.id

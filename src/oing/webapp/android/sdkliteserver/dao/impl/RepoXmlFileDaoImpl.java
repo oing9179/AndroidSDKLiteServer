@@ -12,6 +12,11 @@ public class RepoXmlFileDaoImpl extends BaseDao implements RepoXmlFileDao {
 	private static final String MAPPER_NAMESPACE = "RepoXmlFile";
 
 	@Override
+	public RepoXmlFile selectByFileName(String name) {
+		return super.selectOne("selectByFileName", name);
+	}
+
+	@Override
 	public List<RepoXmlFile> selectDependsRepoXmlId(Long idRepoXml) {
 		return super.selectList("selectByRepoXmlId", idRepoXml);
 	}
@@ -19,6 +24,11 @@ public class RepoXmlFileDaoImpl extends BaseDao implements RepoXmlFileDao {
 	@Override
 	public int insert(RepoXmlFile repoXmlFile) {
 		return super.insert("insert", repoXmlFile);
+	}
+
+	@Override
+	public int insertOrUpdate(RepoXmlFile repoXmlFile) {
+		return super.insertOrUpdateById(repoXmlFile);
 	}
 
 	@Override

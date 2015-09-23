@@ -15,6 +15,7 @@ import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -173,6 +174,28 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 			}
 		}
 		listener.onPublish(1, "Everything is completed.");
+	}
+
+	public void manualAddition(String repositoryName, MultipartFile[] multipartFiles, String[] urls) throws IOException {
+		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
+
+		for (int i = 0; i < multipartFiles.length; i++) {
+			MultipartFile lMultipartFile = multipartFiles[i];
+			RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByFileName(lMultipartFile.getOriginalFilename());
+
+			if (lRepoXmlFile == null) {
+				lRepoXmlFile = new RepoXmlFile();
+				lRepoXmlFile.setIdRepoXml(lRepoXml.getId());
+				lRepoXmlFile.setFileName(lMultipartFile.getOriginalFilename());
+				lRepoXmlFile.setUrl(urls[i]);
+			} else {
+				lRepoXmlFile.setUrl(urls[i]);
+			}
+			repoXmlFileDao.insertOrUpdate(lRepoXmlFile);
+			File lFileTarget = new File(ConfigurationUtil.getXmlRepositoryDir(lRepoXml.getName()),
+					"/" + lMultipartFile.getOriginalFilename());
+			lMultipartFile.transferTo(lFileTarget);
+		}
 	}
 
 	private RepoXml getRepoXmlByNameOrThrow(String repositoryName) {

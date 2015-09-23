@@ -3,7 +3,9 @@ package oing.webapp.android.sdkliteserver.service;
 import jodd.http.ProxyInfo;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface XmlRepositoryEditorService {
@@ -31,4 +33,14 @@ public interface XmlRepositoryEditorService {
 	 */
 	void automaticAddition(String repositoryName, boolean isPreferHttpsConnection, ProxyInfo proxyInfo,
 						   AutomaticAdditionEventListener listener) throws Exception;
+
+	/**
+	 * Fill(or update) a xml repository manually.
+	 *
+	 * @param repositoryName Repository name
+	 * @param multipartFiles XML file user uploaded. File will be replaced if a file exist in database,
+	 *                       otherwise create a new record in database.
+	 * @param urls           Where are these xml files comes from.
+	 */
+	void manualAddition(String repositoryName, MultipartFile[] multipartFiles, String[] urls) throws IOException;
 }

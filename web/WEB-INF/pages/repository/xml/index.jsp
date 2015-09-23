@@ -9,13 +9,17 @@
     <div class="card">
         <div class="card-content" style="padding: 0;">
             <!-- card title -->
-            <span class="card-title black-text" style="padding-left: 12px;">XML Repository</span>
-            <div class="divider"></div>
-            <div class="row right-align" style="margin:0; padding:6px;">
-                <a href="/repository/xml/creation.do"
-                   class="btn btn-less-padding waves-effect waves-light green" title="Add">
-                    <i class="material-icons">add</i>
-                </a>
+            <div class="row" style="margin:0;">
+                <div class="col s12 m8 l8">
+                    <span class="card-title black-text">XML Repository</span>
+                </div>
+                <div class="divider col s12 hide-on-med-and-up"></div>
+                <div class="col s12 m4 l4 right-align" style="margin:0; padding:6px;">
+                    <a href="/repository/xml/creation.do"
+                       class="btn btn-less-padding waves-effect waves-light green" title="Add">
+                        <i class="material-icons">add</i>
+                    </a>
+                </div>
             </div>
             <div class="divider"></div>
             <!-- card content area -->

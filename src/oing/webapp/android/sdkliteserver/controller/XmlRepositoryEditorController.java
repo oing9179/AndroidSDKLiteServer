@@ -1,5 +1,7 @@
 package oing.webapp.android.sdkliteserver.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import jodd.http.ProxyInfo;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
@@ -15,11 +17,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping("/repository/xml/{repositoryName}/")
@@ -41,6 +47,9 @@ public class XmlRepositoryEditorController {
 		return "repository/xml/repositoryName/index";
 	}
 
+	/**
+	 * Navigate to automatic addition page, help users fill repository easily.
+	 */
 	@RequestMapping(value = "/automatic_addition.do", method = RequestMethod.GET)
 	public String automatic_addition(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
 		modelMap.put("xmlRepository", xmlRepositoryEditorService.getByName(repositoryName));
@@ -136,5 +145,37 @@ public class XmlRepositoryEditorController {
 	public String manual_addition(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
 		modelMap.put("xmlRepository", xmlRepositoryEditorService.getByName(repositoryName));
 		return "repository/xml/repositoryName/manual_add";
+	}
+
+	@RequestMapping(value = "/manual_addition.do", method = RequestMethod.POST)
+	public String manual_addition(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+								  @RequestParam("file") MultipartFile[] multipartFiles,
+								  @RequestParam("url") String[] urls) {
+		RepoXml lRepoXml = xmlRepositoryEditorService.getByName(repositoryName);
+		try {
+			Validate.isTrue(multipartFiles.length == urls.length, "Count of files and URLs are not equal.");
+			xmlRepositoryEditorService.manualAddition(repositoryName, multipartFiles, urls);
+		} catch (Exception e) {
+			mLogger.error(e.toString(), e);
+			modelMap.put("errorMessage", e.toString());
+			modelMap.put("xmlRepository", lRepoXml);
+		}
+		return modelMap.containsKey("errorMessage") ?
+				"repository/xml/repositoryName/manual_add" :
+				"redirect:/repository/xml/" + lRepoXml.getName() + "/";
+	}
+
+	/**
+	 * Convert log comes from SDK Manager to XML URLs.
+	 */
+	@RequestMapping(value = "/parse_log_for_sdkmanager.do", method = RequestMethod.POST)
+	@ResponseBody
+	public JSONArray parse_log_for_sdkmanager(@RequestParam("log") String log) {
+		HashSet<String> lHashSetUrls = new HashSet<>();
+		Matcher lMatcher = Pattern.compile("(http|https)://\\S+.xml").matcher(log);
+		while (lMatcher.find()) {
+			lHashSetUrls.add(lMatcher.group());
+		}
+		return (JSONArray) JSON.toJSON(lHashSetUrls);
 	}
 }
