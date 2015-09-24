@@ -13,6 +13,8 @@ import oing.webapp.android.sdkliteserver.utils.AddonsListXmlParser;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,8 +34,10 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	private RepoXmlFileDao repoXmlFileDao;
 
 	@Override
-	public RepoXml getByName(String name) throws IllegalArgumentException {
-		return getRepoXmlByNameOrThrow(name);
+	public RepoXmlFile getByIdDependsRepoXmlId(Long id, Long repoXmlId) {
+		RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByIdDependsRepoXmlId(id, repoXmlId);
+		if (lRepoXmlFile != null) return lRepoXmlFile;
+		throw new IllegalArgumentException("XML file not found: id=" + id);
 	}
 
 	@Override
@@ -109,9 +113,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 				try {
 					lWriter = new OutputStreamWriter(new FileOutputStream(lFileAddonsListXml));
 					lParser.getDocument().write(lWriter);
-				} catch (IOException e) {
-					throw e;
-				} finally {
+				}  finally {
 					// Java do "finally" first before rethrow.
 					IOUtils.closeQuietly(lWriter);
 				}
@@ -196,6 +198,24 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 					"/" + lMultipartFile.getOriginalFilename());
 			lMultipartFile.transferTo(lFileTarget);
 		}
+	}
+
+	@Override
+	public void delete(String repositoryName, Long id, String name) {
+		/**
+		 * 1. Repository exists.
+		 * 2. Found a RepoXmlFile by id.
+		 * 3. Name from database equals to name from parameter.
+		 * All conditions are true, then delete xml file.
+		 */
+		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
+		RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByIdDependsRepoXmlId(id, lRepoXml.getId());
+		Validate.isTrue(lRepoXmlFile != null, "XML file not found: (id=" + id + ")" + name);
+		Validate.isTrue(lRepoXmlFile.getFileName().equals(name),
+				"XML file name incorrect, desired: " + lRepoXmlFile.getFileName() + " give: " + name);
+		repoXmlFileDao.deleteById(lRepoXmlFile.getId());
+		new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName),
+				"/" + lRepoXmlFile.getFileName()).delete();
 	}
 
 	private RepoXml getRepoXmlByNameOrThrow(String repositoryName) {

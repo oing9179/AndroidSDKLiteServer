@@ -8,6 +8,7 @@ import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
 import oing.webapp.android.sdkliteserver.service.AutomaticAdditionEventListener;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryEditorService;
+import oing.webapp.android.sdkliteserver.service.XmlRepositoryListService;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -32,12 +33,14 @@ import java.util.regex.Pattern;
 public class XmlRepositoryEditorController {
 	private static Logger mLogger = LoggerFactory.getLogger(XmlRepositoryEditorController.class);
 	@Autowired
+	private XmlRepositoryListService xmlRepositoryListService;
+	@Autowired
 	private XmlRepositoryEditorService xmlRepositoryEditorService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String _index(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
 		try {
-			RepoXml lRepoXml = xmlRepositoryEditorService.getByName(repositoryName);
+			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
 			modelMap.put("xmlRepository", lRepoXml);
 			List<RepoXmlFile> lListRepoXmlFiles = xmlRepositoryEditorService.getFilesByRepoXmlId(lRepoXml.getId());
 			modelMap.put("xmlFiles", lListRepoXmlFiles);
@@ -51,13 +54,23 @@ public class XmlRepositoryEditorController {
 	 * Navigate to automatic addition page, help users fill repository easily.
 	 */
 	@RequestMapping(value = "/automatic_addition.do", method = RequestMethod.GET)
-	public String automatic_addition(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
-		modelMap.put("xmlRepository", xmlRepositoryEditorService.getByName(repositoryName));
+	public String automatic_addition_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
+		modelMap.put("xmlRepository", xmlRepositoryListService.getByName(repositoryName));
 		modelMap.put("url_addons_list_xml", ConfigurationUtil.get("url.addons_list_2_xml"));
 		modelMap.put("url_repository_xml", ConfigurationUtil.get("url.repository_11_xml"));
-		return "repository/xml/repositoryName/automatic_add";
+		return "repository/xml/repositoryName/automatic_addition";
 	}
 
+	/**
+	 * Fill xml repository automatically
+	 *
+	 * @param isPreferHttpsConnection Prefer HTTPS connection instead of HTTP.
+	 * @param proxyInfo_type          Proxy type {Direct, HTTP, SOCKS4, SOCKS5}
+	 * @param proxyInfo_address       Proxy address
+	 * @param proxyInfo_port          Proxy port
+	 * @param proxyInfo_userName      Username for proxy authorization
+	 * @param proxyInfo_password      Password for proxy authorization
+	 */
 	@RequestMapping(value = "/automatic_addition.do", method = RequestMethod.POST)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.ACCEPTED)
@@ -141,17 +154,26 @@ public class XmlRepositoryEditorController {
 		}
 	}
 
+	/**
+	 * Navigate to manual addition page
+	 */
 	@RequestMapping(value = "/manual_addition.do", method = RequestMethod.GET)
-	public String manual_addition(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
-		modelMap.put("xmlRepository", xmlRepositoryEditorService.getByName(repositoryName));
-		return "repository/xml/repositoryName/manual_add";
+	public String manual_addition_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
+		modelMap.put("xmlRepository", xmlRepositoryListService.getByName(repositoryName));
+		return "repository/xml/repositoryName/manual_addition";
 	}
 
+	/**
+	 * Fill or update xml repository manually
+	 *
+	 * @param multipartFiles XML files user uploaded
+	 * @param urls           Where these xml files comes from
+	 */
 	@RequestMapping(value = "/manual_addition.do", method = RequestMethod.POST)
 	public String manual_addition(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
 								  @RequestParam("file") MultipartFile[] multipartFiles,
 								  @RequestParam("url") String[] urls) {
-		RepoXml lRepoXml = xmlRepositoryEditorService.getByName(repositoryName);
+		RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
 		try {
 			Validate.isTrue(multipartFiles.length == urls.length, "Count of files and URLs are not equal.");
 			xmlRepositoryEditorService.manualAddition(repositoryName, multipartFiles, urls);
@@ -161,7 +183,7 @@ public class XmlRepositoryEditorController {
 			modelMap.put("xmlRepository", lRepoXml);
 		}
 		return modelMap.containsKey("errorMessage") ?
-				"repository/xml/repositoryName/manual_add" :
+				"repository/xml/repositoryName/manual_addition" :
 				"redirect:/repository/xml/" + lRepoXml.getName() + "/";
 	}
 
@@ -177,5 +199,38 @@ public class XmlRepositoryEditorController {
 			lHashSetUrls.add(lMatcher.group());
 		}
 		return (JSONArray) JSON.toJSON(lHashSetUrls);
+	}
+
+	@RequestMapping(value = "/deletion.do", method = RequestMethod.GET)
+	public String deletion_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+								@RequestParam("id") Long id) {
+		try {
+			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
+			modelMap.put("xmlRepository", lRepoXml);
+			modelMap.put("xmlFile", xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId()));
+		} catch (Exception e) {
+			mLogger.error(e.toString(), e);
+			modelMap.put("errorMessage", e.toString());
+		}
+		return "repository/xml/repositoryName/deletion";
+	}
+
+	@RequestMapping(value = "/deletion.do", method = RequestMethod.POST)
+	public String deletion(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+						   @RequestParam("id") Long id, @RequestParam("name") String name) {
+		try {
+			xmlRepositoryEditorService.delete(repositoryName, id, name);
+		} catch (Exception e) {
+			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
+			modelMap.put("xmlRepository", lRepoXml);
+			try {
+				modelMap.put("xmlFile", xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId()));
+			} catch (Exception ignore) {
+			}
+			modelMap.put("errorMessage", e.toString());
+		}
+		return modelMap.containsKey("errorMessage") ?
+				"repository/xml/repositoryName/deletion" :
+				"redirect:/repository/xml/" + repositoryName + "/";
 	}
 }

@@ -17,6 +17,11 @@ public interface XmlRepositoryListService {
 	RepoXml getById(Long id);
 
 	/**
+	 * Select from table "repo_xml" by name
+	 */
+	RepoXml getByName(String name);
+
+	/**
 	 * Create a repository
 	 *
 	 * @param name       The name of new repository.

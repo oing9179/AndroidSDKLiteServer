@@ -27,7 +27,7 @@
                         <i class="material-icons">add</i>
                     </a>
                     <a href="/repository/xml/deletion.do?id=${xmlRepository.id}" title="Delete repository"
-                       class="btn btn-less-padding waves-effect waves-light red white-text">
+                       class="btn btn-less-padding waves-effect waves-light red white-text" style="display:none;">
                         <i class="material-icons">delete</i>
                     </a>
                 </div>
@@ -49,12 +49,14 @@
                         <td class="truncate-nonblock" title="${xmlFile.fileName}">${xmlFile.fileName}</td>
                         <td class="hide-on-small-and-down truncate-nonblock" title="${xmlFile.url}">${xmlFile.url}</td>
                         <td>
-                            <button class="btn btn-less-padding waves-effect waves-light">
+                            <a href="/repository/xml/${xmlRepository.name}/xml_editor.do?id=${xmlFile.id}"
+                               class="btn btn-less-padding waves-effect waves-light" title="Edit">
                                 <i class="material-icons">edit</i>
-                            </button>
-                            <button class="btn btn-less-padding waves-effect waves-light red white-text">
+                            </a>
+                            <a href="/repository/xml/${xmlRepository.name}/deletion.do?id=${xmlFile.id}"
+                               class="btn btn-less-padding waves-effect waves-light red white-text" title="Delete">
                                 <i class="material-icons">delete</i>
-                            </button>
+                            </a>
                         </td>
                     </tr>
                 </jstlc:forEach>

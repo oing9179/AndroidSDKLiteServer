@@ -33,7 +33,16 @@ public class XmlRepositoryListServiceImpl implements XmlRepositoryListService {
 
 	@Override
 	public RepoXml getById(Long id) {
-		return repoXmlDao.selectById(id);
+		RepoXml lRepoXml = repoXmlDao.selectById(id);
+		Validate.isTrue(lRepoXml != null, "Repository not found: id=" + id);
+		return lRepoXml;
+	}
+
+	@Override
+	public RepoXml getByName(String name) {
+		RepoXml lRepoXml = repoXmlDao.selectByName(name);
+		Validate.isTrue(lRepoXml != null, "Repository not found: " + name);
+		return lRepoXml;
 	}
 
 	@Override
@@ -57,7 +66,7 @@ public class XmlRepositoryListServiceImpl implements XmlRepositoryListService {
 		if (lRepoXml_existed != null) {
 			// If source repository exists, do copy data.
 			lRepoXml_new = repoXmlDao.selectByName(lRepoXml_new.getName());
-			repoXmlDao.copyExistingRecordsForNewXmlRepo(createFrom, lRepoXml_new.getId());
+			repoXmlFileDao.copyExistingRecordsForNewXmlRepo(createFrom, lRepoXml_new.getId());
 		}
 		// 3. Create a folder for new repository.
 		lFileDirNewRepo = ConfigurationUtil.getXmlRepositoryDir(lRepoXml_new.getName());
@@ -72,7 +81,7 @@ public class XmlRepositoryListServiceImpl implements XmlRepositoryListService {
 
 	@Override
 	public void delete(Long id, String name) throws IOException {
-		RepoXml lRepoXml = repoXmlDao.selectById(id);
+		RepoXml lRepoXml = getById(id);
 		// 1. If repositoryName have no matches in database, reject.
 		if (!lRepoXml.getName().equals(name)) {
 			String lStrMessage;

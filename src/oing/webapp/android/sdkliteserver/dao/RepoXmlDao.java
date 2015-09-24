@@ -29,15 +29,6 @@ public interface RepoXmlDao {
 	RepoXml selectByName(String name);
 
 	/**
-	 * Copy existing records for new xml repository in table "repo_xml_file"
-	 * copyExistingRecordsForNewXmlRepo
-	 *
-	 * @param fromId The source xml repository id.
-	 * @param toId   The destination xml repository id.
-	 */
-	int copyExistingRecordsForNewXmlRepo(Long fromId, Long toId);
-
-	/**
 	 * Add a RepoXml to database.
 	 *
 	 * @return Number of rows affected.

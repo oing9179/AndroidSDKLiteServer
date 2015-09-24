@@ -10,11 +10,12 @@ import java.util.List;
 
 public interface XmlRepositoryEditorService {
 	/**
-	 * Select from repo_xml by name
+	 * Get RepoXmlFile by id depends repo_xml.id.
 	 *
-	 * @throws IllegalArgumentException
+	 * @param id        ID for repo_xml_file
+	 * @param repoXmlId ID for repo_xml
 	 */
-	RepoXml getByName(String name) throws IllegalArgumentException;
+	RepoXmlFile getByIdDependsRepoXmlId(Long id, Long repoXmlId);
 
 	/**
 	 * Get all files from specific repository
@@ -43,4 +44,13 @@ public interface XmlRepositoryEditorService {
 	 * @param urls           Where are these xml files comes from.
 	 */
 	void manualAddition(String repositoryName, MultipartFile[] multipartFiles, String[] urls) throws IOException;
+
+	/**
+	 * Delete a xml file from repository
+	 *
+	 * @param repositoryName Repository name where xml file lives in
+	 * @param id             Database repo_xml_file.id
+	 * @param name           XML file name
+	 */
+	void delete(String repositoryName, Long id, String name);
 }
