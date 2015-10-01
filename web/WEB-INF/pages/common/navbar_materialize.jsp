@@ -1,9 +1,9 @@
 <header>
     <!-- dropdown: "management" on navbar -->
     <ul id="dropdownManagementNavbar" class="dropdown-content">
-        <li class="waves-effect waves-light"><a href="/dashboard/">Dashboard</a></li>
-        <li class="waves-effect waves-light"><a href="/repository/xml/">XML Repository</a></li>
-        <li class="waves-effect waves-light"><a href="/repository/zip/">ZIP Repository</a></li>
+        <li class="waves-effect"><a href="/dashboard/">Dashboard</a></li>
+        <li class="waves-effect"><a href="/repository/xml/">XML Repository</a></li>
+        <li class="waves-effect"><a href="/repository/zip/">ZIP Repository</a></li>
     </ul>
     <!-- navbar -->
     <nav>
@@ -13,12 +13,14 @@
                style="padding:0 12px;">Android SDK Lite Server</a>
             <!-- brand logo for middle and large screen -->
             <a href="" class="brand-logo waves-effect waves-light hide-on-med-and-up"
-               style="font-size: 20px; padding:0px 10px;">Android SDK Lite Server</a>
+               style="font-size: 20px; padding:0 10px;">Android SDK Lite Server</a>
             <!-- toggle sidenav -->
-            <a href="javascript:;" class="button-collapse" data-activates="sidenavLeftMain"><i class="material-icons">menu</i></a>
+            <a href="javascript:;" class="button-collapse" data-activates="sidenavLeftMain">
+                <i class="material-icons">menu</i>
+            </a>
             <!-- navbar links -->
             <ul class="right hide-on-med-and-down">
-                <li class="waves-effect waves-light">
+                <li class="waves-effect">
                     <a href="/download_record/" class="waves-effect waves-light">Download record</a>
                 </li>
                 <li>

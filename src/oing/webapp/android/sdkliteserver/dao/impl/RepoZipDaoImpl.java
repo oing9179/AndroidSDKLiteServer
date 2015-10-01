@@ -12,6 +12,11 @@ public class RepoZipDaoImpl extends BaseDao implements RepoZipDao {
 	private static final String MAPPER_NAMESPACE = "RepoZip";
 
 	@Override
+	public List<RepoZip> selectAll() {
+		return super.selectList("selectAll", null);
+	}
+
+	@Override
 	public List<RepoZip> selectDependsOnRepoXmlId(Long idRepoXml) {
 		return super.selectList("selectByRepoXmlId", idRepoXml);
 	}

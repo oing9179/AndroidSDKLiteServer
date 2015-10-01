@@ -23,6 +23,8 @@ CREATE TABLE "main"."repo_zip" (
 	"id"  INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 	"id_repo_xml"  INTEGER, -- Zip repo depends on NO xml repo is ok, depends on a EXIST xml repo is better.
 	"name"  TEXT NOT NULL,
+	"date_create" INTEGER NOT NULL,
+	"date_last_modified" INTEGER,
 	CONSTRAINT "fk_repo_zip__repo_xml_0" FOREIGN KEY ("id_repo_xml") REFERENCES "repo_xml" ("id")
 ) ;
 

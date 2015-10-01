@@ -6,6 +6,11 @@ import java.util.List;
 
 public interface RepoZipDao {
 	/**
+	 * Select all from repo_zip
+	 */
+	List<RepoZip> selectAll();
+
+	/**
 	 * Select from repo_zip where id_repo_xml=repo_xml.id
 	 */
 	List<RepoZip> selectDependsOnRepoXmlId(Long idRepoXml);

@@ -13,6 +13,10 @@ public class ZipRepositoryListServiceImpl implements ZipRepositoryListService {
 	@Autowired
 	private RepoZipDao repoZipDao;
 
+	public List<RepoZip> getAll() {
+		return repoZipDao.selectAll();
+	}
+
 	@Override
 	public List<RepoZip> getDependsRepoXmlId(Long idRepoXml) {
 		return repoZipDao.selectDependsOnRepoXmlId(idRepoXml);
