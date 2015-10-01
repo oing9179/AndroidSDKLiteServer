@@ -63,11 +63,9 @@
                     <label for="textBoxRepoName">Type repository name to confirm.</label>
                 </div>
             </div>
-            <div class="row" style="margin-bottom: 0; display: ${errorMessage != null ? "inherit" : "none"}">
-                <div class="card">
-                    <div class="card-content red darken-4 white-text">${errorMessage}</div>
-                </div>
-            </div>
+            <jstlc:if test="${errorMessage != null}">
+                <div class="card-panel red darken-4 white-text">${errorMessage}</div>
+            </jstlc:if>
         </div>
         <div class="card-action right-align">
             <button type="submit" class="btn btn-less-padding waves-effect waves-light red white-text">

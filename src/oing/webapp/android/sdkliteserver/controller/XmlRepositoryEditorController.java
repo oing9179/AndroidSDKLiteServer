@@ -210,7 +210,7 @@ public class XmlRepositoryEditorController {
 			modelMap.put("xmlFile", xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId()));
 		} catch (Exception e) {
 			mLogger.error(e.toString(), e);
-			modelMap.put("errorMessage", e.toString());
+			modelMap.put("errorMessage", e);
 		}
 		return "repository/xml/repositoryName/deletion";
 	}
@@ -227,7 +227,7 @@ public class XmlRepositoryEditorController {
 				modelMap.put("xmlFile", xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId()));
 			} catch (Exception ignore) {
 			}
-			modelMap.put("errorMessage", e.toString());
+			modelMap.put("errorMessage", e);
 		}
 		return modelMap.containsKey("errorMessage") ?
 				"repository/xml/repositoryName/deletion" :

@@ -28,6 +28,11 @@
         SELECT <include refid="RepoZip_columns_full"/> FROM repo_zip WHERE id_repo_xml=#{idRepoXml}
     </select>
 
+    <insert id="insert" parameterType="RepoZip">
+        INSERT INTO repo_zip(name, date_create, date_last_modified)
+            VALUES (#{name}, #{dateCreate}, #{dateLastModified})
+    </insert>
+
     <update id="updateClearDependencyFromRepoXml">
         UPDATE repo_zip SET id_repo_xml=NULL WHERE id_repo_xml=#{idRepoXml}
     </update>

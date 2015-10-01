@@ -15,7 +15,7 @@
                 </div>
                 <div class="divider col s12 hide-on-med-and-up"></div>
                 <div class="col s12 m4 l4 right-align" style="margin:0; padding:6px;">
-                    <a href="javascript:;"
+                    <a href="/repository/zip/creation.do" title="Add"
                        class="btn btn-less-padding waves-effect waves-light green">
                         <i class="material-icons">add</i>
                     </a>

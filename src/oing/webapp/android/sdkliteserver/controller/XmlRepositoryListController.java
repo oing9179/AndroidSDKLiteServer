@@ -46,7 +46,8 @@ public class XmlRepositoryListController {
 
 	/**
 	 * Do create xml repository
-	 * @param name New xml repository name
+	 *
+	 * @param name       New xml repository name
 	 * @param createFrom Copy Data and Files from existing repository.
 	 */
 	@RequestMapping(value = "/creation.do", method = RequestMethod.POST)
@@ -66,7 +67,7 @@ public class XmlRepositoryListController {
 			mLogger.info(e.toString(), e);
 			modelMap.put("errorMessage", e);
 		}
-		if (modelMap.containsKey("errorMessage")) return "/repository/xml/creation";
+		if (modelMap.containsKey("errorMessage")) return "repository/xml/creation";
 		// After validation complete, create xml repository.
 		try {
 			xmlRepositoryListService.create(name, createFrom);
@@ -75,12 +76,13 @@ public class XmlRepositoryListController {
 			modelMap.put("xmlRepositories", xmlRepositoryListService.getAll());
 			modelMap.put("errorMessage", e);
 		}
-		if (modelMap.containsKey("errorMessage")) return "/repository/xml/creation";
+		if (modelMap.containsKey("errorMessage")) return "repository/xml/creation";
 		return "redirect:/repository/xml/";
 	}
 
 	/**
 	 * Navigate to repository deletion page
+	 *
 	 * @param id Repository ID
 	 */
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.GET)
@@ -92,7 +94,8 @@ public class XmlRepositoryListController {
 
 	/**
 	 * Do repository deletion
-	 * @param id Repository ID
+	 *
+	 * @param id   Repository ID
 	 * @param name Repository name for validation.
 	 */
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.POST)
@@ -102,12 +105,9 @@ public class XmlRepositoryListController {
 		} catch (Exception e) {
 			mLogger.error(e.toString(), e);
 			modelMap.put("errorMessage", e);
-		}
-		if (modelMap.containsKey("errorMessage")) {
 			modelMap.put("xmlRepository", xmlRepositoryListService.getById(id));
 			modelMap.put("zipRepositories", zipRepositoryListService.getDependsRepoXmlId(id));
-			return "repository/xml/deletion";
 		}
-		return "redirect:/repository/xml/";
+		return modelMap.containsKey("errorMessage") ? "repository/xml/deletion" : "redirect:/repository/xml/";
 	}
 }

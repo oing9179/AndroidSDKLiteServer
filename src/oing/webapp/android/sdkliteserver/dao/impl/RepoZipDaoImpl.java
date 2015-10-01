@@ -22,6 +22,11 @@ public class RepoZipDaoImpl extends BaseDao implements RepoZipDao {
 	}
 
 	@Override
+	public int insert(RepoZip repoZip) {
+		return super.insert(repoZip);
+	}
+
+	@Override
 	public int updateClearDependencyFromRepoXml(Long idRepoXml) {
 		return super.update("updateClearDependencyFromRepoXml", idRepoXml);
 	}

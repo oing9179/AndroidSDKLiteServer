@@ -32,8 +32,6 @@ public class RepoXmlDaoImpl extends BaseDao implements RepoXmlDao {
 
 	@Override
 	public int insert(RepoXml repoXml) {
-		// The last-modified-date should be same as creation-date.
-		repoXml.setDateLastModified(repoXml.getDateCreate());
 		return super.insert(repoXml);
 	}
 

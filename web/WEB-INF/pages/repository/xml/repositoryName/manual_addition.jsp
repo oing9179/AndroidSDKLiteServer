@@ -6,9 +6,9 @@
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
 <div class="container">
-    <div class="card-panel red darken-4 white-text" style="display:${errorMessage != null ? "block" : "none"};">
-        ${errorMessage}
-    </div>
+    <jstlc:if test="${errorMessage != null}">
+        <div class="card-panel red darken-4 white-text">${errorMessage}</div>
+    </jstlc:if>
     <div class="card">
         <div class="card-content" style="padding:0;">
             <div class="row" style="margin:0;">

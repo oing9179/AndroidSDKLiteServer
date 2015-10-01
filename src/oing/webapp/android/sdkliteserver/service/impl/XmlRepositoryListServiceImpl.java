@@ -61,6 +61,8 @@ public class XmlRepositoryListServiceImpl implements XmlRepositoryListService {
 		lRepoXml_new = new RepoXml();
 		lRepoXml_new.setName(name);
 		lRepoXml_new.setDateCreate(new Date());
+		// The last-modified-date should be same as creation-date.
+		lRepoXml_new.setDateLastModified(lRepoXml_new.getDateCreate());
 		repoXmlDao.insert(lRepoXml_new);
 		// 2. Copy data from a table to another table.
 		if (lRepoXml_existed != null) {

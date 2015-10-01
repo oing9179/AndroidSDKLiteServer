@@ -15,4 +15,9 @@ public interface ZipRepositoryListService {
 	 * Select from repo_zip where id_repo_xml=repo_xml.id
 	 */
 	List<RepoZip> getDependsRepoXmlId(Long idRepoXml);
+
+	/**
+	 * Create a repository
+	 */
+	void create(String name);
 }
