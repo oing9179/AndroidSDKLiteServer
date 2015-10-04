@@ -6,8 +6,8 @@
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
 <div class="container">
-    <jstlc:if test="${errorMessage != null}">
-        <div class="card-panel red darken-4 white-text">${errorMessage}</div>
+    <jstlc:if test="${objException != null}">
+        <div class="card-panel red darken-4 white-text">${objException}</div>
     </jstlc:if>
     <div class="card">
         <div class="card-content" style="padding:0;">
@@ -30,7 +30,7 @@
                     </button>
                 </div>
             </div>
-            <form action="/repository/xml/${xmlRepository.name}/manual_addition.do"
+            <form action="repository/xml/${xmlRepository.name}/manual_addition.do"
                   method="post" enctype="multipart/form-data">
                 <div class="row" style="margin-left:0; margin-right:0;">
                     <div class="col s12">
@@ -98,7 +98,7 @@
             }
         };
         $.ajax({
-            url: "/repository/xml/${xmlRepository.name}/parse_log_for_sdkmanager.do",
+            url: "repository/xml/${xmlRepository.name}/parse_log_for_sdkmanager.do",
             method: "POST",
             data: {"log": $("#textareaLog").val()},
             dataType: "json",

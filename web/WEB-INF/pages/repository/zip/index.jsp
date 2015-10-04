@@ -15,7 +15,7 @@
                 </div>
                 <div class="divider col s12 hide-on-med-and-up"></div>
                 <div class="col s12 m4 l4 right-align" style="margin:0; padding:6px;">
-                    <a href="/repository/zip/creation.do" title="Add"
+                    <a href="repository/zip/creation.do" title="Add"
                        class="btn btn-less-padding waves-effect waves-light green">
                         <i class="material-icons">add</i>
                     </a>
@@ -43,14 +43,14 @@
                         </td>
                         <td class="hide-on-med-and-down">
                             <jstlfmt:formatDate value="${zipRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
-                            <!-- Date of create: ${zipRepository.dateCreate} -->
+                            <!-- Date of create: ${zipRepository.dateCreation} -->
                         </td>
                         <td>
                             <a href="javascript:;" title="Edit.."
                                class="btn btn-less-padding waves-effect waves-light">
                                 <i class="material-icons">edit</i>
                             </a>
-                            <a href="javascript:;" title="Delete repository"
+                            <a href="repository/zip/deletion.do?id=${zipRepository.id}" title="Delete repository"
                                class="btn btn-less-padding waves-effect waves-light red">
                                 <i class="material-icons">delete</i>
                             </a>

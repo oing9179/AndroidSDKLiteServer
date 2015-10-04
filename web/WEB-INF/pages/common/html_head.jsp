@@ -2,8 +2,9 @@
 <%@ taglib prefix="jstlc" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="jstlfmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%
-    String contextPath = request.getContextPath();
-    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + "/";
+    String contextPath = request.getContextPath() + "/";
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" +
+            request.getServerPort() + contextPath;
 %>
 <base href="<%=basePath%>">
 <title>Android SDK Lite Server</title>

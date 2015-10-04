@@ -17,6 +17,11 @@ public class RepoZipDaoImpl extends BaseDao implements RepoZipDao {
 	}
 
 	@Override
+	public RepoZip selectById(Long id) {
+		return super.selectOne("selectById", id);
+	}
+
+	@Override
 	public List<RepoZip> selectDependsOnRepoXmlId(Long idRepoXml) {
 		return super.selectList("selectByRepoXmlId", idRepoXml);
 	}
@@ -29,6 +34,11 @@ public class RepoZipDaoImpl extends BaseDao implements RepoZipDao {
 	@Override
 	public int updateClearDependencyFromRepoXml(Long idRepoXml) {
 		return super.update("updateClearDependencyFromRepoXml", idRepoXml);
+	}
+
+	@Override
+	public int deleteById(Long id) {
+		return super.delete("deleteById", id);
 	}
 
 	@Override

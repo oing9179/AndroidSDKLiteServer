@@ -13,6 +13,7 @@ public class IndexController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String _index(ModelMap modelMap, HttpServletRequest request) {
 		// Now focus on function of XML Repository
-		return "redirect:/repository/zip/";
+		// return "redirect:/repository/zip/";
+		return "index";
 	}
 }

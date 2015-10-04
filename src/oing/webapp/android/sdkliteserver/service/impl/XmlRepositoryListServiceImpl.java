@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -34,14 +33,14 @@ public class XmlRepositoryListServiceImpl implements XmlRepositoryListService {
 	@Override
 	public RepoXml getById(Long id) {
 		RepoXml lRepoXml = repoXmlDao.selectById(id);
-		Validate.isTrue(lRepoXml != null, "Repository not found: id=" + id);
+		Validate.notNull(lRepoXml, "Repository not found: id=" + id);
 		return lRepoXml;
 	}
 
 	@Override
 	public RepoXml getByName(String name) {
 		RepoXml lRepoXml = repoXmlDao.selectByName(name);
-		Validate.isTrue(lRepoXml != null, "Repository not found: " + name);
+		Validate.notNull(lRepoXml, "Repository not found: " + name);
 		return lRepoXml;
 	}
 
@@ -60,9 +59,9 @@ public class XmlRepositoryListServiceImpl implements XmlRepositoryListService {
 		// 1. Add record for new xml repository to table
 		lRepoXml_new = new RepoXml();
 		lRepoXml_new.setName(name);
-		lRepoXml_new.setDateCreate(new Date());
+		lRepoXml_new.setDateCreation(new Date());
 		// The last-modified-date should be same as creation-date.
-		lRepoXml_new.setDateLastModified(lRepoXml_new.getDateCreate());
+		lRepoXml_new.setDateLastModified(lRepoXml_new.getDateCreation());
 		repoXmlDao.insert(lRepoXml_new);
 		// 2. Copy data from a table to another table.
 		if (lRepoXml_existed != null) {
@@ -85,11 +84,8 @@ public class XmlRepositoryListServiceImpl implements XmlRepositoryListService {
 	public void delete(Long id, String name) throws IOException {
 		RepoXml lRepoXml = getById(id);
 		// 1. If repositoryName have no matches in database, reject.
-		if (!lRepoXml.getName().equals(name)) {
-			String lStrMessage;
-			lStrMessage = MessageFormat.format("The repository name does not match, desired: {0}, give: {1}", lRepoXml.getName(), name);
-			throw new IllegalArgumentException(lStrMessage);
-		}
+		Validate.isTrue(lRepoXml.getName().equals(name),
+				"Repository name doesn't match, desired: " + lRepoXml.getName() + ", give: " + name + ".");
 		// 2. Delete record from table xml_repo_file.
 		repoXmlFileDao.deleteDependsRepoXmlId(lRepoXml.getId());
 		// 3. Clear dependency for zip repository who depends on this.

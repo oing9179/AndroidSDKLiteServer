@@ -6,7 +6,7 @@
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
 <div class="container">
-    <form class="card" action="/repository/xml/${xmlRepository.name}/deletion.do" method="post">
+    <form class="card" action="repository/xml/${xmlRepository.name}/deletion.do" method="post">
         <div class="card-content" style="padding-top:0;">
             <div class="row" style="margin-bottom:0;">
                 <div class="card-title col s12 red-text text-darken-4">Delete XML file</div>
@@ -28,15 +28,15 @@
                     <label for="textBoxFileName">Type repository name to confirm.</label>
                 </div>
             </div>
-            <jstlc:if test="${errorMessage != null}">
-                <div class="card-panel red darken-4 white-text">${errorMessage}</div>
+            <jstlc:if test="${objException != null}">
+                <div class="card-panel red darken-4 white-text">${objException}</div>
             </jstlc:if>
         </div>
         <div class="card-action right-align">
             <button type="submit" class="btn btn-less-padding waves-effect waves-light red white-text">
                 <i class="material-icons left">delete</i>Delete
             </button>
-            <a href="/repository/xml/${xmlRepository.name}/" style="margin-right: 0;"
+            <a href="repository/xml/${xmlRepository.name}/" style="margin-right: 0;"
                class="btn btn-less-padding waves-effect white grey-text text-darken-4">Cancel</a>
         </div>
     </form>

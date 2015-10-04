@@ -37,9 +37,28 @@ public class ZipRepositoryListController {
 			zipRepositoryListService.create(name);
 		} catch (Exception e) {
 			mLogger.info(e.toString(), e);
-			modelMap.put("errorMessage", e);
+			modelMap.put("objException", e);
+			return creation_view();
 		}
-		return modelMap.containsKey("errorMessage") ?
-				"repository/zip/creation" : "redirect:/repository/zip/";
+		return "redirect:/repository/zip/";
+	}
+
+	@RequestMapping(value = "/deletion.do", method = RequestMethod.GET)
+	public String deletion_view(ModelMap modelMap, @RequestParam("id") Long id) {
+		modelMap.put("zipRepository", zipRepositoryListService.getById(id));
+		return "repository/zip/deletion";
+	}
+
+	@RequestMapping(value = "/deletion.do", method = RequestMethod.POST)
+	public String deletion(ModelMap modelMap, @RequestParam("id") Long id, @RequestParam("name") String name) {
+		try {
+			zipRepositoryListService.delete(id, name);
+		} catch (Exception e) {
+			mLogger.info(e.toString(), e);
+			String lStrUrl = deletion_view(modelMap, id);
+			modelMap.put("objException", e);
+			return lStrUrl;
+		}
+		return "redirect:/repository/zip/";
 	}
 }

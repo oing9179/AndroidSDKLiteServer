@@ -6,7 +6,7 @@ public class RepoZip {
 	private Long id;
 	private Long idRepoXml;
 	private String name;
-	private Date dateCreate;
+	private Date dateCreation;
 	private Date dateLastModified;
 	// fields that does not exists in table.
 	private String repoXml_name;
@@ -35,12 +35,12 @@ public class RepoZip {
 		this.name = name;
 	}
 
-	public Date getDateCreate() {
-		return dateCreate;
+	public Date getDateCreation() {
+		return dateCreation;
 	}
 
-	public void setDateCreate(Date dateCreate) {
-		this.dateCreate = dateCreate;
+	public void setDateCreation(Date dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 
 	public Date getDateLastModified() {

@@ -8,7 +8,7 @@ import java.util.Date;
 public class RepoXml {
 	private Long id;
 	private String name;
-	private Date dateCreate;
+	private Date dateCreation;
 	private Date dateLastModified;
 
 	public Long getId() {
@@ -27,12 +27,12 @@ public class RepoXml {
 		this.name = name;
 	}
 
-	public Date getDateCreate() {
-		return dateCreate;
+	public Date getDateCreation() {
+		return dateCreation;
 	}
 
-	public void setDateCreate(Date dateCreate) {
-		this.dateCreate = dateCreate;
+	public void setDateCreation(Date dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 
 	public Date getDateLastModified() {

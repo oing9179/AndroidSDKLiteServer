@@ -65,18 +65,18 @@ public class XmlRepositoryListController {
 					"Validation failed: repository name: At least 6 chars, at most 32 chars, alphabets numbers and underscores are allowed.");
 		} catch (IllegalArgumentException e) {
 			mLogger.info(e.toString(), e);
-			modelMap.put("errorMessage", e);
+			modelMap.put("objException", e);
 		}
-		if (modelMap.containsKey("errorMessage")) return "repository/xml/creation";
+		if (modelMap.containsKey("objException")) return "repository/xml/creation";
 		// After validation complete, create xml repository.
 		try {
 			xmlRepositoryListService.create(name, createFrom);
 		} catch (Exception e) {
 			mLogger.info(e.toString(), e);
+			modelMap.put("objException", e);
 			modelMap.put("xmlRepositories", xmlRepositoryListService.getAll());
-			modelMap.put("errorMessage", e);
 		}
-		if (modelMap.containsKey("errorMessage")) return "repository/xml/creation";
+		if (modelMap.containsKey("objException")) return "repository/xml/creation";
 		return "redirect:/repository/xml/";
 	}
 
@@ -87,8 +87,13 @@ public class XmlRepositoryListController {
 	 */
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.GET)
 	public String deletion_view(ModelMap modelMap, @RequestParam("id") Long id) {
-		modelMap.put("xmlRepository", xmlRepositoryListService.getById(id));
-		modelMap.put("zipRepositories", zipRepositoryListService.getDependsRepoXmlId(id));
+		try {
+			modelMap.put("xmlRepository", xmlRepositoryListService.getById(id));
+			modelMap.put("zipRepositories", zipRepositoryListService.getDependsRepoXmlId(id));
+		} catch (Exception e) {
+			mLogger.info(e.toString(), e);
+			modelMap.put("objException", e);
+		}
 		return "repository/xml/deletion";
 	}
 
@@ -104,10 +109,10 @@ public class XmlRepositoryListController {
 			xmlRepositoryListService.delete(id, name);
 		} catch (Exception e) {
 			mLogger.error(e.toString(), e);
-			modelMap.put("errorMessage", e);
-			modelMap.put("xmlRepository", xmlRepositoryListService.getById(id));
-			modelMap.put("zipRepositories", zipRepositoryListService.getDependsRepoXmlId(id));
+			String lStrUrl = deletion_view(modelMap, id);
+			modelMap.put("objException", e);
+			return lStrUrl;
 		}
-		return modelMap.containsKey("errorMessage") ? "repository/xml/deletion" : "redirect:/repository/xml/";
+		return "redirect:/repository/xml/";
 	}
 }

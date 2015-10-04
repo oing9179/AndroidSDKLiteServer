@@ -45,7 +45,7 @@ public class XmlRepositoryEditorController {
 			List<RepoXmlFile> lListRepoXmlFiles = xmlRepositoryEditorService.getFilesByRepoXmlId(lRepoXml.getId());
 			modelMap.put("xmlFiles", lListRepoXmlFiles);
 		} catch (IllegalArgumentException e) {
-			modelMap.put("errorMessage", e);
+			modelMap.put("objException", e);
 		}
 		return "repository/xml/repositoryName/index";
 	}
@@ -55,9 +55,14 @@ public class XmlRepositoryEditorController {
 	 */
 	@RequestMapping(value = "/automatic_addition.do", method = RequestMethod.GET)
 	public String automatic_addition_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
-		modelMap.put("xmlRepository", xmlRepositoryListService.getByName(repositoryName));
-		modelMap.put("url_addons_list_xml", ConfigurationUtil.get("url.addons_list_2_xml"));
-		modelMap.put("url_repository_xml", ConfigurationUtil.get("url.repository_11_xml"));
+		try {
+			modelMap.put("xmlRepository", xmlRepositoryListService.getByName(repositoryName));
+			modelMap.put("url_addons_list_xml", ConfigurationUtil.get("url.addons_list_2_xml"));
+			modelMap.put("url_repository_xml", ConfigurationUtil.get("url.repository_11_xml"));
+		} catch (Exception e) {
+			mLogger.info(e.toString(), e);
+			modelMap.put("objException", e);
+		}
 		return "repository/xml/repositoryName/automatic_addition";
 	}
 
@@ -179,10 +184,10 @@ public class XmlRepositoryEditorController {
 			xmlRepositoryEditorService.manualAddition(repositoryName, multipartFiles, urls);
 		} catch (Exception e) {
 			mLogger.error(e.toString(), e);
-			modelMap.put("errorMessage", e.toString());
+			modelMap.put("objException", e.toString());
 			modelMap.put("xmlRepository", lRepoXml);
 		}
-		return modelMap.containsKey("errorMessage") ?
+		return modelMap.containsKey("objException") ?
 				"repository/xml/repositoryName/manual_addition" :
 				"redirect:/repository/xml/" + lRepoXml.getName() + "/";
 	}
@@ -210,7 +215,7 @@ public class XmlRepositoryEditorController {
 			modelMap.put("xmlFile", xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId()));
 		} catch (Exception e) {
 			mLogger.error(e.toString(), e);
-			modelMap.put("errorMessage", e);
+			modelMap.put("objException", e);
 		}
 		return "repository/xml/repositoryName/deletion";
 	}
@@ -227,9 +232,9 @@ public class XmlRepositoryEditorController {
 				modelMap.put("xmlFile", xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId()));
 			} catch (Exception ignore) {
 			}
-			modelMap.put("errorMessage", e);
+			modelMap.put("objException", e);
 		}
-		return modelMap.containsKey("errorMessage") ?
+		return modelMap.containsKey("objException") ?
 				"repository/xml/repositoryName/deletion" :
 				"redirect:/repository/xml/" + repositoryName + "/";
 	}

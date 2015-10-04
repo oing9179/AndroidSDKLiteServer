@@ -15,7 +15,7 @@
                 </div>
                 <div class="divider col s12 hide-on-med-and-up"></div>
                 <div class="col s12 m4 l4 right-align" style="margin:0; padding:6px;">
-                    <a href="/repository/xml/creation.do"
+                    <a href="repository/xml/creation.do"
                        class="btn btn-less-padding waves-effect waves-light green" title="Add">
                         <i class="material-icons">add</i>
                     </a>
@@ -43,14 +43,14 @@
                         <td class="truncate-nonblock" style="width:50%;">${xmlRepository.name}</td>
                         <td class="hide-on-small-and-down">
                             <jstlfmt:formatDate value="${xmlRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
-                            <!-- Date of create: ${xmlRepository.dateCreate} -->
+                            <!-- Date of create: ${xmlRepository.dateCreation} -->
                         </td>
                         <td>
-                            <a href="/repository/xml/${xmlRepository.name}/" title="Edit.."
+                            <a href="repository/xml/${xmlRepository.name}/" title="Edit.."
                                class="btn btn-less-padding waves-effect waves-light">
                                 <i class="material-icons">edit</i>
                             </a>
-                            <a href="/repository/xml/deletion.do?id=${xmlRepository.id}" title="Delete repository"
+                            <a href="repository/xml/deletion.do?id=${xmlRepository.id}" title="Delete repository"
                                class="btn btn-less-padding waves-effect waves-light red">
                                 <i class="material-icons">delete</i>
                             </a>

@@ -6,11 +6,11 @@
     <resultMap id="resultMap_RepoXml_all" type="RepoXml">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
-        <result property="dateCreate" column="date_create" jdbcType="BIGINT"/>
+        <result property="dateCreation" column="date_creation" jdbcType="BIGINT"/>
         <result property="dateLastModified" column="date_last_modified"/>
     </resultMap>
 
-    <sql id="RepoXml_columns_full">`id`, `name`, `date_create`, `date_last_modified`</sql>
+    <sql id="RepoXml_columns_full">`id`, `name`, `date_creation`, `date_last_modified`</sql>
 
     <select id="selectAll" resultMap="resultMap_RepoXml_all">
 		SELECT <include refid="RepoXml_columns_full"/> FROM repo_xml
@@ -29,8 +29,8 @@
 	</select>
 
     <insert id="insert" parameterType="RepoXml">
-		INSERT INTO repo_xml(name, date_create, date_last_modified)
-		  VALUES(#{name}, #{dateCreate}, #{dateLastModified})
+		INSERT INTO repo_xml(name, date_creation, date_last_modified)
+		  VALUES(#{name}, #{dateCreation}, #{dateLastModified})
 	</insert>
 
     <delete id="deleteById">
