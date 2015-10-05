@@ -113,7 +113,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 				try {
 					lWriter = new OutputStreamWriter(new FileOutputStream(lFileAddonsListXml));
 					lParser.getDocument().write(lWriter);
-				}  finally {
+				} finally {
 					// Java do "finally" first before rethrow.
 					IOUtils.closeQuietly(lWriter);
 				}
@@ -175,6 +175,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 				listener.onPublish(lnProgress, "Remote resource not found: " + lStrUrl);
 			}
 		}
+		repoXmlDao.updateById(lRepoXml);//Update date of last modified automatically.
 		listener.onPublish(1, "Everything is completed.");
 	}
 

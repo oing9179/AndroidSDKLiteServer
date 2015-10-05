@@ -9,7 +9,18 @@ public class RepoZip {
 	private Date dateCreation;
 	private Date dateLastModified;
 	// fields that does not exists in table.
+	/**
+	 * RepoXml name what this repository depends.
+	 */
 	private String repoXml_name;
+	/**
+	 * How many files in this repository.
+	 */
+	private Integer totalFileCount;
+	/**
+	 * Total file size of this repository in bytes.
+	 */
+	private Long totalFileSize;
 
 	public Long getId() {
 		return id;
@@ -57,5 +68,21 @@ public class RepoZip {
 
 	public void setRepoXml_name(String repoXml_name) {
 		this.repoXml_name = repoXml_name;
+	}
+
+	public Integer getTotalFileCount() {
+		return totalFileCount;
+	}
+
+	public void setTotalFileCount(Integer totalFileCount) {
+		this.totalFileCount = totalFileCount;
+	}
+
+	public Long getTotalFileSize() {
+		return totalFileSize;
+	}
+
+	public void setTotalFileSize(Long totalFileSize) {
+		this.totalFileSize = totalFileSize;
 	}
 }

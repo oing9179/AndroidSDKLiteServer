@@ -16,6 +16,11 @@ public interface RepoZipDao {
 	RepoZip selectById(Long id);
 
 	/**
+	 * Select from repo_zip by name
+	 */
+	RepoZip selectByName(String name);
+
+	/**
 	 * Select from repo_zip where id_repo_xml=repo_xml.id
 	 */
 	List<RepoZip> selectDependsOnRepoXmlId(Long idRepoXml);
@@ -24,6 +29,11 @@ public interface RepoZipDao {
 	 * Add a RepoZip to database
 	 */
 	int insert(RepoZip repoZip);
+
+	/**
+	 * Update RepoZip by id
+	 */
+	int updateById(RepoZip repoZip);
 
 	/**
 	 * Clear dependency from repo_xml, zip repositories that updated will depends nothing.

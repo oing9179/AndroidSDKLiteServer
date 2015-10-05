@@ -46,7 +46,7 @@
                             <!-- Date of create: ${zipRepository.dateCreation} -->
                         </td>
                         <td>
-                            <a href="javascript:;" title="Edit.."
+                            <a href="repository/zip/${zipRepository.name}/" title="Edit.."
                                class="btn btn-less-padding waves-effect waves-light">
                                 <i class="material-icons">edit</i>
                             </a>

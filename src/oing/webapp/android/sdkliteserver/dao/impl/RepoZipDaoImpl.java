@@ -3,8 +3,11 @@ package oing.webapp.android.sdkliteserver.dao.impl;
 import oing.webapp.android.sdkliteserver.dao.BaseDao;
 import oing.webapp.android.sdkliteserver.dao.RepoZipDao;
 import oing.webapp.android.sdkliteserver.model.RepoZip;
+import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -22,13 +25,27 @@ public class RepoZipDaoImpl extends BaseDao implements RepoZipDao {
 	}
 
 	@Override
+	public RepoZip selectByName(String name) {
+		RepoZip lRepoZip = super.selectOne("selectByName", name);
+		loadRepoInfoFromDisk(lRepoZip);
+		return lRepoZip;
+	}
+
+	@Override
 	public List<RepoZip> selectDependsOnRepoXmlId(Long idRepoXml) {
 		return super.selectList("selectByRepoXmlId", idRepoXml);
 	}
 
 	@Override
 	public int insert(RepoZip repoZip) {
+		repoZip.setDateLastModified(new Date());
 		return super.insert(repoZip);
+	}
+
+	@Override
+	public int updateById(RepoZip repoZip) {
+		repoZip.setDateLastModified(new Date());
+		return super.updateById(repoZip);
 	}
 
 	@Override
@@ -44,5 +61,15 @@ public class RepoZipDaoImpl extends BaseDao implements RepoZipDao {
 	@Override
 	protected String getMapperNamespace() {
 		return MAPPER_NAMESPACE;
+	}
+
+	private void loadRepoInfoFromDisk(RepoZip repoZip) {
+		long lnTotalFileSize = 0;
+		File[] lFileArrZipFiles = ConfigurationUtil.getZipRepositoryDir(repoZip.getName()).listFiles();
+		repoZip.setTotalFileCount(lFileArrZipFiles.length);
+		for (File file : lFileArrZipFiles) {
+			lnTotalFileSize += file.length();
+		}
+		repoZip.setTotalFileSize(lnTotalFileSize);
 	}
 }

@@ -29,6 +29,13 @@ public class ZipRepositoryListServiceImpl implements ZipRepositoryListService {
 	}
 
 	@Override
+	public RepoZip getByName(String name) {
+		RepoZip lRepoZip = repoZipDao.selectByName(name);
+		Validate.notNull(lRepoZip, "Repository not found: " + name);
+		return lRepoZip;
+	}
+
+	@Override
 	public List<RepoZip> getDependsRepoXmlId(Long idRepoXml) {
 		return repoZipDao.selectDependsOnRepoXmlId(idRepoXml);
 	}
@@ -39,10 +46,15 @@ public class ZipRepositoryListServiceImpl implements ZipRepositoryListService {
 		RepoZip lRepoZip = new RepoZip();
 		lRepoZip.setName(name);
 		lRepoZip.setDateCreation(new Date());
-		lRepoZip.setDateLastModified(lRepoZip.getDateCreation());
 		repoZipDao.insert(lRepoZip);
 		// Create a folder
 		ConfigurationUtil.getZipRepositoryDir(lRepoZip.getName()).mkdirs();
+	}
+
+	public void updateRepositoryDependency(String repositoryName, Long targetRepoId) {
+		RepoZip lRepoZip = getByName(repositoryName);
+		lRepoZip.setIdRepoXml(targetRepoId);
+		repoZipDao.updateById(lRepoZip);
 	}
 
 	@Override

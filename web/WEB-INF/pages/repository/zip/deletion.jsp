@@ -12,10 +12,10 @@
             <div class="divider" style="margin:0 -20px;"></div>
             <h5 class="red-text text-darken-4 center-align">You are going to delete zip repository: ${zipRepository.name}</h5>
             <div class="row" style="margin-bottom:0;">
-                <span class="col s12 m12 l6">Date of create:
+                <span class="col s12 m6 l6">Date of create:
                     <jstlfmt:formatDate value="${zipRepository.dateCreation}" pattern="yyyy-MM-dd HH:mm:ss"/>
                 </span>
-                <span class="col s12 m12 l6">Date of last modified:
+                <span class="col s12 m6 l6">Date of last modified:
                     <jstlfmt:formatDate value="${zipRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
                 </span>
             </div>

@@ -33,6 +33,16 @@
 		  VALUES(#{name}, #{dateCreation}, #{dateLastModified})
 	</insert>
 
+    <update id="updateById" parameterType="RepoXml">
+        UPDATE repo_xml
+        <set>
+            <if test="name != null">name=#{name},</if>
+            <if test="dateCreation != null">date_creation=#{dateCreation},</if>
+            <if test="dateLastModified != null">date_last_modified=#{dateLastModified}</if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
     <delete id="deleteById">
         DELETE FROM repo_xml WHERE id=#{id}
     </delete>

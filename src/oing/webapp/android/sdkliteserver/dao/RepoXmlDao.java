@@ -36,6 +36,11 @@ public interface RepoXmlDao {
 	int insert(RepoXml repoXml);
 
 	/**
+	 * Update RepoXml by id
+	 */
+	int updateById(RepoXml repoXml);
+
+	/**
 	 * Delete a RepoXml from database by ID.<br/>
 	 * @return Number of rows affected.
 	 */

@@ -5,7 +5,7 @@ import oing.webapp.android.sdkliteserver.dao.RepoXmlDao;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -32,7 +32,14 @@ public class RepoXmlDaoImpl extends BaseDao implements RepoXmlDao {
 
 	@Override
 	public int insert(RepoXml repoXml) {
+		repoXml.setDateLastModified(new Date());
 		return super.insert(repoXml);
+	}
+
+	@Override
+	public int updateById(RepoXml repoXml) {
+		repoXml.setDateLastModified(new Date());
+		return super.updateById(repoXml);
 	}
 
 	@Override

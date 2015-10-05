@@ -18,6 +18,11 @@ public interface ZipRepositoryListService {
 	RepoZip getById(Long id);
 
 	/**
+	 * Select RepoZip by name
+	 */
+	RepoZip getByName(String name);
+
+	/**
 	 * Select from repo_zip where id_repo_xml=repo_xml.id
 	 */
 	List<RepoZip> getDependsRepoXmlId(Long idRepoXml);
@@ -26,6 +31,14 @@ public interface ZipRepositoryListService {
 	 * Create a repository
 	 */
 	void create(String name);
+
+	/**
+	 * Change dependency to another xml repository.
+	 *
+	 * @param repositoryName Who will be changed.
+	 * @param targetRepoId   Target xml repository id.
+	 */
+	void updateRepositoryDependency(String repositoryName, Long targetRepoId);
 
 	/**
 	 * Delete a repository
