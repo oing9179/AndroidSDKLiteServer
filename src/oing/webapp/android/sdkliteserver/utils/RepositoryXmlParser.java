@@ -62,11 +62,12 @@ public class RepositoryXmlParser {
 		for (int i = 0, size = lListElements.size(); i < size; i++) {
 			Element element = lListElements.get(i);
 			// Element values for the parent of <sdk:archives>.
-			String lStrDisplayName, lStrDescription, lStrVersion, lStrRevision = null;
+			String lStrType, lStrDisplayName, lStrDescription, lStrVersion, lStrRevision = null;
 			Integer lnApiLevel = null;
 			Boolean mzIsObsolete;
 			// The parent of <sdk:archives>
 			element = element.getParent();
+			lStrType = element.getName();
 			// <sdk:name-display>
 			lStrDisplayName = element.elementText("name-display");
 			// <sdk:description>
@@ -93,9 +94,11 @@ public class RepositoryXmlParser {
 						 *     <sdk:preview>ignored</sdk:preview>
 						 * </sdk:revision>
 						 */
-						lStrRevision = elementRevision.elementText("major") +
-								elementRevision.elementText("minor") +
-								elementRevision.elementText("micro");
+						lStrRevision = elementRevision.elementText("major");
+						String lStrTemp = elementRevision.elementText("minor");
+						if (lStrTemp != null) lStrRevision += "." + lStrTemp;
+						lStrTemp = elementRevision.elementText("micro");
+						if (lStrTemp != null) lStrRevision += "." + lStrTemp;
 					}
 				}
 			}
@@ -105,19 +108,20 @@ public class RepositoryXmlParser {
 				if (apiLevel != null) lnApiLevel = Integer.parseInt(apiLevel);
 			}
 			// <sdk:obsolete>
-			mzIsObsolete = element.element("obsolete") == null;
+			mzIsObsolete = element.element("obsolete") != null;
 			// <sdk:archive>
 			{
 				//noinspection unchecked
 				List<Element> lListElementArchives = element.element("archives").elements("archive");
 				for (Element elementArchive : lListElementArchives) {
 					SdkArchive lSdkArchive = new SdkArchive();
+					lSdkArchive.setType(lStrType);
 					lSdkArchive.setDisplayName(lStrDisplayName);
 					lSdkArchive.setDescription(lStrDescription);
 					lSdkArchive.setVersion(lStrVersion);
 					lSdkArchive.setRevision(lStrRevision);
 					lSdkArchive.setApiLevel(lnApiLevel);
-					lSdkArchive.setIsObsolute(mzIsObsolete);
+					lSdkArchive.setIsObsolete(mzIsObsolete);
 					// <sdk:size>
 					lSdkArchive.setSize(Long.parseLong(elementArchive.elementText("size")));
 					// <sdk:checksum type="checksum type">
@@ -159,19 +163,17 @@ public class RepositoryXmlParser {
 			String lStrURL = lSdkArchive.getUrl();
 
 			// concat base url
-			if (prependBaseURL) {
-				if (lStrURL.startsWith("http://") || lStrURL.startsWith("https://")) {
-					// Remove it if it starts with (regexp)"$http[s]?://"
-					lStrURL = lStrURL.substring(lStrURL.indexOf('/') + 2);
-				}
+			if (prependBaseURL && !lStrURL.startsWith("http://") && !lStrURL.startsWith("https://")) {
+				// Remove it if it starts with (regexp)"$http[s]?://"
+				// lStrURL = lStrURL.substring(lStrURL.indexOf('/') + 2);
 				lStrURL = mStrBaseURL + lStrURL;
 			}
 			// Prepend (regexp)"$http[s]?://" or not.
 			if (forceHttps && lStrURL.startsWith("http://")) {
-				// 7 is the length of "http"
+				// 4 is the length of "http"
 				lStrURL = "https" + lStrURL.substring(4);
 			} else if (!forceHttps && lStrURL.startsWith("https://")) {
-				// 8 is the length of "https"
+				// 5 is the length of "https"
 				lStrURL = "http" + lStrURL.substring(5);
 			}
 			lSdkArchive.setUrl(lStrURL);
@@ -199,25 +201,5 @@ public class RepositoryXmlParser {
 		for (int i = 0, size = lListElementURLs.size(); i < size; i++) {
 			lListElementURLs.get(i).setText(urlsList.get(i));
 		}
-	}
-
-	public static void main(String[] args) throws IOException, DocumentException {
-		RepositoryXmlParser parser = new RepositoryXmlParser(
-				"https://dl.google.com/android/repository/repository-11.xml",
-				new File("/media/oing9179/Softwares/Programming/Java/AndroidSDK_files/AndroidRepoXml/repository-11.xml"));
-		List<SdkArchive> list = parser.getSdkArchives();
-		ArrayList<String> listNewURLs = new ArrayList<>(list.size());
-		Pattern pattern = Pattern.compile("^(http://|https://)\\S+.zip$");
-		for (SdkArchive sdkArchive : list) {
-			String lStrURL = sdkArchive.getUrl();
-			if (pattern.matcher(lStrURL).matches()) {
-				// save only file name and suffix.
-				lStrURL = lStrURL.substring(lStrURL.lastIndexOf('/') + 1);
-			}
-			listNewURLs.add(lStrURL);
-		}
-		parser.updateURLs(listNewURLs);
-		list = parser.getSdkArchives();
-		System.out.println(JSONObject.toJSONString(list, true));
 	}
 }

@@ -13,3 +13,25 @@
  * In fact, class ".truncate" provided by materializecss has a bug when I using in <td>.
  */
 .truncate-nonblock {text-overflow:ellipsis; white-space:nowrap; overflow:hidden;}
+
+.my-badge { padding: 2px 6px; border-radius: 3px; }
+
+/* Give label 24px left padding from checkbox, and 12px right padding. */
+[type="checkbox"] + label { padding-left: 24px; padding-right: 12px; color: hsl(240, 7%, 30%); }
+/* Indigo color for checkboxes */
+[type="checkbox"].filled-in:checked + label:after { border-color: #3f51b5; background-color: #3f51b5; }
+
+/*
+ * Material ProgressBar style sheet
+ * Progressbar background: HSV: H=const, S=-50, V=+28
+ * Progressbar bar: HSV: H=const, S=77, V=65
+ */
+.progressbar-red { background-color: #FFBCB8 !important; }
+.progressbar-red .determinate { background-color: #F44336 !important; }
+.progressbar-red .indeterminate { background-color: #F44336 !important; }
+.progressbar-blue { background-color: #A3D6FF !important; }
+.progressbar-blue .determinate { background-color: #2196F3 !important; }
+.progressbar-blue .indeterminate { background-color: #2196F3 !important; }
+.progressbar-green { background-color: #E6F7E7 !important; }
+.progressbar-green .determinate { background-color: #4CAF50 !important; }
+.progressbar-green .indeterminate { background-color: #4CAF50 !important; }

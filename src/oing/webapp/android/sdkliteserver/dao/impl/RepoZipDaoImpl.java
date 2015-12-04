@@ -63,7 +63,11 @@ public class RepoZipDaoImpl extends BaseDao implements RepoZipDao {
 		return MAPPER_NAMESPACE;
 	}
 
+	/**
+	 * Calc total file count and total file size of this repository.
+	 */
 	private void loadRepoInfoFromDisk(RepoZip repoZip) {
+		if (repoZip == null) return;
 		long lnTotalFileSize = 0;
 		File[] lFileArrZipFiles = ConfigurationUtil.getZipRepositoryDir(repoZip.getName()).listFiles();
 		repoZip.setTotalFileCount(lFileArrZipFiles.length);

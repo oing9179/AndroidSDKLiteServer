@@ -3,6 +3,7 @@ package oing.webapp.android.sdkliteserver.model;
 public class SdkArchive {
 	private Long id;
 	private Long idRepoXmlFile;
+	private String type;
 	private String displayName;
 	private String description;
 	private String version;
@@ -30,6 +31,14 @@ public class SdkArchive {
 
 	public void setIdRepoXmlFile(Long idRepoXmlFile) {
 		this.idRepoXmlFile = idRepoXmlFile;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getDisplayName() {
@@ -72,11 +81,11 @@ public class SdkArchive {
 		this.apiLevel = apiLevel;
 	}
 
-	public Boolean getIsObsolute() {
+	public Boolean isObsolete() {
 		return isObsolete;
 	}
 
-	public void setIsObsolute(Boolean isObsolute) {
+	public void setIsObsolete(Boolean isObsolute) {
 		this.isObsolete = isObsolute;
 	}
 

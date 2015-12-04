@@ -1,3 +1,5 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="/WEB-INF/pages/common/jsp_header.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -92,48 +94,6 @@
 <script id="templateToastError" type="text/x-handlebars-template">
     <i class="material-icons left">error</i>{{text}}
 </script>
-<style type="text/css">
-    /*
-     * Progressbar background: HSV: H=const, S=-50, V=+28
-     * Progressbar bar: HSV: H=const, S=77, V=65
-     */
-    .progressbar-red {
-        background-color: #FFBCB8 !important;
-    }
-
-    .progressbar-red .determinate {
-        background-color: #F44336 !important;
-    }
-
-    .progressbar-red .indeterminate {
-        background-color: #F44336 !important;
-    }
-
-    .progressbar-blue {
-        background-color: #A3D6FF !important;
-    }
-
-    .progressbar-blue .determinate {
-        background-color: #2196F3 !important;
-    }
-
-    .progressbar-blue .indeterminate {
-        background-color: #2196F3 !important;
-    }
-
-    .progressbar-green {
-        background-color: #E6F7E7 !important;
-    }
-
-    .progressbar-green .determinate {
-        background-color: #4CAF50 !important;
-    }
-
-    .progressbar-green .indeterminate {
-        background-color: #4CAF50 !important;
-    }
-</style>
-<!-- script -->
 <script type="text/javascript">
     var mCompiledTemplate_templateToastError;
 

@@ -1,3 +1,5 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="/WEB-INF/pages/common/jsp_header.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,8 +27,8 @@
                 <div class="col s12 m6 l6" style="margin-bottom:6px;">Storage usage:<br/>
                     <jstlc:set var="fileSize" scope="page"
                                value="${zipRepository.totalFileSize / 1024 / 1024 / 1024}"/>
-                    <span class="badge-span blue darken-2 white-text">${zipRepository.totalFileCount}</span> files up to
-                    <span class="badge-span green darken-2 white-text">
+                    <span class="my-badge blue darken-2 white-text">${zipRepository.totalFileCount}</span> files up to
+                    <span class="my-badge green darken-2 white-text" title="${zipRepository.totalFileSize} Bytes">
                         <jstlfmt:formatNumber value="${fileSize}" pattern="0.00"/> GiB
                     </span>
                 </div>
@@ -40,32 +42,29 @@
                             </option>
                         </jstlc:forEach>
                     </select>
-                    <label>XML repository dependency</label>
+                    <label>Change XML repository dependency</label>
                 </form>
             </div>
             <div class="row">
                 <div class="col s12 center-align" style="padding-bottom:6px;">Choose what you want to do</div>
                 <div class="col s12 m6 l6">
-                    <a href="javascript:;" style="width:100%; margin-bottom:6px;"
+                    <a href="repository/zip/${zipRepository.name}/file_completion.do" style="width:100%; margin-bottom:6px;"
                        class="btn light-green darken-1 waves-effect waves-light"
                        title="Parse zip URLs from specified xml repository to complete missing files.">
-                        <i class="material-icons left">done_all</i>File completion
+                        <i class="material-icons left">done_all</i>File completion...
                     </a>
                 </div>
                 <div class="col s12 m6 l6">
                     <a href="javascript:;" style="width:100%; margin-bottom:6px;"
                        class="btn light-green darken-1 waves-effect waves-light"
                        title="Cleanup files what no longer needed(eg: obsoleted).">
-                        <i class="material-icons left">clear_all</i>Clear redundancy
+                        <i class="material-icons left">clear_all</i>Clear redundancy...
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<style type="text/css">
-    .badge-span { padding: 2px 6px; border-radius: 3px; }
-</style>
 <script type="text/javascript">
     function document_onReady(){
         $("select").material_select();

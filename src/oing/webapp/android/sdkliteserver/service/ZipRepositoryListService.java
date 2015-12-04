@@ -1,6 +1,9 @@
 package oing.webapp.android.sdkliteserver.service;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import oing.webapp.android.sdkliteserver.model.RepoZip;
+import oing.webapp.android.sdkliteserver.model.SdkArchive;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,4 +50,16 @@ public interface ZipRepositoryListService {
 	 * @param name For web form validation.
 	 */
 	void delete(Long id, String name) throws IOException;
+
+	/**
+	 * Load archive info from xml repository, then group it.
+	 *
+	 * @param repositoryName          ZIP repository name
+	 * @param includeSysLinux         Include linux archives.
+	 * @param includeSysMacOSX        Include Mac OSX archives.
+	 * @param includeSysWin           Include Windows archives.
+	 * @param includeObsoleteArchives Include obsolete archives.
+	 */
+	List<SdkArchive> getAllSdkArchiveInfo(String repositoryName, boolean includeSysLinux, boolean includeSysMacOSX,
+	                                      boolean includeSysWin, boolean includeObsoleteArchives);
 }
