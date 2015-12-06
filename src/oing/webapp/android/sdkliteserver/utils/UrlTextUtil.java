@@ -1,10 +1,5 @@
 package oing.webapp.android.sdkliteserver.utils;
 
-import jodd.http.HttpRequest;
-import jodd.http.HttpResponse;
-import jodd.http.ProxyInfo;
-import jodd.http.net.SocketHttpConnectionProvider;
-
 public class UrlTextUtil {
 	public static String http2https(String url) {
 		if (url.startsWith("http://")) {
@@ -38,25 +33,9 @@ public class UrlTextUtil {
 	}
 
 	public static String getFileName(String url) {
+		if (url == null) return null;
 		int index = url.lastIndexOf('/');
 		if (index != -1) url = url.substring(index + 1);
 		return url;
-	}
-
-	public static void main(String[] args) throws Exception {
-		test0();
-	}
-
-	private static void test0(){
-		final String lStrUrl = "http://dl-ssl.google.com/glass/gdk/addon.xml";
-		ProxyInfo proxyInfo = new ProxyInfo(ProxyInfo.ProxyType.SOCKS5, "127.0.0.1", 9150, "tor", "");
-		SocketHttpConnectionProvider provider = new SocketHttpConnectionProvider();
-		provider.useProxy(proxyInfo);
-//		HttpResponse response = new HttpRequest().open(provider).method("GET").set(lStrUrl).send();
-		HttpResponse response = HttpRequest.get(lStrUrl).open(provider).send();
-		System.out.println(response.bodyText());
-	}
-
-	private static void test1(){
 	}
 }

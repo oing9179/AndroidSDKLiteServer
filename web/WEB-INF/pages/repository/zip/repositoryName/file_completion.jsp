@@ -22,16 +22,18 @@
             </div>
             <div class="row">
                 <div class="col s12 right-align">
-                    <form id="formGetAllArchives" method="get"
+                    <form id="formGetAllArchives" method="post"
                           action="/repository/zip/${zipRepository.name}/get_all_archives.do">
-                        <input id="checkBoxIncludeSysLinux" name="includeSysLinux" type="checkbox" class="filled-in"/>
+                        <input id="checkBoxIncludeSysLinux" name="isIncludeSysLinux" type="checkbox" class="filled-in"/>
                         <label for="checkBoxIncludeSysLinux" title="Include Linux archives.">Linux</label>
-                        <input id="checkBoxIncludeSysMacOSX" name="includeSysMacOSX" type="checkbox" class="filled-in"/>
+                        <input id="checkBoxIncludeSysMacOSX" name="isIncludeSysOSX" type="checkbox" class="filled-in"/>
                         <label for="checkBoxIncludeSysMacOSX" title="Include Mac OSX archives.">Mac OSX</label>
-                        <input id="checkBoxIncludeSysWindows" name="includeSysWin" type="checkbox" class="filled-in"/>
+                        <input id="checkBoxIncludeSysWindows" name="isIncludeSysWin" type="checkbox" class="filled-in"/>
                         <label for="checkBoxIncludeSysWindows" title="Include Windows archives.">Windows</label>
-                        <input id="checkBoxIncludeObsoleteArchives" name="includeObsoleteArchives" type="checkbox" class="filled-in"/>
+                        <input id="checkBoxIncludeObsoleteArchives" name="isIncludeObsoleted" type="checkbox" class="filled-in"/>
                         <label for="checkBoxIncludeObsoleteArchives" title="Include obsoleted archives.">Obsoleted</label>
+                        <input id="checkBoxIncludeExistedArchives" name="isIncludeExisted" type="checkbox" class="filled-in"/>
+                        <label for="checkBoxIncludeExistedArchives" title="Include existed archives.">Existed</label>
                         <button id="buttonPerformFilter" type="button"
                                 class="btn btn-less-padding waves-effect waves-light indigo">
                             <i class="material-icons left">filter_list</i>Filter
@@ -76,9 +78,11 @@
 <script id="templateCheckBoxWithLabel" type="text/x-handlebars-template">
     <tr>
         <td style="padding:6px;">
-            <input id="checkBoxArchive_{{ordinal}}" type="checkbox" class="filled-in" data-url="{{url}}"
+            <input id="checkBoxArchive_{{ordinal}}" type="checkbox" class="filled-in" data-json="{{json}}"
                    data-parent-checkbox="{{idParentCheckBox}}" title="Check to include this archive."/>
             <label for="checkBoxArchive_{{ordinal}}" title="{{url}}">
+                {{#if existed}}<i class="material-icons left green-text text-darken-3" title="This archive already exist.">check</i>{{/if}}
+                {{#if obsoleted}}<i class="material-icons left red-text text-darken-3" title="This archive is obsoleted.">watch_later</i>{{/if}}
                 {{type}}
                 {{#ifExists displayName}}
                 {{displayName}}
@@ -97,10 +101,11 @@
 
     function buttonPerformFilter_onClick(e) {
         var $form = $("#formGetAllArchives");
+        $("#ulSdkArchives").html("");
         $.ajax({
             url: $form.attr("action"),
             data: new FormData($form[0]),
-            type: "post",
+            type: $form.attr("method"),
             dataType: "json",
             processData: false,
             contentType: false,
@@ -110,7 +115,7 @@
         });
     }
 
-    function ulSdkArchives_updateContent(e, data) {
+    function ulSdkArchives_onUpdateContent(e, data) {
         data = data.data;
         var lnOrdinal = 0;
         var $ul = $("#ulSdkArchives").html("");
@@ -130,6 +135,7 @@
                 lnOrdinal++;
                 lJsonObj["ordinal"] = lnOrdinal;
                 lJsonObj["idParentCheckBox"] = lStrIdCheckBoxParent;
+                lJsonObj["json"] = JSON.stringify(lJsonObj);
                 $tbody.append(mTemplate_templateCheckBoxWithLabel(lJsonObj));
             }
             $ul.append($li);
@@ -148,7 +154,8 @@
         var lStrUrls = "";
         $checkBoxies.each(function (index, element) {
             element = $(element);
-            lStrUrls += element.attr("data-url") + "\n";
+            var lJsonObj = JSON.parse(element.attr("data-json"));
+            lStrUrls += lJsonObj.url + "\n";
         });
         var $modal = $("#modalExportURLs");
         $modal.find("div.modal-content>pre").text(lStrUrls);
@@ -164,7 +171,7 @@
         mTemplate_templateCheckBoxWithLabel = Handlebars.compile($("#templateCheckBoxWithLabel").html());
         $("#buttonPerformFilter").bind("click", buttonPerformFilter_onClick);
         $("#buttonExportURLs").bind("click", buttonExportURLs_onClick);
-        $("#ulSdkArchives").bind("updateContent", ulSdkArchives_updateContent);
+        $("#ulSdkArchives").bind("updateContent", ulSdkArchives_onUpdateContent);
     }
 
     $(document).ready(document_onReady);

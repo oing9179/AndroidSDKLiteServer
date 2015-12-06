@@ -1,7 +1,5 @@
 package oing.webapp.android.sdkliteserver.service;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import oing.webapp.android.sdkliteserver.model.RepoZip;
 import oing.webapp.android.sdkliteserver.model.SdkArchive;
 
@@ -54,12 +52,28 @@ public interface ZipRepositoryListService {
 	/**
 	 * Load archive info from xml repository, then group it.
 	 *
-	 * @param repositoryName          ZIP repository name
-	 * @param includeSysLinux         Include linux archives.
-	 * @param includeSysMacOSX        Include Mac OSX archives.
-	 * @param includeSysWin           Include Windows archives.
-	 * @param includeObsoleteArchives Include obsolete archives.
+	 * @param repositoryName     ZIP repository name
+	 * @param isIncludeSysLinux  Include linux archives.
+	 * @param isIncludeSysOSX    Include Mac OSX archives.
+	 * @param isIncludeSysWin    Include Windows archives.
+	 * @param isIncludeObsoleted Include obsoleted archives.
+	 * @param isIncludeExisted   Include existing archives.
 	 */
-	List<SdkArchive> getAllSdkArchiveInfo(String repositoryName, boolean includeSysLinux, boolean includeSysMacOSX,
-	                                      boolean includeSysWin, boolean includeObsoleteArchives);
+	List<SdkArchive> getAllSdkArchiveInfo(String repositoryName, boolean isIncludeSysLinux, boolean isIncludeSysOSX,
+	                                      boolean isIncludeSysWin, boolean isIncludeObsoleted, boolean isIncludeExisted);
+
+	/**
+	 * Load archive info from xml repository, then find out which archives are not needed.
+	 * @param repositoryName ZIP repository name
+	 * @param isIncludeObsoleted Include obsoleted archives.
+	 * @param isIncludeNotExisted Include existing archives.
+	 */
+	List<SdkArchive> getNoLongerNeededArchives(String repositoryName, boolean isIncludeObsoleted, boolean isIncludeNotExisted);
+
+	/**
+	 * Redundancy cleanup form specific ZIP repository.
+	 * @param repositoryName ZIP repository name
+	 * @param fileNames Files name which will be deleted.
+	 */
+	void doRedundancyCleanup(String repositoryName, String[] fileNames) throws IOException;
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Controller
@@ -63,19 +64,21 @@ public class ZipRepositoryEditorController {
 
 	@RequestMapping(value = "/get_all_archives.do", method = RequestMethod.POST)
 	@ResponseBody
-	public JSONObject get_all_archives(@PathVariable("repositoryName") String repositoryName,
-	                                   @RequestParam(value = "includeSysLinux", required = false, defaultValue = "false") Boolean includeSysLinux,
-	                                   @RequestParam(value = "includeSysMacOSX", required = false, defaultValue = "false") Boolean includeSysMacOSX,
-	                                   @RequestParam(value = "includeSysWin", required = false, defaultValue = "false") Boolean includeSysWin,
-	                                   @RequestParam(value = "includeObsoleteArchives", required = false, defaultValue = "false") Boolean includeObsoleteArchives) {
+	public JSONObject get_all_archives(@PathVariable("repositoryName") String repositoryName, @RequestParam HashMap<String, String> params,
+	                                   @RequestParam(value = "isIncludeSysLinux", required = false, defaultValue = "false") Boolean isIncludeSysLinux,
+	                                   @RequestParam(value = "isIncludeSysOSX", required = false, defaultValue = "false") Boolean isIncludeSysOSX,
+	                                   @RequestParam(value = "isIncludeSysWin", required = false, defaultValue = "false") Boolean isIncludeSysWin,
+	                                   @RequestParam(value = "isIncludeObsoleted", required = false, defaultValue = "false") Boolean isIncludeObsoleted,
+	                                   @RequestParam(value = "isIncludeExisted", required = false, defaultValue = "false") Boolean isIncludeExisted) {
 		JSONObject lJsonObjResponse = new JSONObject();
-		lJsonObjResponse.put("linux", includeSysLinux);
-		lJsonObjResponse.put("osx", includeSysMacOSX);
-		lJsonObjResponse.put("win", includeSysWin);
-		lJsonObjResponse.put("obsolete", includeObsoleteArchives);
+		lJsonObjResponse.put("linux", isIncludeSysLinux);
+		lJsonObjResponse.put("osx", isIncludeSysOSX);
+		lJsonObjResponse.put("win", isIncludeSysWin);
+		lJsonObjResponse.put("obsoleted", isIncludeObsoleted);
+		lJsonObjResponse.put("existed", isIncludeExisted);
 		{
 			List<SdkArchive> lListSdkArchives = zipRepositoryListService.getAllSdkArchiveInfo(repositoryName,
-					includeSysLinux, includeSysMacOSX, includeSysWin, includeObsoleteArchives);
+					isIncludeSysLinux, isIncludeSysOSX, isIncludeSysWin, isIncludeObsoleted, isIncludeExisted);
 			JSONObject lJsonObj = new JSONObject();
 			/**
 			 * The final json content would like this:
@@ -100,6 +103,44 @@ public class ZipRepositoryEditorController {
 				lJsonArr.add(sdkArchive);
 			}
 			lJsonObjResponse.put("data", lJsonObj);
+		}
+		return lJsonObjResponse;
+	}
+
+	@RequestMapping(value = "/redundancy_cleanup.do", method = RequestMethod.GET)
+	public String redundancy_cleanup_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
+		RepoZip lRepoZip = zipRepositoryListService.getByName(repositoryName);
+		modelMap.put("zipRepository", lRepoZip);
+		try {
+			modelMap.put("xmlRepository", xmlRepositoryListService.getById(lRepoZip.getIdRepoXml()));
+		} catch (Exception ignore) {
+		}
+		return "repository/zip/repositoryName/redundancy_cleanup";
+	}
+
+	@RequestMapping(value = "/get_no_longer_needed_archives.do", method = RequestMethod.POST)
+	@ResponseBody
+	public JSONObject get_no_longer_needed_archives(@PathVariable("repositoryName") String repositoryName,
+	                                     @RequestParam(value = "isAbandonObsoleted", required = false, defaultValue = "false") boolean isAbandonObsoleted,
+	                                     @RequestParam(value = "inAbandonNotExisted", required = false, defaultValue = "false") boolean isAbandonNotExisted) {
+		JSONObject lJsonObjResponse = new JSONObject();
+		lJsonObjResponse.put("data", zipRepositoryListService.getNoLongerNeededArchives(
+				repositoryName, isAbandonObsoleted, isAbandonNotExisted));
+		return lJsonObjResponse;
+	}
+
+	@RequestMapping(value = "/redundancy_cleanup.do", method = RequestMethod.POST)
+	@ResponseBody
+	public JSONObject redundancy_cleanup(@PathVariable("repositoryName") String repositoryName,
+	                                     @RequestParam("fileNames") String[] fileNames) {
+		JSONObject lJsonObjResponse = new JSONObject();
+		try {
+			zipRepositoryListService.doRedundancyCleanup(repositoryName, fileNames);
+			lJsonObjResponse.put("success", true);
+		} catch (Exception e){
+			mLogger.warn(e.toString(), e);
+			lJsonObjResponse.put("success", false);
+			lJsonObjResponse.put("message", e.toString());
 		}
 		return lJsonObjResponse;
 	}

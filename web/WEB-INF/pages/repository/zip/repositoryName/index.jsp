@@ -55,10 +55,10 @@
                     </a>
                 </div>
                 <div class="col s12 m6 l6">
-                    <a href="javascript:;" style="width:100%; margin-bottom:6px;"
+                    <a href="/repository/zip/${zipRepository.name}/redundancy_cleanup.do" style="width:100%; margin-bottom:6px;"
                        class="btn light-green darken-1 waves-effect waves-light"
                        title="Cleanup files what no longer needed(eg: obsoleted).">
-                        <i class="material-icons left">clear_all</i>Clear redundancy...
+                        <i class="material-icons left">clear_all</i>Redundancy cleanup...
                     </a>
                 </div>
             </div>

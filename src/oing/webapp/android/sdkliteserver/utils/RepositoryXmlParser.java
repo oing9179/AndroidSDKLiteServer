@@ -1,6 +1,5 @@
 package oing.webapp.android.sdkliteserver.utils;
 
-import com.alibaba.fastjson.JSONObject;
 import jodd.io.FileUtil;
 import oing.webapp.android.sdkliteserver.model.SdkArchive;
 import org.apache.commons.lang3.Validate;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * A xml parser for general sdk-repository like "repository-11.xml".
@@ -121,7 +119,7 @@ public class RepositoryXmlParser {
 					lSdkArchive.setVersion(lStrVersion);
 					lSdkArchive.setRevision(lStrRevision);
 					lSdkArchive.setApiLevel(lnApiLevel);
-					lSdkArchive.setIsObsolete(mzIsObsolete);
+					lSdkArchive.setIsObsoleted(mzIsObsolete);
 					// <sdk:size>
 					lSdkArchive.setSize(Long.parseLong(elementArchive.elementText("size")));
 					// <sdk:checksum type="checksum type">

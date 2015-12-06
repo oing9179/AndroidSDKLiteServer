@@ -1,5 +1,7 @@
 package oing.webapp.android.sdkliteserver.model;
 
+import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
+
 public class SdkArchive {
 	private Long id;
 	private Long idRepoXmlFile;
@@ -9,13 +11,14 @@ public class SdkArchive {
 	private String version;
 	private String revision;
 	private Integer apiLevel;
-	private Boolean isObsolete;
+	private Boolean isObsoleted;
 	private String url;
 	private String checksumType;
 	private String checksum;
 	private Long size;
 	private String hostOs;
 	private String hostBits;
+	private Boolean isExisted;
 
 	public Long getId() {
 		return id;
@@ -81,12 +84,12 @@ public class SdkArchive {
 		this.apiLevel = apiLevel;
 	}
 
-	public Boolean isObsolete() {
-		return isObsolete;
+	public Boolean isObsoleted() {
+		return isObsoleted;
 	}
 
-	public void setIsObsolete(Boolean isObsolute) {
-		this.isObsolete = isObsolute;
+	public void setIsObsoleted(Boolean isObsolute) {
+		this.isObsoleted = isObsolute;
 	}
 
 	public String getUrl() {
@@ -95,6 +98,17 @@ public class SdkArchive {
 
 	public void setUrl(String url) {
 		this.url = url;
+		lStrFileNameCache = null;
+	}
+
+	private String lStrFileNameCache = null;
+
+	/**
+	 * Generated from {@link #getUrl()}
+	 */
+	public String getFileName() {
+		if (lStrFileNameCache == null) lStrFileNameCache = UrlTextUtil.getFileName(getUrl());
+		return lStrFileNameCache;
 	}
 
 	public String getChecksumType() {
@@ -135,5 +149,13 @@ public class SdkArchive {
 
 	public void setHostBits(String hostBits) {
 		this.hostBits = hostBits;
+	}
+
+	public Boolean isExisted() {
+		return isExisted;
+	}
+
+	public void setIsExisted(Boolean existed) {
+		isExisted = existed;
 	}
 }
