@@ -52,7 +52,8 @@
                         <td class="hide-on-small-and-down truncate-nonblock" title="${xmlFile.url}">${xmlFile.url}</td>
                         <td>
                             <a href="repository/xml/${xmlRepository.name}/xml_editor.do?id=${xmlFile.id}"
-                               class="btn btn-less-padding waves-effect waves-light" title="Edit">
+                               class="btn btn-less-padding waves-effect waves-light" title="Edit"
+                               style="${fn:startsWith(xmlFile.fileName, 'addons_list') ? "display:none" : ""};">
                                 <i class="material-icons">edit</i>
                             </a>
                             <a href="repository/xml/${xmlRepository.name}/deletion.do?id=${xmlFile.id}"

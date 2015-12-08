@@ -16,7 +16,7 @@ public interface RepoXmlFileDao {
 	/**
 	 * Select from repo_xml_file by name
 	 */
-	RepoXmlFile selectByFileName(String name);
+	RepoXmlFile selectByFileNameDependsRepoXmlId(Long repoXmlId, String name);
 
 	/**
 	 * Select from repo_xml_file depends on repo_xml.id

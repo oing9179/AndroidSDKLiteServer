@@ -108,7 +108,7 @@ public abstract class BaseDao {
 		Object lObjId = null;
 		try {
 			lObjId = ReflectUtil.invokeDeclared(model, "getId");
-		} catch (ReflectiveOperationException e) {
+		} catch (ReflectiveOperationException ignore) {
 			// Ignore, cause method "getId" does not exist.
 		}
 		if (lObjId == null) {

@@ -122,17 +122,6 @@
                 "processData": false,
                 "contentType": false,
                 "mnLastLoaded": 0, /* Progress for last time */
-                onProgress: function (e) {
-                    TaskManager.updateProgressInfo(e.target.responseText);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    var lJsonObj = {"text": "Error(" + textStatus + "): " + errorThrown};
-                    Materialize.toast(mCompiledTemplate_templateToastError(lJsonObj), 10000, "red darken-4");
-                },
-                complete: function (jqXHR, textStatus) {
-                    $("#buttonAbortTask").hide();
-                    $("#buttonBackToRepositoryPage").show();
-                },
                 xhr: function () {
                     var xhr = $.ajaxSettings.xhr();
                     var onProgress = this.onProgress;
@@ -140,6 +129,17 @@
                         onProgress(e);
                     });
                     return xhr;
+                },
+                onProgress: function (e) {
+                    TaskManager.updateProgressInfo(e.target.responseText);
+                },
+                complete: function (jqXHR, textStatus) {
+                    $("#buttonAbortTask").hide();
+                    $("#buttonBackToRepositoryPage").show();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var lJsonObj = {"text": "Error(" + textStatus + "): " + errorThrown};
+                    Materialize.toast(mCompiledTemplate_templateToastError(lJsonObj), 10000, "red darken-4");
                 }
             });
         },

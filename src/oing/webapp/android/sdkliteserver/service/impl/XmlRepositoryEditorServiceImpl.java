@@ -7,23 +7,23 @@ import oing.webapp.android.sdkliteserver.dao.RepoXmlDao;
 import oing.webapp.android.sdkliteserver.dao.RepoXmlFileDao;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
+import oing.webapp.android.sdkliteserver.model.SdkArchive;
 import oing.webapp.android.sdkliteserver.service.AutomaticAdditionEventListener;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryEditorService;
 import oing.webapp.android.sdkliteserver.utils.AddonsListXmlParser;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
+import oing.webapp.android.sdkliteserver.utils.RepositoryXmlParser;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.Validate;
+import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -124,8 +124,8 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 		// Boring code, this is quite duplicated from Step3.
 		{
 			String lStrUrl = ConfigurationUtil.get("url.repository_11_xml");
-			listener.onPublish(0, "Fetching " + lStrUrl);
 			lStrUrl = isPreferHttpsConnection ? UrlTextUtil.http2https(lStrUrl) : UrlTextUtil.https2http(lStrUrl);
+			listener.onPublish(0, "Fetching " + lStrUrl);
 			HttpResponse lHttpResponse = HttpRequest.get(lStrUrl)
 					.open(createHttpConnectionProvider(proxyInfo)).send();
 			String lStrResponse = lHttpResponse.bodyText();
@@ -148,9 +148,9 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 			float lnProgress = 1.0F * i / size;
 			String lStrUrl = lListStrUrls.get(i);
 
-			listener.onPublish(lnProgress, "Fetching " + lStrUrl);
 			lStrUrl = isPreferHttpsConnection ? UrlTextUtil.http2https(lStrUrl) : UrlTextUtil.https2http(lStrUrl);
 			lListStrUrls.set(i, lStrUrl);
+			listener.onPublish(lnProgress, "Fetching " + lStrUrl);
 			HttpResponse lHttpResponse = HttpRequest.get(lStrUrl).open(createHttpConnectionProvider(proxyInfo)).send();
 			String lStrResponse = lHttpResponse.bodyText();
 			if (lStrResponse.length() != 0) {
@@ -176,7 +176,8 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 			}
 		}
 		repoXmlDao.updateById(lRepoXml);//Update date of last modified automatically.
-		listener.onPublish(1, "Everything is completed.");
+		listener.onPublish(1, "Almost done...");
+		// Database will commit changes after this method finished, it will take a while.
 	}
 
 	public void manualAddition(String repositoryName, MultipartFile[] multipartFiles, String[] urls) throws IOException {
@@ -184,7 +185,8 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 
 		for (int i = 0; i < multipartFiles.length; i++) {
 			MultipartFile lMultipartFile = multipartFiles[i];
-			RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByFileName(lMultipartFile.getOriginalFilename());
+			RepoXmlFile lRepoXmlFile = repoXmlFileDao
+					.selectByFileNameDependsRepoXmlId(lRepoXml.getId(), lMultipartFile.getOriginalFilename());
 
 			if (lRepoXmlFile == null) {
 				lRepoXmlFile = new RepoXmlFile();
@@ -202,7 +204,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	}
 
 	@Override
-	public void delete(String repositoryName, Long id, String name) {
+	public void delete(String repositoryName, Long id, String name) throws IOException {
 		/**
 		 * 1. Repository exists.
 		 * 2. Found a RepoXmlFile by id.
@@ -212,11 +214,38 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
 		RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByIdDependsRepoXmlId(id, lRepoXml.getId());
 		Validate.isTrue(lRepoXmlFile != null, "XML file not found: (id=" + id + ")" + name);
-		Validate.isTrue(lRepoXmlFile.getFileName().equals(name),
+		Validate.isTrue(name.equals(lRepoXmlFile.getFileName()),
 				"XML file name incorrect, desired: " + lRepoXmlFile.getFileName() + " give: " + name);
 		repoXmlFileDao.deleteById(lRepoXmlFile.getId());
-		new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName),
-				"/" + lRepoXmlFile.getFileName()).delete();
+		FileUtil.deleteFile(new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName), lRepoXmlFile.getFileName()));
+	}
+
+	public List<SdkArchive> getSdkArchivesById(String repositoryName, Long id) throws IOException, DocumentException {
+		List<SdkArchive> lListSdkArchives;
+		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
+		RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByIdDependsRepoXmlId(id, lRepoXml.getId());
+		File lFileXml = new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName), lRepoXmlFile.getFileName());
+		RepositoryXmlParser lParser = new RepositoryXmlParser(lRepoXmlFile.getUrl(), lFileXml);
+		lListSdkArchives = lParser.getSdkArchives();
+		return lListSdkArchives;
+	}
+
+	@Override
+	public void updateXmlURLs(String repositoryName, Long id, String[] urls) throws IOException, DocumentException {
+		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
+		RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByIdDependsRepoXmlId(id, lRepoXml.getId());
+		File lFileXml = new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName), lRepoXmlFile.getFileName());
+		RepositoryXmlParser lParser = new RepositoryXmlParser(lRepoXmlFile.getUrl(), lFileXml);
+		lParser.updateURLs(Arrays.asList(urls));
+		// Save back to storage.
+		OutputStreamWriter lWriter = null;
+		try {
+			lWriter = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(lFileXml)));
+			lParser.getDocument().write(lWriter);
+			lWriter.flush();
+		} finally {
+			IOUtils.closeQuietly(lWriter);
+		}
 	}
 
 	private RepoXml getRepoXmlByNameOrThrow(String repositoryName) {

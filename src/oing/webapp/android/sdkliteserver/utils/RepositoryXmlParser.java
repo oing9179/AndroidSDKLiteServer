@@ -194,7 +194,7 @@ public class RepositoryXmlParser {
 		}
 		if (lListElementURLs.size() != urlsList.size()) {
 			throw new IllegalArgumentException(
-					"Count of URLs does not match, desired: " + lListElementURLs.size() + ", give: " + urlsList.size());
+					"Count of URLs does not match xml elements, desired: " + lListElementURLs.size() + ", give: " + urlsList.size());
 		}
 		for (int i = 0, size = lListElementURLs.size(); i < size; i++) {
 			lListElementURLs.get(i).setText(urlsList.get(i));

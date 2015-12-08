@@ -1,8 +1,9 @@
 package oing.webapp.android.sdkliteserver.service;
 
 import jodd.http.ProxyInfo;
-import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
+import oing.webapp.android.sdkliteserver.model.SdkArchive;
+import org.dom4j.DocumentException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -52,5 +53,20 @@ public interface XmlRepositoryEditorService {
 	 * @param id             Database repo_xml_file.id
 	 * @param name           XML file name
 	 */
-	void delete(String repositoryName, Long id, String name);
+	void delete(String repositoryName, Long id, String name) throws IOException;
+
+	/**
+	 * Parse a xml file from specific repository, then return all of the SdkArchives.
+	 * @param repositoryName XML repository name where xml file lives in.
+	 * @param id XML file id in database, we will find xml file only from {@code repositoryName}.
+	 */
+	List<SdkArchive> getSdkArchivesById(String repositoryName, Long id) throws IOException, DocumentException;
+
+	/**
+	 * Update URLs to xml file
+	 * @param repositoryName XML repository name where xml file lives in.
+	 * @param id XML file id in database, we will find xml file only from {@code repositoryName}.
+	 * @param urls URLs that will update into xml file.
+	 */
+	void updateXmlURLs(String repositoryName, Long id, String[] urls) throws IOException, DocumentException;
 }

@@ -149,6 +149,7 @@ public class XmlRepositoryEditorController {
 			}
 			xmlRepositoryEditorService
 					.automaticAddition(repositoryName, isPreferHttpsConnection, lProxyInfo, listener);
+			listener.onPublish(1, "Everything is complete.");
 		} catch (Exception e) {
 			mLogger.error(e.toString(), e);
 			try {
@@ -237,5 +238,34 @@ public class XmlRepositoryEditorController {
 		return modelMap.containsKey("objException") ?
 				"repository/xml/repositoryName/deletion" :
 				"redirect:/repository/xml/" + repositoryName + "/";
+	}
+
+	@RequestMapping(value = "/xml_editor.do", method = RequestMethod.GET)
+	public String xml_editor_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                              @RequestParam("id") Long id) {
+		try {
+			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
+			modelMap.put("xmlRepository", lRepoXml);
+			RepoXmlFile lRepoXmlFile = xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId());
+			modelMap.put("xmlFile", lRepoXmlFile);
+			modelMap.put("sdkArchives", xmlRepositoryEditorService.getSdkArchivesById(repositoryName, id));
+		} catch (Exception e) {
+			mLogger.warn(e.toString(), e);
+			modelMap.put("objException", e);
+		}
+		return "repository/xml/repositoryName/xml_editor";
+	}
+
+	@RequestMapping(value = "/xml_editor.do", method = RequestMethod.POST)
+	public String xml_editor(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                         @RequestParam("id") Long id, @RequestParam("url") String[] urls) {
+		try {
+			xmlRepositoryEditorService.updateXmlURLs(repositoryName, id, urls);
+		} catch (Exception e){
+			String lStrViewPath = xml_editor_view(modelMap, repositoryName, id);
+			modelMap.put("objException", e);
+			return lStrViewPath;
+		}
+		return "redirect:/repository/xml/" + repositoryName + "/";
 	}
 }

@@ -21,8 +21,11 @@ public class RepoXmlFileDaoImpl extends BaseDao implements RepoXmlFileDao {
 	}
 
 	@Override
-	public RepoXmlFile selectByFileName(String name) {
-		return super.selectOne("selectByFileName", name);
+	public RepoXmlFile selectByFileNameDependsRepoXmlId(Long repoXmlId, String name) {
+		HashMap<String,Object> mMapParams = new HashMap<>();
+		mMapParams.put("repoXmlId", repoXmlId);
+		mMapParams.put("name", name);
+		return super.selectOne("selectByFileNameDependsRepoXmlId", mMapParams);
 	}
 
 	@Override

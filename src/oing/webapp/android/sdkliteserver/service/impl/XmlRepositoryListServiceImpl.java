@@ -4,9 +4,9 @@ import jodd.io.FileUtil;
 import oing.webapp.android.sdkliteserver.dao.RepoXmlDao;
 import oing.webapp.android.sdkliteserver.dao.RepoXmlFileDao;
 import oing.webapp.android.sdkliteserver.dao.RepoZipDao;
-import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryListService;
+import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class XmlRepositoryListServiceImpl implements XmlRepositoryListService {
 		RepoXml lRepoXml_new, lRepoXml_existed = null;
 		File lFileDirNewRepo, lFileDirExistedRepo;
 		// Reject if new repository name already exist.
-		Validate.isTrue(!repoXmlDao.existsByName(name), "Name of new repository already exist.");
+		Validate.isTrue(!repoXmlDao.existsByName(name), "Name of new repository already exist: " + name);
 		// Check if source RepoXml(aka createFrom) does not found in database.
 		if (createFrom != null) {
 			lRepoXml_existed = repoXmlDao.selectById(createFrom);

@@ -1,0 +1,137 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ include file="/WEB-INF/pages/common/jsp_header.jsp" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <%@ include file="/WEB-INF/pages/common/html_head.jsp" %>
+</head>
+<body>
+<%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
+<div class="container">
+    <jstlc:if test="${objException != null}">
+        <div class="card-panel red darken-4 white-text">${objException}</div>
+    </jstlc:if>
+    <jstlc:if test="${objException == null}">
+        <div class="card">
+            <div class="card-content" style="padding-top:0;">
+                <span class="card-title">XML editor</span><br/>
+                <span>${xmlFile.fileName}</span>
+                <div class="divider" style="margin:0 -20px;"></div>
+                <form id="formXmlEditor" action="repository/xml/${xmlRepository.name}/xml_editor.do" method="post">
+                    <input type="hidden" name="id" value="${xmlFile.id}"/>
+                    <div class="row" style="padding-top:6px;">
+                        <div class="col s12 m12 l6">
+                            <button type="button" data-form="#formXmlEditor" data-action="urlToFileNameOnly"
+                                    class="btn btn-less-padding deep-purple waves-effect waves-light"
+                                    title="Edit all form fields automatically, if you don't know how to do.">
+                                File name only
+                            </button>
+                            <button type="button" data-form="#formXmlEditor" data-action="addPrefixToUrl"
+                                    class="btn btn-less-padding deep-purple waves-effect waves-light">
+                                Add prefix...
+                            </button>
+                        </div>
+                        <div class="col s12 m12 l6 right-align">
+                            <button class="btn btn-less-padding indigo waves-effect waves-light"
+                                    type="button" data-form="#formXmlEditor" data-action="reset"
+                                    title="Reset all form fields back to initial value, which is values they are shown after page loaded.">
+                                <i class="material-icons left">backspace</i>Reset
+                            </button>
+                            <button title="Commit all changes back to file."
+                                    data-form="#formXmlEditor" data-action="submit"
+                                    class="btn btn-less-padding green darken-2 waves-effect waves-light">
+                                <i class="material-icons left">check</i>Submit
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom:0;">
+                        <div class="col s12">
+                            <table id="tableEditor" data-xml-original-url="${xmlFile.url}">
+                                <thead>
+                                <tr>
+                                    <td style="width:60px;">#</td>
+                                    <td>Value</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <jstlc:forEach var="sdkArchive" items="${sdkArchives}" varStatus="varStatus">
+                                    <tr>
+                                        <td>${varStatus.index+1}</td>
+                                        <td>
+                                            <input type="text" name="url" required="required" value="${sdkArchive.url}"
+                                                   data-original-url="${sdkArchive.url}" placeholder="${sdkArchive.url}"/>
+                                        </td>
+                                    </tr>
+                                </jstlc:forEach>
+                                </tbody>
+                            </table>
+                            <style type="text/css">
+                                #tableEditor td { padding: 6px; }
+                                #tableEditor input[type='text'] { margin: 0; height: 2rem; }
+                            </style>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </jstlc:if>
+</div>
+<script type="text/javascript">
+    var JQUERY_SELECTOR_TEXT_BOXES_URL = "#tableEditor > tbody > tr > td:nth-child(2) > input[type='text']";
+
+    function formXmlEditor_buttonUrlToFileNameOnly_onClick(e) {
+        $(JQUERY_SELECTOR_TEXT_BOXES_URL).each(function (index, element) {
+            element = $(element);
+            var lStrFileName = element.val();
+            if (lStrFileName.lastIndexOf("/") != -1) {
+                lStrFileName = lStrFileName.substr(lStrFileName.lastIndexOf("/") + 1);
+                element.val(lStrFileName);
+            }
+        });
+    }
+
+    function formXmlEditor_buttonAddPrefixToUrl_onClick(e) {
+        var lStrPrefix = window.prompt("The prefix that you want prepend to file names.\n" +
+                "NOTE: PREFIX will prepend to file name only, not some url like starts with \"http://\".");
+        if (lStrPrefix == null || lStrPrefix.length == 0) return;
+        $(JQUERY_SELECTOR_TEXT_BOXES_URL).each(function (index, element) {
+            element = $(element);
+            var lStrFileName = element.val();
+            if (lStrFileName.indexOf("http://") != -1 || lStrFileName.indexOf("https://") != -1) {
+                // It's a URL, so we skipp iteration this time,
+                return true;// Just like java "continue;".
+            }
+            lStrFileName = lStrPrefix + lStrFileName;
+            element.val(lStrFileName);
+        });
+    }
+
+    function formXmlEditor_buttonAutoEdit_onClick(e) {
+        $(JQUERY_SELECTOR_TEXT_BOXES_URL).each(function (index, element) {
+            element = $(element);
+            var lStrUrl = element.attr("data-original-url");
+            if (lStrUrl.lastIndexOf("/") != -1) {
+                lStrUrl = lStrUrl.substr(lStrUrl.lastIndexOf("/") + 1);
+            }
+            element.val(lStrUrl);
+        });
+    }
+
+    function formXmlEditor_buttonReset_onClick(e) {
+        $(JQUERY_SELECTOR_TEXT_BOXES_URL).each(function (index, element) {
+            element = $(element);
+            element.val(element.attr("data-original-url"));
+        });
+    }
+
+    function document_onReady() {
+        $("#formXmlEditor button[data-action='urlToFileNameOnly']").bind("click", formXmlEditor_buttonUrlToFileNameOnly_onClick);
+        $("#formXmlEditor button[data-action='addPrefixToUrl']").bind("click", formXmlEditor_buttonAddPrefixToUrl_onClick);
+        $("#formXmlEditor button[data-action='reset']").bind("click", formXmlEditor_buttonReset_onClick);
+        $("#formXmlEditor button[data-action='autoEdit']").bind("click", formXmlEditor_buttonAutoEdit_onClick);
+    }
+
+    $(document).ready(document_onReady);
+</script>
+</body>
+</html>
