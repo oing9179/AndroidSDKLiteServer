@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:tx="http://www.springframework.org/schema/tx"
@@ -11,10 +10,6 @@
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
-    <context:component-scan base-package="oing.webapp.android.sdkliteserver"/>
-    <mvc:annotation-driven/>
-    <mvc:default-servlet-handler/>
-
     <context:property-placeholder location="WEB-INF/config.properties" file-encoding="UTF8"/>
     <!-- DataSource and TransactionManager -->
     <bean id="dataSource" class="oing.webapp.android.sdkliteserver.dao.DataRepositoryDataSource">
@@ -38,7 +33,6 @@
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="configLocation" value="WEB-INF/mybatis-config.xml"/>
         <property name="dataSource" ref="dataSource"/>
-        <!--<property name="mapperLocations" value="classpath:oing/webapp/android/sdkliteserver/parameter/*Mapper.xml"/>-->
     </bean>
     <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
         <constructor-arg index="0" ref="sqlSessionFactory"/>
@@ -59,7 +53,23 @@
                 <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
             </list>
         </property>
+        <property name="customArgumentResolvers">
+            <list>
+                <bean class="oing.webapp.android.sdkliteserver.controller.resolver.ModelRequestParamArgumentResolver"/>
+            </list>
+        </property>
     </bean>
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="oing.webapp.android.sdkliteserver.model.converter.StringToSdkAddonSiteTypeConverter"/>
+            </set>
+        </property>
+    </bean>
+
+    <context:component-scan base-package="oing.webapp.android.sdkliteserver"/>
+    <mvc:annotation-driven conversion-service="conversionService"/>
+    <mvc:default-servlet-handler/>
 
     <bean id="webappStartupListener" class="oing.webapp.android.sdkliteserver.misc.WebappStartupListener"
           init-method="onStartup">

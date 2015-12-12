@@ -10,7 +10,7 @@ import oing.webapp.android.sdkliteserver.model.RepoZip;
 import oing.webapp.android.sdkliteserver.model.SdkArchive;
 import oing.webapp.android.sdkliteserver.service.ZipRepositoryListService;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
-import oing.webapp.android.sdkliteserver.utils.RepositoryXmlParser;
+import oing.webapp.android.sdkliteserver.utils.RepositoryXmlEditor;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -94,8 +94,8 @@ public class ZipRepositoryListServiceImpl implements ZipRepositoryListService {
 		try {
 			for (RepoXmlFile item : lListRepoXmlFiles) {
 				if (item.getFileName().startsWith("addons_list")) continue;
-				RepositoryXmlParser repositoryXmlParser = new RepositoryXmlParser(item.getUrl(), new File(lFileXmlRepo, item.getFileName()));
-				lListSdkArchives.addAll(repositoryXmlParser.getSdkArchives(true, true));
+				RepositoryXmlEditor repositoryXmlEditor = new RepositoryXmlEditor(item.getUrl(), new File(lFileXmlRepo, item.getFileName()));
+				lListSdkArchives.addAll(repositoryXmlEditor.getSdkArchives(true, true));
 			}
 		} catch (Exception e) {
 			mLogger.warn(e.toString(), e);

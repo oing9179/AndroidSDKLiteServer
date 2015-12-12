@@ -2,11 +2,11 @@ package oing.webapp.android.sdkliteserver.utils;
 
 import jodd.io.FileUtil;
 import oing.webapp.android.sdkliteserver.model.SdkArchive;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.dom4j.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +14,9 @@ import java.util.List;
 /**
  * A xml parser for general sdk-repository like "repository-11.xml".
  */
-public class RepositoryXmlParser {
+public class RepositoryXmlEditor {
 	private String mStrBaseURL = null;
+	private File mFileDocument = null;
 	private Document mDocument = null;
 
 	/**
@@ -24,7 +25,7 @@ public class RepositoryXmlParser {
 	 * @param baseURL Where you download this xml file.
 	 * @param xmlFile XML file.
 	 */
-	public RepositoryXmlParser(String baseURL, File xmlFile) throws IOException, DocumentException {
+	public RepositoryXmlEditor(String baseURL, File xmlFile) throws IOException, DocumentException {
 		Validate.isTrue(baseURL.startsWith("http://") || baseURL.startsWith("https://"),
 				"baseURL must start with 'http://' or 'https://'");
 		mStrBaseURL = baseURL;
@@ -32,7 +33,8 @@ public class RepositoryXmlParser {
 			// "+1" means include last of character "/".
 			mStrBaseURL = mStrBaseURL.substring(0, mStrBaseURL.lastIndexOf('/') + 1);
 		}
-		mDocument = DocumentHelper.parseText(FileUtil.readUTFString(xmlFile));
+		mFileDocument = xmlFile;
+		mDocument = DocumentHelper.parseText(FileUtil.readUTFString(mFileDocument));
 	}
 
 	public Document getDocument() {
@@ -180,7 +182,7 @@ public class RepositoryXmlParser {
 	}
 
 	/**
-	 * Update urls to document from given list.
+	 * Update urls to document from given getAll.
 	 */
 	public void updateURLs(List<String> urlsList) {
 		List<Element> lListElementURLs;
@@ -198,6 +200,20 @@ public class RepositoryXmlParser {
 		}
 		for (int i = 0, size = lListElementURLs.size(); i < size; i++) {
 			lListElementURLs.get(i).setText(urlsList.get(i));
+		}
+	}
+
+	public void write() throws IOException {
+		write(mFileDocument);
+	}
+
+	public void write(File target) throws IOException {
+		OutputStreamWriter lWriter = null;
+		try {
+			lWriter = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(target)));
+			mDocument.write(lWriter);
+		} finally {
+			IOUtils.closeQuietly(lWriter);
 		}
 	}
 }

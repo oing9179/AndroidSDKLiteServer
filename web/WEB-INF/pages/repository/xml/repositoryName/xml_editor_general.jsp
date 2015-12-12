@@ -15,9 +15,9 @@
         <div class="card">
             <div class="card-content" style="padding-top:0;">
                 <span class="card-title">XML editor</span><br/>
-                <span>${xmlFile.fileName}</span>
+                <span>${xmlRepository.name} / ${xmlFile.fileName}</span>
                 <div class="divider" style="margin:0 -20px;"></div>
-                <form id="formXmlEditor" action="repository/xml/${xmlRepository.name}/xml_editor.do" method="post">
+                <form id="formXmlEditor" action="repository/xml/${xmlRepository.name}/xml_editor_general.do" method="post">
                     <input type="hidden" name="id" value="${xmlFile.id}"/>
                     <div class="row" style="padding-top:6px;">
                         <div class="col s12 m12 l6">
@@ -98,22 +98,11 @@
             element = $(element);
             var lStrFileName = element.val();
             if (lStrFileName.indexOf("http://") != -1 || lStrFileName.indexOf("https://") != -1) {
-                // It's a URL, so we skipp iteration this time,
+                // It's a URL, so we skip iteration this time,
                 return true;// Just like java "continue;".
             }
             lStrFileName = lStrPrefix + lStrFileName;
             element.val(lStrFileName);
-        });
-    }
-
-    function formXmlEditor_buttonAutoEdit_onClick(e) {
-        $(JQUERY_SELECTOR_TEXT_BOXES_URL).each(function (index, element) {
-            element = $(element);
-            var lStrUrl = element.attr("data-original-url");
-            if (lStrUrl.lastIndexOf("/") != -1) {
-                lStrUrl = lStrUrl.substr(lStrUrl.lastIndexOf("/") + 1);
-            }
-            element.val(lStrUrl);
         });
     }
 
@@ -128,7 +117,6 @@
         $("#formXmlEditor button[data-action='urlToFileNameOnly']").bind("click", formXmlEditor_buttonUrlToFileNameOnly_onClick);
         $("#formXmlEditor button[data-action='addPrefixToUrl']").bind("click", formXmlEditor_buttonAddPrefixToUrl_onClick);
         $("#formXmlEditor button[data-action='reset']").bind("click", formXmlEditor_buttonReset_onClick);
-        $("#formXmlEditor button[data-action='autoEdit']").bind("click", formXmlEditor_buttonAutoEdit_onClick);
     }
 
     $(document).ready(document_onReady);

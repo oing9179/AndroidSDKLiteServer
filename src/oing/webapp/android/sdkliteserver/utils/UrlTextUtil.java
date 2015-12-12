@@ -32,6 +32,13 @@ public class UrlTextUtil {
 		return stringBuilder.toString();
 	}
 
+	public static String getPath(String url) {
+		if (url == null) return null;
+		int index = url.lastIndexOf('/');
+		if (index != -1) url = url.substring(0, index + 1);
+		return url;
+	}
+
 	public static String getFileName(String url) {
 		if (url == null) return null;
 		int index = url.lastIndexOf('/');

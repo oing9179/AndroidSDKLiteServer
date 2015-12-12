@@ -7,21 +7,22 @@ import oing.webapp.android.sdkliteserver.dao.RepoXmlDao;
 import oing.webapp.android.sdkliteserver.dao.RepoXmlFileDao;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
+import oing.webapp.android.sdkliteserver.model.SdkAddonSite;
 import oing.webapp.android.sdkliteserver.model.SdkArchive;
 import oing.webapp.android.sdkliteserver.service.AutomaticAdditionEventListener;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryEditorService;
-import oing.webapp.android.sdkliteserver.utils.AddonsListXmlParser;
+import oing.webapp.android.sdkliteserver.utils.AddonsListXmlEditor;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
-import oing.webapp.android.sdkliteserver.utils.RepositoryXmlParser;
+import oing.webapp.android.sdkliteserver.utils.RepositoryXmlEditor;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,9 +48,8 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 
 	@Override
 	public void automaticAddition(String repositoryName, boolean isPreferHttpsConnection, ProxyInfo proxyInfo,
-								  AutomaticAdditionEventListener listener) throws Exception {
+	                              AutomaticAdditionEventListener listener) throws Exception {
 		String URL_ADDONS_LIST_XML = ConfigurationUtil.get("url.addons_list_2_xml");
-		final String lStrBaseUrl = URL_ADDONS_LIST_XML.substring(0, URL_ADDONS_LIST_XML.lastIndexOf('/'));
 		ArrayList<String> lListStrUrls = new ArrayList<>();
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
 
@@ -85,39 +85,21 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 			FileUtil.writeString(lFileAddonsListXml, lHttpResponse.bodyText());
 			listener.onPublish(0, "Saved " + lRepoXmlFile.getFileName());
 			// Parse addons_list-2.xml
-			List<String> lListStrXmlUrls = new AddonsListXmlParser(
-					URL_ADDONS_LIST_XML.substring(0, URL_ADDONS_LIST_XML.lastIndexOf('/')),
-					lFileAddonsListXml).getURLs();
-			for (int i = 0, size = lListStrXmlUrls.size(); i < size; i++) {
-				String lStrUrl = lListStrXmlUrls.get(i);
-				// Prepend BaseURL before it.
-				if (!lStrUrl.startsWith("http://") && !lStrUrl.startsWith("https://")) {
-					lStrUrl = UrlTextUtil.concat(lStrBaseUrl, lStrUrl);
-				}
-				lListStrUrls.add(lStrUrl);
-				// Update XML URLs for addons_list-2.xml, so it will downloadable after deployment.
-				lStrUrl = lListStrXmlUrls.get(i);
+			AddonsListXmlEditor lAddonsListXmlEditor = new AddonsListXmlEditor(
+					URL_ADDONS_LIST_XML.substring(0, URL_ADDONS_LIST_XML.lastIndexOf('/')), lFileAddonsListXml);
+			List<SdkAddonSite> lListSdkAddonSites = lAddonsListXmlEditor.getAll(true, isPreferHttpsConnection);
+			for (int i = 0, size = lListSdkAddonSites.size(); i < size; i++) {
+				SdkAddonSite lSdkAddonSite = lListSdkAddonSites.get(i);
+				lListStrUrls.add(lSdkAddonSite.getUrl());
 				// Prepend index to prevent file name duplication.
 				/**
 				 * i + 1: See: NOTE_0 in Step3.
 				 */
-				lStrUrl = i + "_" + lStrUrl.substring(lStrUrl.lastIndexOf('/') + 1);
-				lListStrXmlUrls.set(i, lStrUrl);
+				lSdkAddonSite.setUrl(i + "_" + UrlTextUtil.getFileName(lSdkAddonSite.getUrl()));
 			}
-			// Update XML URLs for addons_list-2.xml, so it will downloadable after deployment.
-			{
-				// Commit changes to addons_list-2.xml
-				OutputStreamWriter lWriter = null;
-				AddonsListXmlParser lParser = new AddonsListXmlParser(lStrBaseUrl, lFileAddonsListXml);
-				lParser.updateURLs(lListStrXmlUrls);
-				try {
-					lWriter = new OutputStreamWriter(new FileOutputStream(lFileAddonsListXml));
-					lParser.getDocument().write(lWriter);
-				} finally {
-					// Java do "finally" first before rethrow.
-					IOUtils.closeQuietly(lWriter);
-				}
-			}
+			// Save addons_list-2.xml back to storage, so URLs inside that xml will accessible after deployment.
+			lAddonsListXmlEditor.replaceAll(lListSdkAddonSites);
+			lAddonsListXmlEditor.write();
 			listener.onPublish(0, lRepoXmlFile.getFileName() + " updated.");
 		}
 		// Step 2: Fetch repository-11.xml and save it.
@@ -149,7 +131,6 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 			String lStrUrl = lListStrUrls.get(i);
 
 			lStrUrl = isPreferHttpsConnection ? UrlTextUtil.http2https(lStrUrl) : UrlTextUtil.https2http(lStrUrl);
-			lListStrUrls.set(i, lStrUrl);
 			listener.onPublish(lnProgress, "Fetching " + lStrUrl);
 			HttpResponse lHttpResponse = HttpRequest.get(lStrUrl).open(createHttpConnectionProvider(proxyInfo)).send();
 			String lStrResponse = lHttpResponse.bodyText();
@@ -220,32 +201,42 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 		FileUtil.deleteFile(new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName), lRepoXmlFile.getFileName()));
 	}
 
-	public List<SdkArchive> getSdkArchivesById(String repositoryName, Long id) throws IOException, DocumentException {
-		List<SdkArchive> lListSdkArchives;
+	@Override
+	public List<SdkAddonSite> getSdkAddonSitesById(String repositoryName, Long id) throws IOException, DocumentException {
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
 		RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByIdDependsRepoXmlId(id, lRepoXml.getId());
 		File lFileXml = new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName), lRepoXmlFile.getFileName());
-		RepositoryXmlParser lParser = new RepositoryXmlParser(lRepoXmlFile.getUrl(), lFileXml);
-		lListSdkArchives = lParser.getSdkArchives();
-		return lListSdkArchives;
+		AddonsListXmlEditor lEditor = new AddonsListXmlEditor(lRepoXmlFile.getUrl(), lFileXml);
+		return lEditor.getAll();
+	}
+
+	public List<SdkArchive> getSdkArchivesById(String repositoryName, Long id) throws IOException, DocumentException {
+		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
+		RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByIdDependsRepoXmlId(id, lRepoXml.getId());
+		File lFileXml = new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName), lRepoXmlFile.getFileName());
+		RepositoryXmlEditor lParser = new RepositoryXmlEditor(lRepoXmlFile.getUrl(), lFileXml);
+		return lParser.getSdkArchives();
 	}
 
 	@Override
-	public void updateXmlURLs(String repositoryName, Long id, String[] urls) throws IOException, DocumentException {
+	public void updateSdkArchiveURLs(String repositoryName, Long id, String[] urls) throws IOException, DocumentException {
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
 		RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByIdDependsRepoXmlId(id, lRepoXml.getId());
 		File lFileXml = new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName), lRepoXmlFile.getFileName());
-		RepositoryXmlParser lParser = new RepositoryXmlParser(lRepoXmlFile.getUrl(), lFileXml);
-		lParser.updateURLs(Arrays.asList(urls));
+		RepositoryXmlEditor lEditor = new RepositoryXmlEditor(lRepoXmlFile.getUrl(), lFileXml);
+		lEditor.updateURLs(Arrays.asList(urls));
 		// Save back to storage.
-		OutputStreamWriter lWriter = null;
-		try {
-			lWriter = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(lFileXml)));
-			lParser.getDocument().write(lWriter);
-			lWriter.flush();
-		} finally {
-			IOUtils.closeQuietly(lWriter);
-		}
+		lEditor.write();
+	}
+
+	@Override
+	public void updateSdkAddonSiteURLs(String repositoryName, Long id, List<SdkAddonSite> sdkAddonSites) throws IOException, DocumentException {
+		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
+		RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByIdDependsRepoXmlId(id, lRepoXml.getId());
+		File lFileXml = new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName), lRepoXmlFile.getFileName());
+		AddonsListXmlEditor lEditor = new AddonsListXmlEditor(lRepoXmlFile.getUrl(), lFileXml);
+		lEditor.replaceAll(sdkAddonSites);
+		lEditor.write();
 	}
 
 	private RepoXml getRepoXmlByNameOrThrow(String repositoryName) {

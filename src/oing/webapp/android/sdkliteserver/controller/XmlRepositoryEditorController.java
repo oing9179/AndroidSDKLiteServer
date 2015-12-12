@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import jodd.http.ProxyInfo;
+import oing.webapp.android.sdkliteserver.controller.resolver.ModelRequestParam;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
+import oing.webapp.android.sdkliteserver.model.SdkAddonSite;
 import oing.webapp.android.sdkliteserver.service.AutomaticAdditionEventListener;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryEditorService;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryListService;
@@ -78,15 +80,15 @@ public class XmlRepositoryEditorController {
 	 */
 	@RequestMapping(value = "/automatic_addition.do", method = RequestMethod.POST)
 	@ResponseBody
-	@ResponseStatus(HttpStatus.ACCEPTED)
+	@ResponseStatus(HttpStatus.ACCEPTED)// Mark response need a long time.
 	public void automatic_addition(HttpServletResponse response,
-								   @PathVariable("repositoryName") String repositoryName,
-								   @RequestParam(value = "isPreferHttpsConnection", required = false) boolean isPreferHttpsConnection,
-								   @RequestParam("proxyInfo.type") String proxyInfo_type,
-								   @RequestParam(value = "proxyInfo.address", required = false) String proxyInfo_address,
-								   @RequestParam(value = "proxyInfo.port", required = false, defaultValue = "0") int proxyInfo_port,
-								   @RequestParam(value = "proxyInfo.userName", required = false) String proxyInfo_userName,
-								   @RequestParam(value = "proxyInfo.password", required = false) String proxyInfo_password)
+	                               @PathVariable("repositoryName") String repositoryName,
+	                               @RequestParam(value = "isPreferHttpsConnection", required = false) boolean isPreferHttpsConnection,
+	                               @RequestParam("proxyInfo.type") String proxyInfo_type,
+	                               @RequestParam(value = "proxyInfo.address", required = false) String proxyInfo_address,
+	                               @RequestParam(value = "proxyInfo.port", required = false, defaultValue = "0") int proxyInfo_port,
+	                               @RequestParam(value = "proxyInfo.userName", required = false) String proxyInfo_userName,
+	                               @RequestParam(value = "proxyInfo.password", required = false) String proxyInfo_password)
 			throws Exception {
 		AutomaticAdditionEventListener listener = null;
 		try {
@@ -177,8 +179,8 @@ public class XmlRepositoryEditorController {
 	 */
 	@RequestMapping(value = "/manual_addition.do", method = RequestMethod.POST)
 	public String manual_addition(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-								  @RequestParam("file") MultipartFile[] multipartFiles,
-								  @RequestParam("url") String[] urls) {
+	                              @RequestParam("file") MultipartFile[] multipartFiles,
+	                              @RequestParam("url") String[] urls) {
 		RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
 		try {
 			Validate.isTrue(multipartFiles.length == urls.length, "Count of files and URLs are not equal.");
@@ -209,7 +211,7 @@ public class XmlRepositoryEditorController {
 
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.GET)
 	public String deletion_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-								@RequestParam("id") Long id) {
+	                            @RequestParam("id") Long id) {
 		try {
 			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
 			modelMap.put("xmlRepository", lRepoXml);
@@ -223,7 +225,7 @@ public class XmlRepositoryEditorController {
 
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.POST)
 	public String deletion(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-						   @RequestParam("id") Long id, @RequestParam("name") String name) {
+	                       @RequestParam("id") Long id, @RequestParam("name") String name) {
 		try {
 			xmlRepositoryEditorService.delete(repositoryName, id, name);
 		} catch (Exception e) {
@@ -241,28 +243,75 @@ public class XmlRepositoryEditorController {
 	}
 
 	@RequestMapping(value = "/xml_editor.do", method = RequestMethod.GET)
-	public String xml_editor_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-	                              @RequestParam("id") Long id) {
+	public String xml_editor_redirector(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                                    @RequestParam("id") Long id) {
+		String lStrViewPath = null;
 		try {
 			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
 			modelMap.put("xmlRepository", lRepoXml);
 			RepoXmlFile lRepoXmlFile = xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId());
 			modelMap.put("xmlFile", lRepoXmlFile);
+			if (lRepoXmlFile.getFileName().startsWith("addons_list")) {
+				lStrViewPath = xml_editor_for_addons_list_view(modelMap, repositoryName, id);
+			} else {
+				lStrViewPath = xml_editor_general_view(modelMap, repositoryName, id);
+			}
+		} catch (Exception e) {
+			mLogger.warn(e.toString(), e);
+			modelMap.put("objException", e);
+		}
+		return lStrViewPath;
+	}
+
+	// @RequestMapping(value = "/xml_editor_general.do", method = RequestMethod.GET)
+	public String xml_editor_general_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                                      @RequestParam("id") Long id) {
+		try {
 			modelMap.put("sdkArchives", xmlRepositoryEditorService.getSdkArchivesById(repositoryName, id));
 		} catch (Exception e) {
 			mLogger.warn(e.toString(), e);
 			modelMap.put("objException", e);
 		}
-		return "repository/xml/repositoryName/xml_editor";
+		return "repository/xml/repositoryName/xml_editor_general";
 	}
 
-	@RequestMapping(value = "/xml_editor.do", method = RequestMethod.POST)
-	public String xml_editor(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-	                         @RequestParam("id") Long id, @RequestParam("url") String[] urls) {
+	@RequestMapping(value = "/xml_editor_general.do", method = RequestMethod.POST)
+	public String xml_editor_general(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                                 @RequestParam("id") Long id, @RequestParam("url") String[] urls) {
 		try {
-			xmlRepositoryEditorService.updateXmlURLs(repositoryName, id, urls);
-		} catch (Exception e){
-			String lStrViewPath = xml_editor_view(modelMap, repositoryName, id);
+			xmlRepositoryEditorService.updateSdkArchiveURLs(repositoryName, id, urls);
+		} catch (Exception e) {
+			String lStrViewPath = xml_editor_redirector(modelMap, repositoryName, id);
+			modelMap.put("objException", e);
+			return lStrViewPath;
+		}
+		return "redirect:/repository/xml/" + repositoryName + "/";
+	}
+
+	// @RequestMapping(value = "/xml_editor_for_addons_list.do", method = RequestMethod.GET)
+	public String xml_editor_for_addons_list_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                                              @RequestParam("id") Long id) {
+		try {
+			modelMap.put("sdkAddonSites", xmlRepositoryEditorService.getSdkAddonSitesById(repositoryName, id));
+		} catch (Exception e) {
+			mLogger.warn(e.toString(), e);
+			modelMap.put("objException", e);
+		}
+		return "repository/xml/repositoryName/xml_editor_for_addons_list";
+	}
+
+	@RequestMapping(value = "/xml_editor_for_addons_list.do", method = RequestMethod.POST)
+	public String xml_editor_for_addons_list(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                                         @RequestParam("id") Long id,
+	                                         @ModelRequestParam(value = "sdkAddonSite") List<SdkAddonSite> sdkAddonSites) {
+		try {
+			for (SdkAddonSite sdkAddonSite : sdkAddonSites) {
+				Validate.isTrue(sdkAddonSite.getUrl().endsWith(".xml"), "Invalid XML file name: " + sdkAddonSite.getUrl());
+			}
+			xmlRepositoryEditorService.updateSdkAddonSiteURLs(repositoryName, id, sdkAddonSites);
+		} catch (Exception e) {
+			String lStrViewPath = xml_editor_redirector(modelMap, repositoryName, id);
+			mLogger.warn(e.toString(), e);
 			modelMap.put("objException", e);
 			return lStrViewPath;
 		}
