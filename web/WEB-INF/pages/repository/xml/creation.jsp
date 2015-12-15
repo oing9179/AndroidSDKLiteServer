@@ -29,16 +29,16 @@
                 <div class="input-field col s12 m12 l6">
                     <select name="createFrom">
                         <option value="">&lt;No&gt;</option>
-                        <jstlc:forEach var="xmlRepository" items="${xmlRepositories}">
+                        <c:forEach var="xmlRepository" items="${xmlRepositories}">
                             <option value="${xmlRepository.id}">${xmlRepository.name}</option>
-                        </jstlc:forEach>
+                        </c:forEach>
                     </select>
                     <label>From existing repository</label>
                 </div>
             </div>
-            <jstlc:if test="${objException != null}">
+            <c:if test="${objException != null}">
                 <div class="card-panel red darken-4 white-text">${objException}</div>
-            </jstlc:if>
+            </c:if>
         </div>
         <div class="card-action right-align">
             <button type="submit" class="btn btn-less-padding waves-effect waves-light">

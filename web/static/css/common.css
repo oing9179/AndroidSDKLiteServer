@@ -7,7 +7,8 @@
 .btn-less-padding {padding:0px 12px;}
 
 /* Fix: .select-dropdown in a div will covered by div's boundary */
-.select-dropdown + .dropdown-content.select-dropdown {max-height:150px;}
+/* Bug already fixed by official from version 0.97.3, this comment will removed at next commit. */
+/* .select-dropdown + .dropdown-content.select-dropdown {max-height:150px;} */
 
 /* Truncate some element's content safely.
  * In fact, class ".truncate" provided by materializecss has a bug when I using in <td>.

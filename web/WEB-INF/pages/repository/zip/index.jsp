@@ -36,7 +36,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <jstlc:forEach var="zipRepository" items="${zipRepositories}" varStatus="varStatus">
+                <c:forEach var="zipRepository" items="${zipRepositories}" varStatus="varStatus">
                     <tr>
                         <td>${varStatus.index+1}</td>
                         <td class="truncate-nonblock" title="${zipRepository.name}">${zipRepository.name}</td>
@@ -44,7 +44,7 @@
                             ${zipRepository.repoXml_name}
                         </td>
                         <td class="hide-on-med-and-down">
-                            <jstlfmt:formatDate value="${zipRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                            <fmt:formatDate value="${zipRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
                             <!-- Date of create: ${zipRepository.dateCreation} -->
                         </td>
                         <td>
@@ -58,7 +58,7 @@
                             </a>
                         </td>
                     </tr>
-                </jstlc:forEach>
+                </c:forEach>
                 </tbody>
             </table>
         </div>

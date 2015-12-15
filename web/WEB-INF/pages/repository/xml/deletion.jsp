@@ -20,10 +20,10 @@
             <h5 class="red-text text-darken-4 center-align">You are going to delete xml repository: ${xmlRepository.name}</h5>
             <div class="row" style="margin-bottom:0;">
                 <span class="col s12 m6 l6">Date of create:
-                    <jstlfmt:formatDate value="${xmlRepository.dateCreation}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                    <fmt:formatDate value="${xmlRepository.dateCreation}" pattern="yyyy-MM-dd HH:mm:ss"/>
                 </span>
                 <span class="col s12 m6 l6">Date of last modified:
-                    <jstlfmt:formatDate value="${xmlRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                    <fmt:formatDate value="${xmlRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
                 </span>
             </div>
             <div class="row">
@@ -47,12 +47,12 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <jstlc:if test="${zipRepositories!=null && zipRepositories.size()==0}">
+                        <c:if test="${zipRepositories!=null && zipRepositories.size()==0}">
                             <tr class="green-text text-darken-4"><td>&lt;No one depends on it.&gt;</td></tr>
-                        </jstlc:if>
-                        <jstlc:forEach var="zipRepository" items="${zipRepositories}">
+                        </c:if>
+                        <c:forEach var="zipRepository" items="${zipRepositories}">
                             <tr><td>${zipRepository.name}</td></tr>
-                        </jstlc:forEach>
+                        </c:forEach>
                         </tbody>
                     </table>
                 </div>
@@ -65,9 +65,9 @@
                     <label for="textBoxRepoName">Type repository name to confirm.</label>
                 </div>
             </div>
-            <jstlc:if test="${objException != null}">
+            <c:if test="${objException != null}">
                 <div class="card-panel red darken-4 white-text">${objException}</div>
-            </jstlc:if>
+            </c:if>
         </div>
         <div class="card-action right-align">
             <button type="submit" class="btn btn-less-padding waves-effect waves-light red white-text">

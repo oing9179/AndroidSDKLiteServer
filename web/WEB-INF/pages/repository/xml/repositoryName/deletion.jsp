@@ -30,9 +30,9 @@
                     <label for="textBoxFileName">Type repository name to confirm.</label>
                 </div>
             </div>
-            <jstlc:if test="${objException != null}">
+            <c:if test="${objException != null}">
                 <div class="card-panel red darken-4 white-text">${objException}</div>
-            </jstlc:if>
+            </c:if>
         </div>
         <div class="card-action right-align">
             <button type="submit" class="btn btn-less-padding waves-effect waves-light red white-text">

@@ -1,5 +1,6 @@
 package oing.webapp.android.sdkliteserver.misc;
 
+import oing.webapp.android.sdkliteserver.controller.interceptor.HttpSessionListenerImpl;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -25,6 +26,7 @@ public class WebappStartupListener {
 		loadConfiguration();
 		createDataRepositoryDirsIfNotExist();
 		createDatabaseIfNotExist();
+		servletContext.addListener(new HttpSessionListenerImpl());
 	}
 
 	private void loadConfiguration() throws IOException {

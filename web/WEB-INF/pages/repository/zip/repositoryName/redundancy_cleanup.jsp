@@ -15,9 +15,9 @@
             <div class="row">
                 <div class="col s12">This is zip repository
                     <span class="my-badge blue darken-2 white-text">${zipRepository.name}</span>
-                    <jstlc:if test="${xmlRepository != null}">depends on xml repository
+                    <c:if test="${xmlRepository != null}">depends on xml repository
                         <span class="my-badge blue darken-2 white-text">${xmlRepository.name}</span>
-                    </jstlc:if>.
+                    </c:if>.
                 </div>
             </div>
             <div class="row">

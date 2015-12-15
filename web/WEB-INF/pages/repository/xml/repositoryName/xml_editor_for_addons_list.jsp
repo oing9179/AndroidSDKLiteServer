@@ -13,9 +13,9 @@
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
 <div class="container">
-    <jstlc:if test="${objException != null}">
+    <c:if test="${objException != null}">
         <div class="card-panel red darken-4 white-text">${objException}</div>
-    </jstlc:if>
+    </c:if>
     <div class="card">
         <div class="card-content" style="padding-top:0;">
             <span class="card-title">XML editor</span><br/>
@@ -62,19 +62,19 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <jstlc:set var="SdkAddonSite_Types" value="<%=SdkAddonSite.Type.values()%>" scope="page"/>
-                            <jstlc:forEach var="sdkAddonSite" items="${sdkAddonSites}">
+                            <c:set var="SdkAddonSite_Types" value="<%=SdkAddonSite.Type.values()%>" scope="page"/>
+                            <c:forEach var="sdkAddonSite" items="${sdkAddonSites}">
                                 <tr>
                                     <td></td>
                                     <td>
                                         <select name="sdkAddonSite.type" class="browser-default" required="required">
                                             <option disabled="disabled">Select an option</option>
-                                            <jstlc:forEach var="SdkAddonSite_Type" items="${SdkAddonSite_Types}">
+                                            <c:forEach var="SdkAddonSite_Type" items="${SdkAddonSite_Types}">
                                                 <option value="${SdkAddonSite_Type.toString()}"
                                                     ${SdkAddonSite_Type.equals(sdkAddonSite.getType()) ? "selected" : ""}>
                                                         ${SdkAddonSite_Type.toString()}
                                                 </option>
-                                            </jstlc:forEach>
+                                            </c:forEach>
                                         </select>
                                     </td>
                                     <td>
@@ -91,7 +91,7 @@
                                         </button>
                                     </td>
                                 </tr>
-                            </jstlc:forEach>
+                            </c:forEach>
                             </tbody>
                         </table>
                         <button type="button" data-action="addAddonSite"
@@ -114,9 +114,9 @@
     <td>
         <select name="sdkAddonSite.type" class="browser-default" required>
             <option disabled selected>Select an option</option>
-            <jstlc:forEach var="SdkAddonSite_Type" items="${SdkAddonSite_Types}">
+            <c:forEach var="SdkAddonSite_Type" items="${SdkAddonSite_Types}">
                 <option value="${SdkAddonSite_Type.toString()}">${SdkAddonSite_Type.toString()}</option>
-            </jstlc:forEach>
+            </c:forEach>
         </select>
     </td>
     <td><input type="text" name="sdkAddonSite.name" required/></td>

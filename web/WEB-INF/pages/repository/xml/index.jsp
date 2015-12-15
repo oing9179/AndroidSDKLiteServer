@@ -39,12 +39,12 @@
                 </tr>
                 </thead>
                 <tbody>
-                <jstlc:forEach var="xmlRepository" items="${xmlRepositories}" varStatus="varStatus">
+                <c:forEach var="xmlRepository" items="${xmlRepositories}" varStatus="varStatus">
                     <tr>
                         <td>${varStatus.index+1}</td>
                         <td class="truncate-nonblock" style="width:50%;">${xmlRepository.name}</td>
                         <td class="hide-on-small-and-down">
-                            <jstlfmt:formatDate value="${xmlRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                            <fmt:formatDate value="${xmlRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
                             <!-- Date of create: ${xmlRepository.dateCreation} -->
                         </td>
                         <td>
@@ -58,7 +58,7 @@
                             </a>
                         </td>
                     </tr>
-                </jstlc:forEach>
+                </c:forEach>
                 </tbody>
             </table>
         </div>

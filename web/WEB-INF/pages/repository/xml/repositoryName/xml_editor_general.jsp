@@ -8,10 +8,10 @@
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
 <div class="container">
-    <jstlc:if test="${objException != null}">
+    <c:if test="${objException != null}">
         <div class="card-panel red darken-4 white-text">${objException}</div>
-    </jstlc:if>
-    <jstlc:if test="${objException == null}">
+    </c:if>
+    <c:if test="${objException == null}">
         <div class="card">
             <div class="card-content" style="padding-top:0;">
                 <span class="card-title">XML editor</span><br/>
@@ -54,7 +54,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <jstlc:forEach var="sdkArchive" items="${sdkArchives}" varStatus="varStatus">
+                                <c:forEach var="sdkArchive" items="${sdkArchives}" varStatus="varStatus">
                                     <tr>
                                         <td>${varStatus.index+1}</td>
                                         <td>
@@ -62,7 +62,7 @@
                                                    data-original-url="${sdkArchive.url}" placeholder="${sdkArchive.url}"/>
                                         </td>
                                     </tr>
-                                </jstlc:forEach>
+                                </c:forEach>
                                 </tbody>
                             </table>
                             <style type="text/css">
@@ -74,7 +74,7 @@
                 </form>
             </div>
         </div>
-    </jstlc:if>
+    </c:if>
 </div>
 <script type="text/javascript">
     var JQUERY_SELECTOR_TEXT_BOXES_URL = "#tableEditor > tbody > tr > td:nth-child(2) > input[type='text']";

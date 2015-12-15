@@ -91,7 +91,7 @@ public class RepositoryXmlEditor {
 						 *     <sdk:major>20</sdk:major>
 						 *     <sdk:minor>1</sdk:minor>
 						 *     <sdk:micro>2</sdk:micro>
-						 *     <sdk:preview>ignored</sdk:preview>
+						 *     <sdk:preview>1</sdk:preview>
 						 * </sdk:revision>
 						 */
 						lStrRevision = elementRevision.elementText("major");
@@ -99,6 +99,8 @@ public class RepositoryXmlEditor {
 						if (lStrTemp != null) lStrRevision += "." + lStrTemp;
 						lStrTemp = elementRevision.elementText("micro");
 						if (lStrTemp != null) lStrRevision += "." + lStrTemp;
+						lStrTemp = elementRevision.elementText("preview");
+						if (lStrTemp != null) lStrRevision += "p" + lStrTemp;
 					}
 				}
 			}

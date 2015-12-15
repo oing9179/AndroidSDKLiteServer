@@ -4,6 +4,7 @@
 <html>
 <head>
     <%@ include file="/WEB-INF/pages/common/html_head.jsp" %>
+    <script type="text/javascript" src="static/js/jquery-fileSizeFormat.js"></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
@@ -15,9 +16,9 @@
             <div class="row">
                 <div class="col s12">This is zip repository
                     <span class="my-badge blue darken-2 white-text">${zipRepository.name}</span>
-                    <jstlc:if test="${xmlRepository != null}">depends on xml repository
+                    <c:if test="${xmlRepository != null}">depends on xml repository
                         <span class="my-badge blue darken-2 white-text">${xmlRepository.name}</span>
-                    </jstlc:if>.
+                    </c:if>.
                 </div>
             </div>
             <div class="row">
@@ -80,7 +81,7 @@
         <td style="padding:6px;">
             <input id="checkBoxArchive_{{ordinal}}" type="checkbox" class="filled-in" data-json="{{json}}"
                    data-parent-checkbox="{{idParentCheckBox}}" title="Check to include this archive."/>
-            <label for="checkBoxArchive_{{ordinal}}" title="{{url}}">
+            <label for="checkBoxArchive_{{ordinal}}" title="{{htmlTitle}}">
                 {{#if existed}}<i class="material-icons left green-text text-darken-3" title="This archive already exist.">check</i>{{/if}}
                 {{#if obsoleted}}<i class="material-icons left red-text text-darken-3" title="This archive is obsoleted.">watch_later</i>{{/if}}
                 {{type}}
@@ -136,6 +137,10 @@
                 lJsonObj["ordinal"] = lnOrdinal;
                 lJsonObj["idParentCheckBox"] = lStrIdCheckBoxParent;
                 lJsonObj["json"] = JSON.stringify(lJsonObj);
+                lJsonObj["htmlTitle"] = lJsonObj["fileName"] + "\n" +
+                        "Size: " + $.format.fileSize(lJsonObj["size"]) + " (" + lJsonObj["size"] + " Bytes)\n" +
+                        lJsonObj["checksumType"] + ": " + lJsonObj["checksum"] + "\n" +
+                        lJsonObj["url"];
                 $tbody.append(mTemplate_templateCheckBoxWithLabel(lJsonObj));
             }
             $ul.append($li);

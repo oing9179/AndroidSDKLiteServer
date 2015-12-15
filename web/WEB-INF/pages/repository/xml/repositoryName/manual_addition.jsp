@@ -8,9 +8,9 @@
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
 <div class="container">
-    <jstlc:if test="${objException != null}">
+    <c:if test="${objException != null}">
         <div class="card-panel red darken-4 white-text">${objException}</div>
-    </jstlc:if>
+    </c:if>
     <div class="card">
         <div class="card-content" style="padding:0;">
             <div class="row" style="margin:0;">

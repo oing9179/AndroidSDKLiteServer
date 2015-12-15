@@ -15,10 +15,10 @@
             <h5 class="red-text text-darken-4 center-align">You are going to delete zip repository: ${zipRepository.name}</h5>
             <div class="row" style="margin-bottom:0;">
                 <span class="col s12 m6 l6">Date of create:
-                    <jstlfmt:formatDate value="${zipRepository.dateCreation}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                    <fmt:formatDate value="${zipRepository.dateCreation}" pattern="yyyy-MM-dd HH:mm:ss"/>
                 </span>
                 <span class="col s12 m6 l6">Date of last modified:
-                    <jstlfmt:formatDate value="${zipRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
+                    <fmt:formatDate value="${zipRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>
                 </span>
             </div>
             <h6 class="red-text text-darken-4 center-align">
@@ -32,9 +32,9 @@
                     <label for="textBoxRepoName">Type repository name to confirm.</label>
                 </div>
             </div>
-            <jstlc:if test="${objException != null}">
+            <c:if test="${objException != null}">
                 <div class="card-panel red darken-4 white-text">${objException}</div>
-            </jstlc:if>
+            </c:if>
         </div>
         <div class="card-action right-align">
             <button type="submit" class="btn btn-less-padding waves-effect waves-light red white-text">

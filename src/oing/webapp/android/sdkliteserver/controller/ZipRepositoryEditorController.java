@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import oing.webapp.android.sdkliteserver.model.RepoZip;
 import oing.webapp.android.sdkliteserver.model.SdkArchive;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryListService;
+import oing.webapp.android.sdkliteserver.service.ZipRepositoryEditorService;
 import oing.webapp.android.sdkliteserver.service.ZipRepositoryListService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,8 @@ public class ZipRepositoryEditorController {
 	private static Logger mLogger = LoggerFactory.getLogger(ZipRepositoryEditorController.class);
 	@Autowired
 	private ZipRepositoryListService zipRepositoryListService;
+	@Autowired
+	private ZipRepositoryEditorService zipRepositoryEditorService;
 	@Autowired
 	private XmlRepositoryListService xmlRepositoryListService;
 
@@ -41,7 +44,7 @@ public class ZipRepositoryEditorController {
 	public String update_repository_dependency(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
 	                                           @RequestParam("xmlRepository.id") Long id) {
 		try {
-			zipRepositoryListService.updateRepositoryDependency(repositoryName, id);
+			zipRepositoryEditorService.updateRepositoryDependency(repositoryName, id);
 		} catch (Exception e) {
 			mLogger.info(e.toString(), e);
 			String lStrUrl = _index(modelMap, repositoryName);
@@ -77,7 +80,7 @@ public class ZipRepositoryEditorController {
 		lJsonObjResponse.put("obsoleted", isIncludeObsoleted);
 		lJsonObjResponse.put("existed", isIncludeExisted);
 		{
-			List<SdkArchive> lListSdkArchives = zipRepositoryListService.getAllSdkArchiveInfo(repositoryName,
+			List<SdkArchive> lListSdkArchives = zipRepositoryEditorService.getAllSdkArchiveInfo(repositoryName,
 					isIncludeSysLinux, isIncludeSysOSX, isIncludeSysWin, isIncludeObsoleted, isIncludeExisted);
 			JSONObject lJsonObj = new JSONObject();
 			/**
@@ -121,10 +124,10 @@ public class ZipRepositoryEditorController {
 	@RequestMapping(value = "/get_no_longer_needed_archives.do", method = RequestMethod.POST)
 	@ResponseBody
 	public JSONObject get_no_longer_needed_archives(@PathVariable("repositoryName") String repositoryName,
-	                                     @RequestParam(value = "isAbandonObsoleted", required = false, defaultValue = "false") boolean isAbandonObsoleted,
-	                                     @RequestParam(value = "inAbandonNotExisted", required = false, defaultValue = "false") boolean isAbandonNotExisted) {
+	                                                @RequestParam(value = "isAbandonObsoleted", required = false, defaultValue = "false") boolean isAbandonObsoleted,
+	                                                @RequestParam(value = "inAbandonNotExisted", required = false, defaultValue = "false") boolean isAbandonNotExisted) {
 		JSONObject lJsonObjResponse = new JSONObject();
-		lJsonObjResponse.put("data", zipRepositoryListService.getNoLongerNeededArchives(
+		lJsonObjResponse.put("data", zipRepositoryEditorService.getNoLongerNeededArchives(
 				repositoryName, isAbandonObsoleted, isAbandonNotExisted));
 		return lJsonObjResponse;
 	}
@@ -135,9 +138,9 @@ public class ZipRepositoryEditorController {
 	                                     @RequestParam("fileNames") String[] fileNames) {
 		JSONObject lJsonObjResponse = new JSONObject();
 		try {
-			zipRepositoryListService.doRedundancyCleanup(repositoryName, fileNames);
+			zipRepositoryEditorService.doRedundancyCleanup(repositoryName, fileNames);
 			lJsonObjResponse.put("success", true);
-		} catch (Exception e){
+		} catch (Exception e) {
 			mLogger.warn(e.toString(), e);
 			lJsonObjResponse.put("success", false);
 			lJsonObjResponse.put("message", e.toString());
