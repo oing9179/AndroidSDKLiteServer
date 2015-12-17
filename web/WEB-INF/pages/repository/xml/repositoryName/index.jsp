@@ -8,9 +8,9 @@
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
 <div class="container">
-    <jstlc:if test="${objException != null}">
+    <c:if test="${objException != null}">
         <div class="card-panel red darken-4 white-text">${objException}</div>
-    </jstlc:if>
+    </c:if>
     <div class="card" style="display:${objException==null ? "block" : "none"};">
         <div class="card-content" style="padding:0;">
             <div class="row" style="margin:0;">
@@ -45,15 +45,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                <jstlc:forEach var="xmlFile" items="${xmlFiles}" varStatus="varStatus">
+                <c:forEach var="xmlFile" items="${xmlFiles}" varStatus="varStatus">
                     <tr>
                         <td>${varStatus.index+1}</td>
                         <td class="truncate-nonblock" title="${xmlFile.fileName}">${xmlFile.fileName}</td>
                         <td class="hide-on-small-and-down truncate-nonblock" title="${xmlFile.url}">${xmlFile.url}</td>
                         <td>
                             <a href="repository/xml/${xmlRepository.name}/xml_editor.do?id=${xmlFile.id}"
-                               class="btn btn-less-padding waves-effect waves-light" title="Edit"
-                               style="${fn:startsWith(xmlFile.fileName, 'addons_list') ? "display:none" : ""};">
+                               class="btn btn-less-padding waves-effect waves-light" title="Edit">
                                 <i class="material-icons">edit</i>
                             </a>
                             <a href="repository/xml/${xmlRepository.name}/deletion.do?id=${xmlFile.id}"
@@ -62,7 +61,7 @@
                             </a>
                         </td>
                     </tr>
-                </jstlc:forEach>
+                </c:forEach>
                 </tbody>
             </table>
         </div>

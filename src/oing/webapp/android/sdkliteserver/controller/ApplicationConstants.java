@@ -1,5 +1,7 @@
 package oing.webapp.android.sdkliteserver.controller;
 
+import oing.webapp.android.sdkliteserver.io.LimitedBandwidthInputStream;
+
 public class ApplicationConstants {
 	/**
 	 * ApplicationContext attribute key for "repository_xml_id".
@@ -19,12 +21,12 @@ public class ApplicationConstants {
 	public static final String KEY_UPSTREAM_SPEED_LIMIT = "upstream_speed_limit";
 
 	/**
-	 * Session attribute key for {@link oing.webapp.android.sdkliteserver.utils.LimitedBandwidthInputStream}
+	 * Session attribute key for {@link LimitedBandwidthInputStream}
 	 * Actual data type: Long
 	 */
 	public static final String KEY_BANDWIDTH_LIMIT_REMAINING_BYTES = "bandwidth_limit_remaining_bytes";
 	/**
-	 * Session attribute key for {@link oing.webapp.android.sdkliteserver.utils.LimitedBandwidthInputStream}
+	 * Session attribute key for {@link LimitedBandwidthInputStream}
 	 * Actual data type: Long
 	 *
 	 * @see System#currentTimeMillis()

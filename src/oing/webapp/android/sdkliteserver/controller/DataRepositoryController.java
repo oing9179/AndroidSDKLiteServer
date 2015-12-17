@@ -1,12 +1,13 @@
 package oing.webapp.android.sdkliteserver.controller;
 
 import com.alibaba.fastjson.JSON;
+import oing.webapp.android.sdkliteserver.io.LimitedBandwidthInputStream;
+import oing.webapp.android.sdkliteserver.io.RangeFileInputStream;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.model.RepoZip;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryListService;
 import oing.webapp.android.sdkliteserver.service.ZipRepositoryListService;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
-import oing.webapp.android.sdkliteserver.utils.LimitedBandwidthInputStream;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -67,7 +68,8 @@ public class DataRepositoryController {
 	}
 
 	private ResponseEntity acceptAnythingDownload(HttpServletRequest request, HttpServletResponse response)
-			throws FileNotFoundException, HttpSessionRequiredException {
+			throws IOException, HttpSessionRequiredException {
+		final HashMap<String, String> lMapRequestHeaders = getHeaders(request);
 		File lFileZip;
 		{
 			Long lLongRepoZipId = getRepositoryZipId(request.getServletContext());
@@ -86,11 +88,36 @@ public class DataRepositoryController {
 			ljBandwidthLimit = (Long) request.getServletContext().getAttribute(ApplicationConstants.KEY_UPSTREAM_SPEED_LIMIT);
 			if (ljBandwidthLimit == null) ljBandwidthLimit = Long.MAX_VALUE;
 		}
-		InputStreamResource inputStreamResource = new InputStreamResource(
-				new LimitedBandwidthInputStream(new FileInputStream(lFileZip), request.getSession().getId(), ljBandwidthLimit));
+		// HTTP header "Range" support
+		HttpRange lHttpRange = null;
+		{
+			List<HttpRange> lListHttpRanges = HttpRange.parseRanges(lMapRequestHeaders.get("range"));
+			// After I read the source code of HttpRange, this list can't be null, so we don't need null-check.
+			if (lListHttpRanges.size() > 0) {
+				lHttpRange = lListHttpRanges.get(0);
+			} else {
+				lHttpRange = HttpRange.createByteRange(0);
+			}
+		}
+		InputStreamResource inputStreamResource = new InputStreamResource(new LimitedBandwidthInputStream(
+				new RangeFileInputStream(lFileZip, lHttpRange), request.getSession().getId(), ljBandwidthLimit));
 		HttpHeaders lHttpHeaders = new HttpHeaders();
 		lHttpHeaders.setContentType(new MediaType("application", "octet-stream"));
-		lHttpHeaders.setContentLength(lFileZip.length());
+		lHttpHeaders.set("content-description", "attachment; filename=" + lFileZip.getName());
+		{
+			long length = lFileZip.length();
+			length = lHttpRange.getRangeEnd(length) - lHttpRange.getRangeStart(length) + 1;
+			lHttpHeaders.setContentLength(length);
+		}
+		{
+			final long length = lFileZip.length();
+			String lStrContentRange = lHttpRange.getRangeStart(length) + "-" +
+					(lHttpRange.getRangeEnd(length)) + "/" + length;
+			lHttpHeaders.set("content-range", lStrContentRange);
+		}
+		if (lMapRequestHeaders.containsKey("range")) {
+			return new ResponseEntity<>(inputStreamResource, lHttpHeaders, HttpStatus.PARTIAL_CONTENT);
+		}
 		return new ResponseEntity<>(inputStreamResource, lHttpHeaders, HttpStatus.OK);
 	}
 

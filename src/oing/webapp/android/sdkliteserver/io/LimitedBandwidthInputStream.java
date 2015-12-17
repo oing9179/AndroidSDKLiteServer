@@ -1,4 +1,4 @@
-package oing.webapp.android.sdkliteserver.utils;
+package oing.webapp.android.sdkliteserver.io;
 
 import oing.webapp.android.sdkliteserver.controller.ApplicationConstants;
 import oing.webapp.android.sdkliteserver.controller.interceptor.HttpSessionListenerImpl;
@@ -10,7 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * InputStream with limited read-bandwidth.
+ * InputStream with limited read-bandwidth.<br/>
+ * Actually, it is not that accurate,
+ * for instance: say bandwidth limited at 5MiB/s, we got download speed about 5.75MiB/s.<br/>
+ * I don't want lower my webapp performance to get a accurate bandwidth limitation,
+ * So we don't uses things like "SessionLocal-ish (think about ThreadLocal)".
  */
 public class LimitedBandwidthInputStream extends FilterInputStream {
 	private final String SESSION_ID;

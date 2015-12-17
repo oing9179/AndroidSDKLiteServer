@@ -155,7 +155,7 @@
                 lJsonArrResponse[i] = JSON.parse(response[i]);
             }
             for (var i = $ulProgressMessageList.find("li").length, length = lJsonArrResponse.length; i < length; i++) {
-                // Prepend list item into #ulProgressMessageList
+                // Prepend getAll item into #ulProgressMessageList
                 $ulProgressMessageList.prepend(
                         $("<li></li>").addClass("collection-item").html(lJsonArrResponse[i]["message"])
                 );

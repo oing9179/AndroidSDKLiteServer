@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/pages/common/jsp_header.jsp" %>
+<%@ page import="oing.webapp.android.sdkliteserver.controller.ApplicationConstants"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,6 +8,11 @@
 </head>
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
+<%
+    pageContext.setAttribute("repositoryXmlId", application.getAttribute(ApplicationConstants.KEY_REPOSITORY_XML_ID));
+    pageContext.setAttribute("repositoryZipId", application.getAttribute(ApplicationConstants.KEY_REPOSITORY_ZIP_ID));
+    pageContext.setAttribute("upstreamSpeedLimit", application.getAttribute(ApplicationConstants.KEY_UPSTREAM_SPEED_LIMIT));
+%>
 <div class="container">
     <div class="card">
         <div class="card-content" style="padding-top:0;">
@@ -15,12 +21,6 @@
             <div class="divider" style="margin:0 -20px;"></div>
             <form action="dashboard/deploy.do" method="get">
                 <div class="row">
-                    <c:set var="repositoryXmlId" scope="page"
-                           value="${applicationScope.get(ApplicationConstants.KEY_REPOSITORY_XML_ID)}"/>
-                    <c:set var="repositoryZipId" scope="page"
-                           value="${applicationScope.get(ApplicationConstants.KEY_REPOSITORY_ZIP_ID)}"/>
-                    <c:set var="upstreamSpeedLimit" scope="page"
-                           value="${applicationScope.get(ApplicationConstants.KEY_UPSTREAM_SPEED_LIMIT)}"/>
                     <div class="input-field col s12 m6 l6">
                         <select name="xmlRepositoryId">
                             <option value="">&lt;Disabled&gt;</option>
