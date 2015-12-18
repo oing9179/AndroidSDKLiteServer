@@ -8,7 +8,7 @@
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
 <div class="container">
-    <form class="card" action="repository/zip/deletion.do" method="post">
+    <form class="card" action="admin/repository/zip/deletion.do" method="post">
         <div class="card-content">
             <span class="card-title red-text text-darken-4">Delete ZIP Repository</span>
             <div class="divider" style="margin:0 -20px;"></div>
@@ -40,7 +40,7 @@
             <button type="submit" class="btn btn-less-padding waves-effect waves-light red white-text">
                 <i class="material-icons left">delete</i>Delete
             </button>
-            <a href="repository/zip/" style="margin-right: 0;"
+            <a href="admin/repository/zip/" style="margin-right: 0;"
                class="btn btn-less-padding waves-effect white grey-text text-darken-4">Cancel</a>
         </div>
     </form>

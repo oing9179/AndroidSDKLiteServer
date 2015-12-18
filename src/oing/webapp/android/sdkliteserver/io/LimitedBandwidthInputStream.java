@@ -1,7 +1,7 @@
 package oing.webapp.android.sdkliteserver.io;
 
-import oing.webapp.android.sdkliteserver.controller.ApplicationConstants;
 import oing.webapp.android.sdkliteserver.controller.interceptor.HttpSessionListenerImpl;
+import oing.webapp.android.sdkliteserver.misc.ApplicationConstants;
 import org.springframework.web.HttpSessionRequiredException;
 
 import javax.servlet.http.HttpSession;

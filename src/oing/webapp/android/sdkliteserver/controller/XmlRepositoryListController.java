@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-@RequestMapping("/repository/xml/")
+@RequestMapping("/admin/repository/xml/")
 public class XmlRepositoryListController {
 	private static Logger mLogger = LoggerFactory.getLogger(XmlRepositoryListController.class);
 	@Autowired
@@ -32,7 +32,7 @@ public class XmlRepositoryListController {
 		List<RepoXml> lListRepoXml = xmlRepositoryListService.getAll();
 
 		modelMap.put("xmlRepositories", lListRepoXml);
-		return "repository/xml/index";
+		return "admin/repository/xml/index";
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class XmlRepositoryListController {
 	@RequestMapping(value = "/creation.do", method = RequestMethod.GET)
 	public String creation_view(ModelMap modelMap) {
 		modelMap.put("xmlRepositories", xmlRepositoryListService.getAll());
-		return "repository/xml/creation";
+		return "admin/repository/xml/creation";
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class XmlRepositoryListController {
 			mLogger.info(e.toString(), e);
 			modelMap.put("objException", e);
 		}
-		if (modelMap.containsKey("objException")) return "repository/xml/creation";
+		if (modelMap.containsKey("objException")) return "admin/repository/xml/creation";
 		// After validation complete, create xml repository.
 		try {
 			xmlRepositoryListService.create(name, createFrom);
@@ -76,8 +76,8 @@ public class XmlRepositoryListController {
 			modelMap.put("objException", e);
 			modelMap.put("xmlRepositories", xmlRepositoryListService.getAll());
 		}
-		if (modelMap.containsKey("objException")) return "repository/xml/creation";
-		return "redirect:/repository/xml/";
+		if (modelMap.containsKey("objException")) return "admin/repository/xml/creation";
+		return "redirect:/admin/repository/xml/";
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class XmlRepositoryListController {
 			mLogger.info(e.toString(), e);
 			modelMap.put("objException", e);
 		}
-		return "repository/xml/deletion";
+		return "admin/repository/xml/deletion";
 	}
 
 	/**
@@ -113,6 +113,6 @@ public class XmlRepositoryListController {
 			modelMap.put("objException", e);
 			return lStrUrl;
 		}
-		return "redirect:/repository/xml/";
+		return "redirect:/admin/repository/xml/";
 	}
 }

@@ -1,13 +1,14 @@
 <Configuration packages="oing.android.tools.apkrevtools" status="off">
     <Appenders>
-        <RollingFile name="rollingFileAppender" fileName="logs/log.log" filePattern="logs/log-%d{yyyy-MM-dd}-%i.log"
-                     ignoreExceptions="false">
+        <RollingFile name="rollingFileAppender" fileName="${sys:catalina.home}/logs/AndroidSDKLiteServer/log.log"
+                     filePattern="logs/log-%d{yyyy-MM-dd}-%i.log" ignoreExceptions="false">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%d{ABSOLUTE} %level{length=1}: %msg%n" charset="UTF-8"/>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
             </Policies>
         </RollingFile>
-        <RollingFile name="rollingFileAppender_verbose" fileName="logs/log-verbose.log"
+        <RollingFile name="rollingFileAppender_verbose" fileName="${sys:catalina.home}/logs/AndroidSDKLiteServer/log-verbose.log"
                      filePattern="logs/log-verbose-%d{yyyy-MM-dd}-%i.log" ignoreExceptions="false">
             <PatternLayout pattern="%d{DEFAULT} %c[%t] %level{length=1} %logger - %msg%n" charset="UTF-8"/>
             <Policies>
@@ -15,11 +16,11 @@
             </Policies>
         </RollingFile>
         <Console name="consoleAppender" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{ABSOLUTE} %c %level{length=1}: %msg%n"/>
+            <PatternLayout pattern="%d{ABSOLUTE} %c{1} %level{length=1}: %msg%n"/>
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="org.mybatis.spring" level="off"></Logger>
+        <Logger name="org.mybatis.spring" level="off"/>
         <Root level="debug">
             <AppenderRef ref="rollingFileAppender"/>
             <AppenderRef ref="rollingFileAppender_verbose"/>

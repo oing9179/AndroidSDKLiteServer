@@ -23,7 +23,7 @@
             <div class="row">
                 <div class="col s12 right-align">
                     <form id="formRedundancyCleanup" method="post"
-                          action="/repository/zip/${zipRepository.name}/get_no_longer_needed_archives.do">
+                          action="admin/repository/zip/${zipRepository.name}/get_no_longer_needed_archives.do">
                         <input id="checkBoxAbandonObsoletedArchives" type="checkbox" name="isAbandonObsoleted"
                                checked="checked" class="filled-in"/>
                         <label for="checkBoxAbandonObsoletedArchives" title="Abandon obsoleted archives.">Obsoleted</label>
@@ -66,7 +66,7 @@
         <pre></pre>
     </div>
     <div class="modal-footer">
-        <form action="/repository/zip/${zipRepository.name}/redundancy_cleanup.do" method="post"></form>
+        <form action="admin/repository/zip/${zipRepository.name}/redundancy_cleanup.do" method="post"></form>
         <a href="javascript:" class="btn-flat modal-action modal-close waves-effect waves-red" data-action-delete="">
             <i class="material-icons left">delete</i>DELETE ANYWAY</a>
         <a href="javascript:" class="btn-flat modal-action modal-close waves-effect">Cancel</a>

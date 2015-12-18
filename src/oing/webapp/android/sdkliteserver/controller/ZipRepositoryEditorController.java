@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Controller
-@RequestMapping("/repository/zip/{repositoryName}/")
+@RequestMapping("/admin/repository/zip/{repositoryName}/")
 public class ZipRepositoryEditorController {
 	private static Logger mLogger = LoggerFactory.getLogger(ZipRepositoryEditorController.class);
 	@Autowired
@@ -37,7 +37,7 @@ public class ZipRepositoryEditorController {
 			mLogger.info(e.toString(), e);
 			modelMap.put("objException", e);
 		}
-		return "repository/zip/repositoryName/index";
+		return "admin/repository/zip/repositoryName/index";
 	}
 
 	@RequestMapping(value = "/update_repository_dependency.do", method = RequestMethod.POST)
@@ -51,7 +51,7 @@ public class ZipRepositoryEditorController {
 			modelMap.put("objException", e);
 			return lStrUrl;
 		}
-		return "redirect:/repository/zip/{repositoryName}/";
+		return "redirect:/admin/repository/zip/{repositoryName}/";
 	}
 
 	@RequestMapping(value = "/file_completion.do", method = RequestMethod.GET)
@@ -62,7 +62,7 @@ public class ZipRepositoryEditorController {
 			modelMap.put("xmlRepository", xmlRepositoryListService.getById(lRepoZip.getIdRepoXml()));
 		} catch (Exception ignore) {
 		}
-		return "repository/zip/repositoryName/file_completion";
+		return "admin/repository/zip/repositoryName/file_completion";
 	}
 
 	@RequestMapping(value = "/get_all_archives.do", method = RequestMethod.POST)
@@ -118,7 +118,7 @@ public class ZipRepositoryEditorController {
 			modelMap.put("xmlRepository", xmlRepositoryListService.getById(lRepoZip.getIdRepoXml()));
 		} catch (Exception ignore) {
 		}
-		return "repository/zip/repositoryName/redundancy_cleanup";
+		return "admin/repository/zip/repositoryName/redundancy_cleanup";
 	}
 
 	@RequestMapping(value = "/get_no_longer_needed_archives.do", method = RequestMethod.POST)

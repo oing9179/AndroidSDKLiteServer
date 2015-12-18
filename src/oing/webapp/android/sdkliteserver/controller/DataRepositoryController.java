@@ -1,14 +1,17 @@
 package oing.webapp.android.sdkliteserver.controller;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import oing.webapp.android.sdkliteserver.io.LimitedBandwidthInputStream;
 import oing.webapp.android.sdkliteserver.io.RangeFileInputStream;
+import oing.webapp.android.sdkliteserver.misc.ApplicationConstants;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.model.RepoZip;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryListService;
 import oing.webapp.android.sdkliteserver.service.ZipRepositoryListService;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
@@ -30,6 +33,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/android/repository/")
 public class DataRepositoryController {
+	private static final Logger mLogger = LoggerFactory.getLogger(DataRepositoryController.class);
 	@Autowired
 	private XmlRepositoryListService xmlRepositoryListService;
 	@Autowired
@@ -38,7 +42,14 @@ public class DataRepositoryController {
 	@RequestMapping("/*.*")
 	public ResponseEntity _index(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, HttpSessionRequiredException {
-		System.out.println(request.getRequestURI() + JSON.toJSONString(getHeaders(request), true));
+		{
+			JSONObject lJsonObjLog = new JSONObject();
+			lJsonObjLog.put("sessionId", request.getSession().getId());
+			lJsonObjLog.put("remoteAddress", request.getRemoteAddr() + ":" + request.getRemotePort());
+			lJsonObjLog.put("url", request.getRequestURI());
+			lJsonObjLog.put("httpHeaders", getHeaders(request));
+			mLogger.info(lJsonObjLog.toString());
+		}
 		if (request.getRequestURI().endsWith(".xml")) {
 			return acceptXmlDownload(request, response);
 		} else {
@@ -49,9 +60,7 @@ public class DataRepositoryController {
 	private ResponseEntity acceptXmlDownload(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
 		File lFileXml;
 		{
-			Long lLongRepoXmlId = getRepositoryXmlId(request.getServletContext());
-			Validate.notNull(lLongRepoXmlId, "You have not deploy an XML Repository.");
-			RepoXml lRepoXml = xmlRepositoryListService.getById(lLongRepoXmlId);
+			RepoXml lRepoXml = getRepoXml(request.getServletContext());
 			lFileXml = ConfigurationUtil.getXmlRepositoryDir(lRepoXml.getName());
 			String lStrFileName = request.getRequestURI();
 			lStrFileName = lStrFileName.substring(lStrFileName.lastIndexOf('/') + 1);
@@ -72,9 +81,7 @@ public class DataRepositoryController {
 		final HashMap<String, String> lMapRequestHeaders = getHeaders(request);
 		File lFileZip;
 		{
-			Long lLongRepoZipId = getRepositoryZipId(request.getServletContext());
-			Validate.notNull(lLongRepoZipId, "You have not deploy an ZIP Repository.");
-			RepoZip lRepoZip = zipRepositoryListService.getById(lLongRepoZipId);
+			RepoZip lRepoZip = getRepoZip(request.getServletContext());
 			lFileZip = ConfigurationUtil.getZipRepositoryDir(lRepoZip.getName());
 			String lStrFileName = request.getRequestURI();
 			lStrFileName = lStrFileName.substring(lStrFileName.lastIndexOf('/') + 1);
@@ -89,7 +96,7 @@ public class DataRepositoryController {
 			if (ljBandwidthLimit == null) ljBandwidthLimit = Long.MAX_VALUE;
 		}
 		// HTTP header "Range" support
-		HttpRange lHttpRange = null;
+		HttpRange lHttpRange;
 		{
 			List<HttpRange> lListHttpRanges = HttpRange.parseRanges(lMapRequestHeaders.get("range"));
 			// After I read the source code of HttpRange, this list can't be null, so we don't need null-check.
@@ -121,12 +128,16 @@ public class DataRepositoryController {
 		return new ResponseEntity<>(inputStreamResource, lHttpHeaders, HttpStatus.OK);
 	}
 
-	private Long getRepositoryXmlId(ServletContext servletContext) {
-		return (Long) servletContext.getAttribute(ApplicationConstants.KEY_REPOSITORY_XML_ID);
+	private RepoXml getRepoXml(ServletContext servletContext) {
+		Long ljId = (Long) servletContext.getAttribute(ApplicationConstants.KEY_REPOSITORY_XML_ID);
+		Validate.notNull(ljId, "You have not deploy an XML Repository.");
+		return xmlRepositoryListService.getById(ljId);
 	}
 
-	private Long getRepositoryZipId(ServletContext servletContext) {
-		return (Long) servletContext.getAttribute(ApplicationConstants.KEY_REPOSITORY_ZIP_ID);
+	private RepoZip getRepoZip(ServletContext servletContext) {
+		Long ljId = (Long) servletContext.getAttribute(ApplicationConstants.KEY_REPOSITORY_ZIP_ID);
+		Validate.notNull(ljId, "You have not deploy an ZIP Repository.");
+		return zipRepositoryListService.getById(ljId);
 	}
 
 	private HashMap<String, String> getHeaders(HttpServletRequest request) {
@@ -137,10 +148,5 @@ public class DataRepositoryController {
 			lMapHeaders.put(lStrHeader.toLowerCase(), request.getHeader(lStrHeader));
 		}
 		return lMapHeaders;
-	}
-
-	public static void main(String[] args) {
-		List<HttpRange> lListHttpRanges = HttpRange.parseRanges("bytes=0-14,-29");
-		System.out.println(JSON.toJSONString(lListHttpRanges, true));
 	}
 }

@@ -32,7 +32,7 @@
                     </button>
                 </div>
             </div>
-            <form action="repository/xml/${xmlRepository.name}/manual_addition.do"
+            <form action="admin/repository/xml/${xmlRepository.name}/manual_addition.do"
                   method="post" enctype="multipart/form-data">
                 <div class="row" style="margin-left:0; margin-right:0;">
                     <div class="col s12">
@@ -100,7 +100,7 @@
             }
         };
         $.ajax({
-            url: "repository/xml/${xmlRepository.name}/parse_log_for_sdkmanager.do",
+            url: "admin/repository/xml/${xmlRepository.name}/parse_log_for_sdkmanager.do",
             method: "POST",
             data: {"log": $("#textareaLog").val()},
             dataType: "json",

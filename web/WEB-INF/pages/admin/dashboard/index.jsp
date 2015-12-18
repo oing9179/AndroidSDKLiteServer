@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/pages/common/jsp_header.jsp" %>
-<%@ page import="oing.webapp.android.sdkliteserver.controller.ApplicationConstants"%>
+<%@ page import="oing.webapp.android.sdkliteserver.misc.ApplicationConstants"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,7 +19,7 @@
             <span class="card-title">Deployment</span>
 
             <div class="divider" style="margin:0 -20px;"></div>
-            <form action="dashboard/deploy.do" method="get">
+            <form action="admin/dashboard/deploy.do" method="get">
                 <div class="row">
                     <div class="input-field col s12 m6 l6">
                         <select name="xmlRepositoryId">

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/repository/zip/")
+@RequestMapping("/admin/repository/zip/")
 public class ZipRepositoryListController {
 	private static Logger mLogger = LoggerFactory.getLogger(ZipRepositoryListController.class);
 	@Autowired
@@ -21,12 +21,12 @@ public class ZipRepositoryListController {
 	@RequestMapping(method = RequestMethod.GET)
 	public String _index(ModelMap modelMap) {
 		modelMap.put("zipRepositories", zipRepositoryListService.getAll());
-		return "repository/zip/index";
+		return "admin/repository/zip/index";
 	}
 
 	@RequestMapping(value = "/creation.do", method = RequestMethod.GET)
 	public String creation_view() {
-		return "repository/zip/creation";
+		return "admin/repository/zip/creation";
 	}
 
 	@RequestMapping(value = "/creation.do", method = RequestMethod.POST)
@@ -40,13 +40,13 @@ public class ZipRepositoryListController {
 			modelMap.put("objException", e);
 			return creation_view();
 		}
-		return "redirect:/repository/zip/";
+		return "redirect:/admin/repository/zip/";
 	}
 
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.GET)
 	public String deletion_view(ModelMap modelMap, @RequestParam("id") Long id) {
 		modelMap.put("zipRepository", zipRepositoryListService.getById(id));
-		return "repository/zip/deletion";
+		return "admin/repository/zip/deletion";
 	}
 
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.POST)
@@ -59,6 +59,6 @@ public class ZipRepositoryListController {
 			modelMap.put("objException", e);
 			return lStrUrl;
 		}
-		return "redirect:/repository/zip/";
+		return "redirect:/admin/repository/zip/";
 	}
 }

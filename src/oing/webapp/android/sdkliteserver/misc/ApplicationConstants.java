@@ -1,4 +1,4 @@
-package oing.webapp.android.sdkliteserver.controller;
+package oing.webapp.android.sdkliteserver.misc;
 
 import oing.webapp.android.sdkliteserver.io.LimitedBandwidthInputStream;
 

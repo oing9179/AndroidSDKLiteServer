@@ -22,7 +22,7 @@
             <span>${xmlRepository.name} / ${xmlFile.fileName}</span>
             <div class="divider" style="margin:0 -20px;"></div>
             <form id="formXmlEditor" method="post"
-                  action="repository/xml/${xmlRepository.name}/xml_editor_for_addons_list.do">
+                  action="admin/repository/xml/${xmlRepository.name}/xml_editor_for_addons_list.do">
                 <input type="hidden" name="id" value="${xmlFile.id}"/>
                 <div class="row" style="padding-top:6px;">
                     <div class="col s12 m12 l6">

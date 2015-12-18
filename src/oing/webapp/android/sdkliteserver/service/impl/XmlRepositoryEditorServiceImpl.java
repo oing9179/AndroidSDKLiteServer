@@ -194,7 +194,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 		 */
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
 		RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByIdDependsRepoXmlId(id, lRepoXml.getId());
-		Validate.isTrue(lRepoXmlFile != null, "XML file not found: (id=" + id + ")" + name);
+		Validate.notNull(lRepoXmlFile, "XML file not found: (id=" + id + ")" + name);
 		Validate.isTrue(name.equals(lRepoXmlFile.getFileName()),
 				"XML file name incorrect, desired: " + lRepoXmlFile.getFileName() + " give: " + name);
 		repoXmlFileDao.deleteById(lRepoXmlFile.getId());

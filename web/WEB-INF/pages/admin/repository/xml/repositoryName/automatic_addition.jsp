@@ -13,7 +13,7 @@
             <span class="card-title black-text">Automatic add</span><br/>
             <span class="black-text">${xmlRepository.name}</span>
             <div class="divider" style="margin:0 -20px;"></div>
-            <form id="formTaskOptions" action="repository/xml/${xmlRepository.name}/automatic_addition.do"
+            <form id="formTaskOptions" action="admin/repository/xml/${xmlRepository.name}/automatic_addition.do"
                   method="post" onsubmit="return false;" enctype="multipart/form-data">
                 <div class="row">
                     <!-- CheckBox: force https -->
@@ -81,7 +81,7 @@
                             class="btn btn-less-padding waves-effect waves-light red darken-2">
                         <i class="material-icons left">close</i>Abort
                     </button>
-                    <a id="buttonBackToRepositoryPage" href="repository/xml/${xmlRepository.name}/"
+                    <a id="buttonBackToRepositoryPage" href="admin/repository/xml/${xmlRepository.name}/"
                        class="btn btn-less-padding waves-effect waves-light blue" style="display:none;">
                         <i class="material-icons left">arrow_back</i>Back to repository page
                     </a>

@@ -17,7 +17,7 @@
                 </div>
                 <div class="divider col s12 hide-on-med-and-up"></div>
                 <div class="col s12 m4 l4 right-align" style="margin:0; padding:6px;">
-                    <a href="repository/xml/creation.do"
+                    <a href="admin/repository/xml/creation.do"
                        class="btn btn-less-padding waves-effect waves-light green" title="Add">
                         <i class="material-icons">add</i>
                     </a>
@@ -48,11 +48,11 @@
                             <!-- Date of create: ${xmlRepository.dateCreation} -->
                         </td>
                         <td>
-                            <a href="repository/xml/${xmlRepository.name}/" title="Edit.."
+                            <a href="admin/repository/xml/${xmlRepository.name}/" title="Edit.."
                                class="btn btn-less-padding waves-effect waves-light">
                                 <i class="material-icons">edit</i>
                             </a>
-                            <a href="repository/xml/deletion.do?id=${xmlRepository.id}" title="Delete repository"
+                            <a href="admin/repository/xml/deletion.do?id=${xmlRepository.id}" title="Delete repository"
                                class="btn btn-less-padding waves-effect waves-light red">
                                 <i class="material-icons">delete</i>
                             </a>

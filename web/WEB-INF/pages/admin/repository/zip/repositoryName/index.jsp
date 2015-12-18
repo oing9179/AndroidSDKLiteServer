@@ -33,7 +33,7 @@
                     </span>
                 </div>
                 <form id="formChangeRepositoryDependency" class="input-field col s12 m6 l6" method="post"
-                        action="repository/zip/${zipRepository.name}/update_repository_dependency.do">
+                        action="admin/repository/zip/${zipRepository.name}/update_repository_dependency.do">
                     <select name="xmlRepository.id">
                         <option value="-1">&lt;No&gt;</option>
                         <c:forEach var="xmlRepository" items="${xmlRepositories}">
@@ -48,14 +48,14 @@
             <div class="row">
                 <div class="col s12 center-align" style="padding-bottom:6px;">Choose what you want to do</div>
                 <div class="col s12 m6 l6">
-                    <a href="repository/zip/${zipRepository.name}/file_completion.do" style="width:100%; margin-bottom:6px;"
+                    <a href="admin/repository/zip/${zipRepository.name}/file_completion.do" style="width:100%; margin-bottom:6px;"
                        class="btn light-green darken-1 waves-effect waves-light"
                        title="Parse zip URLs from specified xml repository to complete missing files.">
                         <i class="material-icons left">done_all</i>File completion...
                     </a>
                 </div>
                 <div class="col s12 m6 l6">
-                    <a href="/repository/zip/${zipRepository.name}/redundancy_cleanup.do" style="width:100%; margin-bottom:6px;"
+                    <a href="admin/repository/zip/${zipRepository.name}/redundancy_cleanup.do" style="width:100%; margin-bottom:6px;"
                        class="btn light-green darken-1 waves-effect waves-light"
                        title="Cleanup files what no longer needed(eg: obsoleted).">
                         <i class="material-icons left">clear_all</i>Redundancy cleanup...

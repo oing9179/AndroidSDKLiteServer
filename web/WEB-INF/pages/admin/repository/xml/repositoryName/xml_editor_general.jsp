@@ -17,7 +17,8 @@
                 <span class="card-title">XML editor</span><br/>
                 <span>${xmlRepository.name} / ${xmlFile.fileName}</span>
                 <div class="divider" style="margin:0 -20px;"></div>
-                <form id="formXmlEditor" action="repository/xml/${xmlRepository.name}/xml_editor_general.do" method="post">
+                <form id="formXmlEditor" method="post"
+                      action="admin/repository/xml/${xmlRepository.name}/xml_editor_general.do">
                     <input type="hidden" name="id" value="${xmlFile.id}"/>
                     <div class="row" style="padding-top:6px;">
                         <div class="col s12 m12 l6">

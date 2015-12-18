@@ -31,7 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Controller
-@RequestMapping("/repository/xml/{repositoryName}/")
+@RequestMapping("/admin/repository/xml/{repositoryName}/")
 public class XmlRepositoryEditorController {
 	private static Logger mLogger = LoggerFactory.getLogger(XmlRepositoryEditorController.class);
 	@Autowired
@@ -49,7 +49,7 @@ public class XmlRepositoryEditorController {
 		} catch (IllegalArgumentException e) {
 			modelMap.put("objException", e);
 		}
-		return "repository/xml/repositoryName/index";
+		return "admin/repository/xml/repositoryName/index";
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class XmlRepositoryEditorController {
 			mLogger.info(e.toString(), e);
 			modelMap.put("objException", e);
 		}
-		return "repository/xml/repositoryName/automatic_addition";
+		return "admin/repository/xml/repositoryName/automatic_addition";
 	}
 
 	/**
@@ -168,7 +168,7 @@ public class XmlRepositoryEditorController {
 	@RequestMapping(value = "/manual_addition.do", method = RequestMethod.GET)
 	public String manual_addition_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
 		modelMap.put("xmlRepository", xmlRepositoryListService.getByName(repositoryName));
-		return "repository/xml/repositoryName/manual_addition";
+		return "admin/repository/xml/repositoryName/manual_addition";
 	}
 
 	/**
@@ -186,13 +186,12 @@ public class XmlRepositoryEditorController {
 			Validate.isTrue(multipartFiles.length == urls.length, "Count of files and URLs are not equal.");
 			xmlRepositoryEditorService.manualAddition(repositoryName, multipartFiles, urls);
 		} catch (Exception e) {
-			mLogger.error(e.toString(), e);
+			mLogger.warn(e.toString(), e);
 			modelMap.put("objException", e.toString());
 			modelMap.put("xmlRepository", lRepoXml);
+			return "admin/repository/xml/repositoryName/manual_addition";
 		}
-		return modelMap.containsKey("objException") ?
-				"repository/xml/repositoryName/manual_addition" :
-				"redirect:/repository/xml/" + lRepoXml.getName() + "/";
+		return "redirect:/admin/repository/xml/{repositoryName}/";
 	}
 
 	/**
@@ -217,10 +216,10 @@ public class XmlRepositoryEditorController {
 			modelMap.put("xmlRepository", lRepoXml);
 			modelMap.put("xmlFile", xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId()));
 		} catch (Exception e) {
-			mLogger.error(e.toString(), e);
+			mLogger.warn(e.toString(), e);
 			modelMap.put("objException", e);
 		}
-		return "repository/xml/repositoryName/deletion";
+		return "admin/repository/xml/repositoryName/deletion";
 	}
 
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.POST)
@@ -229,17 +228,12 @@ public class XmlRepositoryEditorController {
 		try {
 			xmlRepositoryEditorService.delete(repositoryName, id, name);
 		} catch (Exception e) {
-			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
-			modelMap.put("xmlRepository", lRepoXml);
-			try {
-				modelMap.put("xmlFile", xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId()));
-			} catch (Exception ignore) {
-			}
+			mLogger.warn(e.toString(), e);
+			String lStrViewPath = deletion_view(modelMap, repositoryName, id);
 			modelMap.put("objException", e);
+			return lStrViewPath;
 		}
-		return modelMap.containsKey("objException") ?
-				"repository/xml/repositoryName/deletion" :
-				"redirect:/repository/xml/" + repositoryName + "/";
+		return "redirect:/admin/repository/xml/{repositoryName}/";
 	}
 
 	@RequestMapping(value = "/xml_editor.do", method = RequestMethod.GET)
@@ -272,7 +266,7 @@ public class XmlRepositoryEditorController {
 			mLogger.warn(e.toString(), e);
 			modelMap.put("objException", e);
 		}
-		return "repository/xml/repositoryName/xml_editor_general";
+		return "admin/repository/xml/repositoryName/xml_editor_general";
 	}
 
 	@RequestMapping(value = "/xml_editor_general.do", method = RequestMethod.POST)
@@ -281,11 +275,12 @@ public class XmlRepositoryEditorController {
 		try {
 			xmlRepositoryEditorService.updateSdkArchiveURLs(repositoryName, id, urls);
 		} catch (Exception e) {
+			mLogger.warn(e.toString(), e);
 			String lStrViewPath = xml_editor_redirector(modelMap, repositoryName, id);
 			modelMap.put("objException", e);
 			return lStrViewPath;
 		}
-		return "redirect:/repository/xml/" + repositoryName + "/";
+		return "redirect:/admin/repository/xml/" + repositoryName + "/";
 	}
 
 	// @RequestMapping(value = "/xml_editor_for_addons_list.do", method = RequestMethod.GET)
@@ -297,7 +292,7 @@ public class XmlRepositoryEditorController {
 			mLogger.warn(e.toString(), e);
 			modelMap.put("objException", e);
 		}
-		return "repository/xml/repositoryName/xml_editor_for_addons_list";
+		return "admin/repository/xml/repositoryName/xml_editor_for_addons_list";
 	}
 
 	@RequestMapping(value = "/xml_editor_for_addons_list.do", method = RequestMethod.POST)
@@ -310,11 +305,11 @@ public class XmlRepositoryEditorController {
 			}
 			xmlRepositoryEditorService.updateSdkAddonSiteURLs(repositoryName, id, sdkAddonSites);
 		} catch (Exception e) {
-			String lStrViewPath = xml_editor_redirector(modelMap, repositoryName, id);
 			mLogger.warn(e.toString(), e);
+			String lStrViewPath = xml_editor_redirector(modelMap, repositoryName, id);
 			modelMap.put("objException", e);
 			return lStrViewPath;
 		}
-		return "redirect:/repository/xml/" + repositoryName + "/";
+		return "redirect:/admin/repository/xml/" + repositoryName + "/";
 	}
 }

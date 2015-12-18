@@ -8,7 +8,7 @@
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
 <div class="container">
-    <form class="card" action="repository/xml/${xmlRepository.name}/deletion.do" method="post">
+    <form class="card" action="admin/repository/xml/${xmlRepository.name}/deletion.do" method="post">
         <div class="card-content" style="padding-top:0;">
             <div class="row" style="margin-bottom:0;">
                 <div class="card-title col s12 red-text text-darken-4">Delete XML file</div>
@@ -38,7 +38,7 @@
             <button type="submit" class="btn btn-less-padding waves-effect waves-light red white-text">
                 <i class="material-icons left">delete</i>Delete
             </button>
-            <a href="repository/xml/${xmlRepository.name}/" style="margin-right: 0;"
+            <a href="admin/repository/xml/${xmlRepository.name}/" style="margin-right: 0;"
                class="btn btn-less-padding waves-effect white grey-text text-darken-4">Cancel</a>
         </div>
     </form>

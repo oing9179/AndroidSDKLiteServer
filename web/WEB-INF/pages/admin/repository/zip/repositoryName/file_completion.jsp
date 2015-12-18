@@ -24,7 +24,7 @@
             <div class="row">
                 <div class="col s12 right-align">
                     <form id="formGetAllArchives" method="post"
-                          action="/repository/zip/${zipRepository.name}/get_all_archives.do">
+                          action="admin/repository/zip/${zipRepository.name}/get_all_archives.do">
                         <input id="checkBoxIncludeSysLinux" name="isIncludeSysLinux" type="checkbox" class="filled-in"/>
                         <label for="checkBoxIncludeSysLinux" title="Include Linux archives.">Linux</label>
                         <input id="checkBoxIncludeSysMacOSX" name="isIncludeSysOSX" type="checkbox" class="filled-in"/>

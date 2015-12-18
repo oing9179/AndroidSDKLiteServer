@@ -1,5 +1,6 @@
 package oing.webapp.android.sdkliteserver.controller;
 
+import oing.webapp.android.sdkliteserver.misc.ApplicationConstants;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryListService;
 import oing.webapp.android.sdkliteserver.service.ZipRepositoryListService;
 import org.slf4j.Logger;
@@ -15,7 +16,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/dashboard/")
+@RequestMapping("/admin/dashboard/")
 public class DashboardController {
 	private static final Logger mLogger = LoggerFactory.getLogger(DashboardController.class);
 	@Autowired
@@ -32,7 +33,7 @@ public class DashboardController {
 			mLogger.warn(e.toString(), e);
 			modelMap.put("objException", e);
 		}
-		return "dashboard/index";
+		return "admin/dashboard/index";
 	}
 
 	@RequestMapping(value = "/deploy.do", method = RequestMethod.GET)
@@ -52,6 +53,6 @@ public class DashboardController {
 			modelMap.put("objException", e);
 			return lStrViewPath;
 		}
-		return "redirect:/dashboard/";
+		return "redirect:/admin/dashboard/";
 	}
 }

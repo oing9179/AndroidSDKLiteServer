@@ -38,10 +38,19 @@ public class ConfigurationUtil implements ServletContextAware {
 	}
 
 	// ---------- Quick access methods ----------
+	public static File getWebappRootDir() {
+		return new File(servletContext.getRealPath("/"));
+	}
+
+	private static final String TEXT_ABSOLUTE_COLON = "absolute:";
+
 	public static File getDataRepositoryDir() {
 		String lStrLocation = get("data_repository.location");
-		if (!lStrLocation.startsWith("/")) lStrLocation = servletContext.getRealPath("/" + lStrLocation);
-		return new File(lStrLocation);
+		if (lStrLocation.startsWith(TEXT_ABSOLUTE_COLON)) {
+			return new File(lStrLocation.substring(TEXT_ABSOLUTE_COLON.length() + 1));
+		} else {
+			return new File(getWebappRootDir(), "/" + lStrLocation);
+		}
 	}
 
 	public static File getXmlRepositoryDir(String repositoryName) {
