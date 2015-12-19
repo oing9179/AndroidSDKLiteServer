@@ -1,3 +1,4 @@
+-- Database for stores repository informations in "WEBAPP_ROOT/DataRepository/main.sqlite3".
 -- Execute the sql to initialize the database.
 -- Minimum sqlite version: 3
 
@@ -30,6 +31,7 @@ CREATE TABLE "main"."repo_zip" (
 
 -- Catches the result after parse the xml file.
 -- The table name is "sdk_archive" cause an element called "<sdk:archive>" written in the xml file.
+-- This table probably useless since I doest not uses it form I starts to write this web app.
 CREATE TABLE "main"."sdk_archive" (
   "id"               INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   "id_repo_xml_file" INTEGER                           NOT NULL,

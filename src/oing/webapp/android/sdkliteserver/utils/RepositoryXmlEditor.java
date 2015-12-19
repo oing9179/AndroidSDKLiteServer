@@ -13,6 +13,21 @@ import java.util.List;
 
 /**
  * A xml parser for general sdk-repository like "repository-11.xml".
+ *
+ * The mechanism of how "Android SDK Manager(SdkMgr for short)" works:<br/>
+ * 1. SdkMgr try to fetch 2 of xml files:<br/>
+ *     https://dl.google.com/android/repository/addons_list-2.xml<br/>
+ *     https://dl.google.com/android/repository/repository-12.xml<br/>
+ * 2. Go dive into "addons_list-2.xml", we could found some other xml files, we call it "Addon Sites".<br/>
+ * 3. Put "addons_list-2.xml" for a while, the check out all of the remaining xml files,
+ *    a element called "&lt;sdk:url&gt;" that is what we interested.<br/>
+ * 4. For example, if we got a "&lt;sdk:url&gt;" from repository-12.xml like this:<br/>
+ *     "android-ndk-r10e-linux-x86_64.zip"<br/>
+ *    Grab url where you download "repository-12.xml" and cutoff the xml file name, it should like this:<br/>
+ *     "https://dl.google.com/android/repository/"<br/>
+ *    Combine your zip file name, we got:<br/>
+ *     "https://dl.google.com/android/repository/android-ndk-r10e-linux-x86_64.zip"<br/>
+ * 5. SdkMgr do its work.<br/>
  */
 public class RepositoryXmlEditor {
 	private String mStrBaseURL = null;
@@ -160,8 +175,7 @@ public class RepositoryXmlEditor {
 	public List<SdkArchive> getSdkArchives(boolean prependBaseURL, boolean forceHttps) {
 		List<SdkArchive> list = getSdkArchives();
 
-		for (int i = 0, size = list.size(); i < size; i++) {
-			SdkArchive lSdkArchive = list.get(i);
+		for (SdkArchive lSdkArchive : list) {
 			String lStrURL = lSdkArchive.getUrl();
 
 			// concat base url

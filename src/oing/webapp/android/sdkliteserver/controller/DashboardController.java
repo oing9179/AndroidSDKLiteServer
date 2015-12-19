@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
+/**
+ * This controller does not do the "actual deployment-things",
+ * instead, this Controller just put 3 values to HttpSession Attribute,
+ * then {@link DataRepositoryController} will help "Android SDK Manager" to fetch repositories.
+ */
 @Controller
 @RequestMapping("/admin/dashboard/")
 public class DashboardController {

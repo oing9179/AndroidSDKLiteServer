@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * InputStream with HTTP header "Range" support.
+ */
 public class RangeFileInputStream extends FileInputStream {
 	private final long FILE_RANGE_START;
 	private final long FILE_RANGE_END;

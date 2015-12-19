@@ -13,6 +13,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * A xml parser designed for "addons_list-2.xml" only.<br/>
+ * <br/>
+ * This class uses the same mechanism as {@link RepositoryXmlEditor},
+ * But we just need "&lt;sdk:name&gt;" and "&lt;sdk:url&gt;" instead.
+ */
 public class AddonsListXmlEditor {
 	private String mStrBaseURL = null;
 	private File mFileDocument = null;
@@ -42,8 +48,8 @@ public class AddonsListXmlEditor {
 			Element lElement = iterator.next();
 			SdkAddonSite lSdkAddonSite = new SdkAddonSite();
 			lSdkAddonSite.setType(SdkAddonSite.Type.forString(lElement.getName()));
-			lSdkAddonSite.setUrl(lElement.elementText("url"));
-			lSdkAddonSite.setName(lElement.elementText("name"));
+			lSdkAddonSite.setUrl(lElement.elementText("url"));// <sdk:url>
+			lSdkAddonSite.setName(lElement.elementText("name"));// <sdk:name>
 			lListSdkAddonSites.add(lSdkAddonSite);
 		}
 		return lListSdkAddonSites;

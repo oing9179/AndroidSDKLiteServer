@@ -4,6 +4,11 @@ import oing.webapp.android.sdkliteserver.io.LimitedBandwidthInputStream;
 
 public class ApplicationConstants {
 	/**
+	 * Session attribute for {@link oing.webapp.android.sdkliteserver.controller.interceptor.AdminAuthHandlerInterceptorAdapter}
+	 * In Unix-Timestamp.
+	 */
+	public static final String KEY_SESSION_EXPIRES_ON = "session_expires_on";
+	/**
 	 * ApplicationContext attribute key for "repository_xml_id".
 	 * Actual data type: Long
 	 */

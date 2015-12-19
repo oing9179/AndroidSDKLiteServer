@@ -30,6 +30,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Redirect requests for "Android SDK Manager".
+ */
 @Controller
 @RequestMapping("/android/repository/")
 public class DataRepositoryController {
@@ -57,6 +60,11 @@ public class DataRepositoryController {
 		}
 	}
 
+	/**
+	 * Android SDK Manager fetches XML files from here.
+	 *
+	 * @return XML file content or 404.
+	 */
 	private ResponseEntity acceptXmlDownload(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
 		File lFileXml;
 		{
@@ -76,6 +84,11 @@ public class DataRepositoryController {
 		return new ResponseEntity<>(inputStreamResource, lHttpHeaders, HttpStatus.OK);
 	}
 
+	/**
+	 * Android SDK Manager fetches file from here, mostly ZIP files.
+	 *
+	 * @return File content as binary-stream or 404.
+	 */
 	private ResponseEntity acceptAnythingDownload(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, HttpSessionRequiredException {
 		final HashMap<String, String> lMapRequestHeaders = getHeaders(request);

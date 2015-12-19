@@ -7,13 +7,21 @@
 </head>
 <body>
 <%@ include file="common/navbar_materialize.jsp" %>
-basePath=<%=basePath%><br/>
-contextPath=<%=contextPath%><br/>
-userAgent=<%=request.getHeader("user-agent")%><br/>
-remotePort=<%=request.getRemoteHost()%><br/>
-一只敏捷的棕色狐狸跳过一条懒惰的狗.<br/>
-<button class="btn btn-info waves-effect waves-light">
-    <i class="material-icons left">send</i>Hello world
-</button>
+<div class="container">
+    <div class="card">
+        <div class="card-content" style="padding-top:0;">
+            <span class="card-title">Welcome</span>
+            <div class="divider" style="margin:0 -20px;"></div>
+            <h5>I'm a user and I want to use this website.</h5>
+            Ask for master of this website, then you will get a navigator.<br/><br/>
+            <h5>I'm the f*cking webmaster!</h5>
+            Just login and do what fu*k you want!<br/>
+            <span style="font-size:0.6em;">(OK, I admit that I am a little lazy.)</span>
+        </div>
+        <div class="center-align" style="padding:6px 0 3px 0;">
+            <label class="my-badge indigo white-text">Major developer: oing9179</label>
+        </div>
+    </div>
+</div>
 </body>
 </html>
