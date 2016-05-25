@@ -1,0 +1,7 @@
+<common:site-list>
+    <!-- One example explains everything. -->
+    <site xsi:type="sdk:sysImgSiteType|sdk:addonSiteType">
+        <displayName>Google API add-on System Images</displayName>
+        <url>sys-img/google_apis/sys-img2-1.xml</url>
+    </site>
+</common:site-list>

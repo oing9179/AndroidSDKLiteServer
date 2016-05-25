@@ -17,7 +17,8 @@
         <div class="card-content">
             <span class="card-title red-text text-darken-4">Delete XML Repository</span>
             <div class="divider" style="margin: 0 -20px;"></div>
-            <h5 class="red-text text-darken-4 center-align">You are going to delete xml repository: ${xmlRepository.name}</h5>
+            <h5 class="red-text text-darken-4 center-align">You are going to delete xml
+                repository: ${xmlRepository.name}</h5>
             <div class="row" style="margin-bottom:0;">
                 <span class="col s12 m6 l6">Date of create:
                     <fmt:formatDate value="${xmlRepository.dateCreation}" pattern="yyyy-MM-dd HH:mm:ss"/>
@@ -31,14 +32,20 @@
                 <div class="col s12 m12 l6" style="padding-top: 10px;">
                     Read below before delete this repository:
                     <ol>
-                        <li class="red-text text-darken-4">All files in this xml repository will be deleted and UNRECOVERABLE.</li>
-                        <li class="green-text text-darken-4">The zip repositories(and its files) who depends on this xml repository will safe.</li>
+                        <li class="red-text text-darken-4">All files in this xml repository will be deleted and
+                            UNRECOVERABLE.
+                        </li>
+                        <li class="green-text text-darken-4">The zip repositories(and its files) who depends on this xml
+                            repository will safe.
+                        </li>
                     </ol>
                 </div>
                 <!-- Table: zip repositories who depends on this xml repository -->
                 <div class="col s12 m12 l6">
                     <style type="text/css">
-                        #tableZipRepoDependencyList th,td{padding: 10px 5px;}
+                        #tableZipRepoDependencyList th, td {
+                            padding: 10px 5px;
+                        }
                     </style>
                     <table id="tableZipRepoDependencyList" class="bordered centered">
                         <thead>
@@ -48,10 +55,14 @@
                         </thead>
                         <tbody>
                         <c:if test="${zipRepositories!=null && zipRepositories.size()==0}">
-                            <tr class="green-text text-darken-4"><td>&lt;No one depends on it.&gt;</td></tr>
+                            <tr class="green-text text-darken-4">
+                                <td>&lt;No one depends on it.&gt;</td>
+                            </tr>
                         </c:if>
                         <c:forEach var="zipRepository" items="${zipRepositories}">
-                            <tr><td>${zipRepository.name}</td></tr>
+                            <tr>
+                                <td>${zipRepository.name}</td>
+                            </tr>
                         </c:forEach>
                         </tbody>
                     </table>

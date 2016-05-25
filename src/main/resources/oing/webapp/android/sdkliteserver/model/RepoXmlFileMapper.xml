@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RepoXmlFile">
+    <resultMap id="resultMap_RepoXmlFile_all" type="RepoXmlFile">
+        <id property="id" column="id"/>
+        <result property="idRepoXml" column="id_repo_xml"/>
+        <result property="fileName" column="file_name"/>
+        <result property="url" column="url"/>
+    </resultMap>
+
+    <sql id="RepoXmlFile_columns_full">`id`, `id_repo_xml`, `file_name`, `url`</sql>
+
+    <select id="selectByIdDependsRepoXmlId" parameterType="map" resultMap="resultMap_RepoXmlFile_all">
+        SELECT
+        <include refid="RepoXmlFile_columns_full"/>
+        FROM repo_xml_file
+        WHERE id=#{id} AND id_repo_xml=#{repoXmlId}
+    </select>
+
+    <select id="selectByFileNameDependsRepoXmlId" resultMap="resultMap_RepoXmlFile_all">
+        SELECT
+        <include refid="RepoXmlFile_columns_full"/>
+        FROM repo_xml_file
+        WHERE id_repo_xml=#{repoXmlId} AND file_name=#{name}
+    </select>
+
+    <select id="selectByRepoXmlId" resultMap="resultMap_RepoXmlFile_all">
+        SELECT
+        <include refid="RepoXmlFile_columns_full"/>
+        FROM repo_xml_file WHERE id_repo_xml=#{id}
+    </select>
+
+    <insert id="insert" parameterType="RepoXmlFile">
+        INSERT INTO repo_xml_file(id_repo_xml, file_name, url) VALUES (#{idRepoXml}, #{fileName}, #{url})
+    </insert>
+
+    <insert id="copyExistingXmlFilesIntoNewXmlRepo">
+        INSERT INTO repo_xml_file(id_repo_xml, file_name, url)
+        SELECT #{toId} as `id_repo_xml`,`file_name`,`url` FROM repo_xml_file WHERE `id_repo_xml`=#{fromId}
+    </insert>
+
+    <update id="updateById" parameterType="RepoXmlFile">
+        UPDATE repo_xml_file SET
+        id_repo_xml=#{idRepoXml}, file_name=#{fileName}, url=#{url}
+        WHERE id=#{id}
+    </update>
+
+    <delete id="deleteDependsRepoXmlId">
+        DELETE FROM repo_xml_file WHERE id_repo_xml=#{idRepoXml}
+    </delete>
+
+    <delete id="deleteById">
+        DELETE FROM repo_xml_file WHERE id=#{id}
+    </delete>
+</mapper>

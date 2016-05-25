@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/pages/common/jsp_header.jsp" %>
-<%@ page import="oing.webapp.android.sdkliteserver.misc.ApplicationConstants"%>
+<%@ page import="oing.webapp.android.sdkliteserver.misc.ApplicationConstants" %>
 <!DOCTYPE html>
 <html>
 <head>

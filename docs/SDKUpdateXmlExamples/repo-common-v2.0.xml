@@ -1,0 +1,47 @@
+<some:package>
+	<channel id="channel-[0-9]">Channel name like "stable", "beta" etc.</channel>
+	<!-- If obsolete=true appears in remotePackage as an attribute, that means this package was out dated -->
+	<remotePackage path="we;dont;need;this" obsolete="true">
+		<type-details xsi:type="something:someDetailsType">
+			<!-- Note: api-level is optional in some of type-details. -->
+			<api-level>xsd:int</api-level>
+		</type-details>
+		<revision>
+			<!-- Note: minor, micro and preview are optional. -->
+			<major>xsd:int</major>
+			<minor>xsd:int</minor>
+			<micro>xsd:int</micro>
+			<preview>xsd:int</preview>
+		</revision>
+		<display-name>Like "Android SDK Platform-Tools 24-rc2"</display-name>
+		<channelRef ref="channel-[0-9]"/>
+		<archives>
+			<archive>
+				<complete>
+					<!-- "complete" archive appears once and only once. -->
+					<size>xsd:long</size>
+					<checksum>SHA1 checksum</checksum>
+					<url>just/put/url/here.zip</url>
+				</complete>
+				<!-- element "patches" could appears once or not. -->
+				<patches>
+					<!-- element "patch" could appears at least once. -->
+					<patch>
+						<based-on>
+							<!-- Note: minor, micro and preview are optional. -->
+							<major>xsd:int</major>
+							<minor>xsd:int</minor>
+							<micro>xsd:int</micro>
+							<preview>xsd:int</preview>
+						</based-on>
+						<size>xsd:long</size>
+						<checksum>SHA1 checksum</checksum>
+						<url>just/put/url/here.zip</url>
+					</patch>
+				</patches>
+				<host-os>xsd:string:linux|macosx|windows</host-os>
+				<host-bits>xsd:int:32|64</host-bits>
+			</archive>
+		</archives>
+	</remotePackage>
+</some:package>

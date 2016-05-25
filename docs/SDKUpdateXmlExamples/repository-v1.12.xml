@@ -1,0 +1,38 @@
+<sdk:sdk-repository xmlns:sdk="http://schemas.android.com/sdk/android/repository/12">
+	<!-- sdk:<something> can be replaced by
+	{
+		repository-<n>.xml: platform, source, tool, platform-tool, build-tool, doc, sample, ndk, lldb,
+		addon<blah>.xml: add-on, extra,
+		sys-img<blah>.xml: system-image
+	}
+	-->
+	<sdk:something>
+		<!-- Note: sdk:api-level is optional. -->
+		<sdk:api-level>xsd:int</sdk:api-level>
+		<!-- Note: sdk:version is optional. -->
+		<sdk:version>xsd:string</sdk:version>
+		<!-- Note: sdk:revision is optional; Two types of sdk:revision. -->
+		<sdk:revision>xsd:int</sdk:revision>
+		<sdk:revision>
+			<!-- Note: minor, micro and preview are optional. -->
+			<major>xsd:int</major>
+			<minor>xsd:int</minor>
+			<micro>xsd:int</micro>
+			<preview>xsd:int</preview>
+		</sdk:revision>
+		<!-- Note: sdk:description and sdk:name-display are optional. -->
+		<sdk:name-display>xsd:string</sdk:name-display>
+		<sdk:description>xsd:string</sdk:description>
+		<sdk:obsolete/><!-- This element represents this package is outdated if it exists. -->
+		<sdk:archives>
+			<sdk:archive>
+				<!-- Note: host-os and host-bits are optional. -->
+				<sdk:size>xsd:long</sdk:size>
+				<sdk:checksum type="sha1">xsd:string</sdk:checksum>
+				<sdk:url>xsd:string</sdk:url>
+				<sdk:host-os>xsd:enum: linux|macosx|windows</sdk:host-os>
+				<sdk:host-bits>xsd:enum: 32|64</sdk:host-bits>
+			</sdk:archive>
+		</sdk:archives>
+	</sdk:something>
+</sdk:sdk-repository>

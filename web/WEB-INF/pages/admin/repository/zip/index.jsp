@@ -41,7 +41,7 @@
                         <td>${varStatus.index+1}</td>
                         <td class="truncate-nonblock" title="${zipRepository.name}">${zipRepository.name}</td>
                         <td class="hide-on-small-and-down" title="${zipRepository.repoXml_name}">
-                            ${zipRepository.repoXml_name}
+                                ${zipRepository.repoXml_name}
                         </td>
                         <td class="hide-on-med-and-down">
                             <fmt:formatDate value="${zipRepository.dateLastModified}" pattern="yyyy-MM-dd HH:mm:ss"/>

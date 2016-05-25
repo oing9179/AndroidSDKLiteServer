@@ -26,8 +26,13 @@
             <div class="divider"></div>
             <!-- card content area -->
             <style type="text/css">
-                #tableRepoList thead th:nth-last-child(2) { text-align: right; }
-                #tableRepoList tbody td:nth-last-child(2) { text-align: right; }
+                #tableRepoList thead th:nth-last-child(2) {
+                    text-align: right;
+                }
+
+                #tableRepoList tbody td:nth-last-child(2) {
+                    text-align: right;
+                }
             </style>
             <table id="tableRepoList" class="striped table-in-a-card" style="table-layout:fixed;">
                 <thead>
