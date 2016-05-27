@@ -4,7 +4,7 @@
 <html>
 <head>
     <%@ include file="/WEB-INF/pages/common/html_head.jsp" %>
-    <script type="text/javascript" src="static/js/sha.js"></script>
+    <script type="text/javascript" src="static/js/sha.min.js"></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>

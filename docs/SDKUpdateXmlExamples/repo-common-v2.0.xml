@@ -1,6 +1,9 @@
 <some:package>
 	<channel id="channel-[0-9]">Channel name like "stable", "beta" etc.</channel>
-	<!-- If obsolete=true appears in remotePackage as an attribute, that means this package was out dated -->
+	<!--
+		Attribute "obsoleted" is not required.
+		If obsolete=true appears, that means this package was out dated.
+	-->
 	<remotePackage path="we;dont;need;this" obsolete="true">
 		<type-details xsi:type="something:someDetailsType">
 			<!-- Note: api-level is optional in some of type-details. -->

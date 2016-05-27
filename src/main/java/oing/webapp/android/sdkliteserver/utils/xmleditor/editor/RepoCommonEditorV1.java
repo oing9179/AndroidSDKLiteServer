@@ -3,13 +3,16 @@ package oing.webapp.android.sdkliteserver.utils.xmleditor.editor;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
 import oing.webapp.android.sdkliteserver.utils.xmleditor.*;
 import org.apache.commons.io.FileUtils;
-import org.dom4j.*;
+import org.apache.commons.io.IOUtils;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,23 +32,17 @@ public class RepoCommonEditorV1 implements IRepoCommonEditor {
 
 	@Override
 	public List<RemotePackage> getAllRemotePackages() {
-		List<Element> lListElements;
-		{
-			XPath lXPathSdkArchives = DocumentHelper.createXPath("//sdk:archives");
-			HashMap<String, String> lMapNamespaceURLs = new HashMap<>();
-			lMapNamespaceURLs.put("sdk", mDocument.getRootElement().getNamespaceURI());
-			lXPathSdkArchives.setNamespaceURIs(lMapNamespaceURLs);
-			//noinspection unchecked
-			lListElements = (List<Element>) lXPathSdkArchives.selectNodes(mDocument.getRootElement());
-		}
+		//noinspection unchecked
+		List<Element> lListElements = (List<Element>)
+				DocumentHelper.createXPath("/sdk-repository/*/sdk:archives").selectNodes(mDocument);
 		ArrayList<RemotePackage> lListRemotePackages = new ArrayList<>(lListElements.size());
 		for (int i = 0, size = lListElements.size(); i < size; i++) {
 			Element lElement = lListElements.get(i).getParent();
 			Integer lnApiLevel;
 			String lStrRevision, lStrChannel = "stable", lStrDisplayName;
-			Boolean lzIsObsoleted = false;
+			Boolean lzIsObsoleted;
 			List<Archive> lListArchives = new LinkedList<>();
-			RemotePackage lRemotePackage = null;
+			RemotePackage lRemotePackage;
 
 			{
 				// Parse api-level to int or null.
@@ -94,11 +91,11 @@ public class RepoCommonEditorV1 implements IRepoCommonEditor {
 					.baseUrl(mStrXmlDirUrl).displayName(lStrDisplayName).revision(lStrRevision).channel(lStrChannel)
 					.apiLevel(lnApiLevel).isObsoleted(lzIsObsoleted).build();
 			{
-				// Parse "<sdk:archives>"
+				// Parse "sdk:archives"
 				//noinspection unchecked
 				List<Element> lListElementArchives = lElement.element("archives").elements("archive");
 				for (Element element : lListElementArchives) {
-					CompleteArchive archive = (CompleteArchive) new CompleteArchive.Builder(lRemotePackage)
+					CompleteArchive archive = new CompleteArchive.Builder(lRemotePackage)
 							.size(Long.parseLong(element.elementText("size")))
 							.checksum(element.elementText("checksum"))
 							.url(element.elementText("url"))
@@ -116,15 +113,10 @@ public class RepoCommonEditorV1 implements IRepoCommonEditor {
 
 	@Override
 	public void updateArchivesUrl(List<String> listUrls) {
-		List<Element> lListElementURLs;
-		{
-			XPath lXPathURLs = DocumentHelper.createXPath("//sdk:url");
-			HashMap<String, String> lMapNamespaceURLs = new HashMap<>();
-			lMapNamespaceURLs.put("sdk", mDocument.getRootElement().getNamespaceURI());
-			lXPathURLs.setNamespaceURIs(lMapNamespaceURLs);
-			//noinspection unchecked
-			lListElementURLs = (List<Element>) lXPathURLs.selectNodes(mDocument);
-		}
+		//noinspection unchecked
+		List<Element> lListElementURLs = (List<Element>)
+				DocumentHelper.createXPath("/sdk-repository/*/sdk:archives/sdk:archive/sdk:url")
+						.selectNodes(mDocument);
 		if (lListElementURLs.size() != listUrls.size()) {
 			throw new IllegalArgumentException(
 					"Count of URLs does not match xml elements, desired: " + lListElementURLs.size() + ", give: " + listUrls.size());
@@ -146,10 +138,7 @@ public class RepoCommonEditorV1 implements IRepoCommonEditor {
 			writer = new FileWriter(target);
 			mDocument.write(writer);
 		} finally {
-			if (writer != null) {
-				//noinspection ThrowFromFinallyBlock
-				writer.close();
-			}
+			IOUtils.closeQuietly(writer);
 		}
 	}
 }

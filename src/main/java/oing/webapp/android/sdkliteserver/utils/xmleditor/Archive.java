@@ -90,7 +90,7 @@ public abstract class Archive {
 		isExisted = existed;
 	}
 
-	public abstract static class Builder {
+	protected abstract static class Builder {
 		private RemotePackage remotePackageRef;
 		private Long size;
 		private String checksum;
