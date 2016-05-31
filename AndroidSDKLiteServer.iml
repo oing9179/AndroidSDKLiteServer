@@ -9,9 +9,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/web" relative="/" />
         </webroots>
-        <sourceRoots>
-          <root url="file://$MODULE_DIR$/src" />
-        </sourceRoots>
+        <sourceRoots />
       </configuration>
     </facet>
     <facet type="Spring" name="Spring">
@@ -38,7 +36,7 @@
     <orderEntry type="library" name="log4j-2.3" level="project" />
     <orderEntry type="library" name="slf4j-api-1.7.12" level="project" />
     <orderEntry type="library" name="apache-commons" level="project" />
-    <orderEntry type="library" name="dom4j-1.6.1" level="project" />
     <orderEntry type="library" name="servlet-api" level="project" />
+    <orderEntry type="library" name="dom4j-2.0.0" level="project" />
   </component>
 </module>

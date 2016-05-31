@@ -30,16 +30,13 @@ public class RepoCommonEditorV2 implements IRepoCommonEditor {
 	}
 
 	@Override
-	public List<RemotePackage> getAllRemotePackages() {
-		List<Element> lListElementRemotePackage;
+	public List<RemotePackage> extractAll() {
+		List<Node> lListNodeRemotePackage = DocumentHelper.createXPath("/*/remotePackage").selectNodes(mDocument);
 		List<RemotePackage> lListRemotePackage = new LinkedList<>();
-		//noinspection unchecked
-		lListElementRemotePackage = (List<Element>)
-				DocumentHelper.createXPath("/sdk-repository/remotePackage").selectNodes(mDocument);
 		// Start parse XML file.
-		lListRemotePackage.addAll(
-				lListElementRemotePackage.stream().map(this::element2RemotePackage).collect(Collectors.toList())
-		);
+		lListRemotePackage.addAll(lListNodeRemotePackage.stream().map(
+				node -> element2RemotePackage((Element) node)
+		).collect(Collectors.toList()));
 
 		return lListRemotePackage;
 	}
@@ -88,7 +85,7 @@ public class RepoCommonEditorV2 implements IRepoCommonEditor {
 		// Element "channelRef"
 		lStrChannel = mMapChannelRefs.get(element.element("channelRef").attributeValue("ref"));
 		// Build RemotePackage object
-		lRemotePackage = new RemotePackage.Builder().type(lStrType).baseUrl(mStrXmlDirUrl).displayName(lStrDisplayName)
+		lRemotePackage = new RemotePackage.Builder().type(lStrType).sourceUrl(mStrXmlDirUrl).displayName(lStrDisplayName)
 				.revision(lStrRevision).channel(lStrChannel).apiLevel(lnApiLevel).isObsoleted(lzIsObsoleted).build();
 		// Element "archives"
 		lRemotePackage.setArchives(element2Archives(element.element("archives"), lRemotePackage));
@@ -101,8 +98,7 @@ public class RepoCommonEditorV2 implements IRepoCommonEditor {
 
 		List<Archive> lListArchives = new LinkedList<>();
 		// Elements "archive"
-		//noinspection unchecked
-		List<Element> lListElementArchive = (List<Element>) element.elements("archive");
+		List<Element> lListElementArchive = element.elements("archive");
 
 		// Elements "archives/archive"
 		for (Element lElementArchive : lListElementArchive) {
@@ -121,8 +117,7 @@ public class RepoCommonEditorV2 implements IRepoCommonEditor {
 			Element lElementPatches = lElementArchive.element("patches");
 			if (lElementPatches != null) {
 				// Elements "patches/patch"
-				//noinspection unchecked
-				lListArchives.addAll(((List<Element>) lElementPatches.elements("patch")).stream().map(
+				lListArchives.addAll(lElementPatches.elements("patch").stream().map(
 						lElementPatch -> new PatchArchive.Builder(remotePackageRef)
 								.size(Long.parseLong(lElementPatch.elementText("size")))
 								.checksum(lElementPatch.elementText("checksum"))
@@ -137,16 +132,15 @@ public class RepoCommonEditorV2 implements IRepoCommonEditor {
 
 	@Override
 	public void updateArchivesUrl(List<String> listUrls) {
-		//noinspection unchecked
-		List<Element> lListElementUrl = (List<Element>)
-				DocumentHelper.createXPath("/sdk-repository/remotePackage/archives/archive//url")
-						.selectNodes(mDocument);
-		if (lListElementUrl.size() != listUrls.size()) {
+		List<Node> lListNodeUrl = DocumentHelper.createXPath("/*/remotePackage/archives/archive//url")
+				.selectNodes(mDocument);
+		if (lListNodeUrl.size() != listUrls.size()) {
 			throw new IllegalArgumentException(
-					"Count of URLs does not match xml elements, desired: " + lListElementUrl.size() + ", give: " + listUrls.size());
+					"Count of URLs does not match xml elements, desired: " + lListNodeUrl.size()
+							+ ", give: " + listUrls.size());
 		}
-		for (int i = 0, size = lListElementUrl.size(); i < size; i++) {
-			lListElementUrl.get(i).setText(listUrls.get(i));
+		for (int i = 0, size = lListNodeUrl.size(); i < size; i++) {
+			lListNodeUrl.get(i).setText(listUrls.get(i));
 		}
 	}
 
@@ -156,10 +150,10 @@ public class RepoCommonEditorV2 implements IRepoCommonEditor {
 	}
 
 	@Override
-	public void save(File target) throws IOException {
+	public void save(File targetFile) throws IOException {
 		FileWriter writer = null;
 		try {
-			writer = new FileWriter(target);
+			writer = new FileWriter(targetFile);
 			mDocument.write(writer);
 		} finally {
 			IOUtils.closeQuietly(writer);
@@ -171,11 +165,10 @@ public class RepoCommonEditorV2 implements IRepoCommonEditor {
 	 */
 	private void initChannelRefs() {
 		mMapChannelRefs = new HashMap<>();
-		//noinspection unchecked
-		List<Element> lListElementChannels = (List<Element>)
-				DocumentHelper.createXPath("/sdk-repository/channel").selectNodes(mDocument.getRootElement());
-		for (Element lElementChannel : lListElementChannels) {
-			mMapChannelRefs.put(lElementChannel.attributeValue("id"), lElementChannel.getText());
+		List<Node> lListNodeChannels = DocumentHelper.createXPath("/sdk-repository/channel").selectNodes(mDocument);
+		for (Node node : lListNodeChannels) {
+			Element element = (Element) node;
+			mMapChannelRefs.put(element.attributeValue("id"), element.getText());
 		}
 	}
 }

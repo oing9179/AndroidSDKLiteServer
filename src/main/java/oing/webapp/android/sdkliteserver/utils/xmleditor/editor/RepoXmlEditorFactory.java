@@ -29,11 +29,11 @@ public final class RepoXmlEditorFactory {
 		throw new IllegalArgumentException("Unknown repo-common xml: " + url);
 	}
 
-	public static IAddonsListEditor createAddonsListEditor(String url, File xmlFile) {
+	public static IRepoSitesEditor createAddonsListEditor(String url, File xmlFile) throws IOException, DocumentException {
 		String lStrFileName = UrlTextUtil.getFileName(url);
 
 		if (lStrFileName.equals("addons_list-3.xml")) {
-			return new AddonsListEditorV3();
+			return new RepoSitesEditorV3(url, xmlFile);
 		}
 		throw new IllegalArgumentException("Unknown addons_list xml: " + url);
 	}

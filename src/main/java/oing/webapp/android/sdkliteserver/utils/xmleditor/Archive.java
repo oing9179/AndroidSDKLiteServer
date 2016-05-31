@@ -55,7 +55,7 @@ public abstract class Archive {
 
 	@JSONField(deserialize = false)
 	public String getAbsoluteUrl() {
-		return UrlTextUtil.concat(remotePackageRef.getBaseUrl(), getUrl());
+		return UrlTextUtil.concat(remotePackageRef.getSourceUrl(), getUrl());
 	}
 
 	public String getFileName() {

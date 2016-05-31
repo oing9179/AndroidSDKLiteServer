@@ -5,7 +5,7 @@ import java.util.List;
 
 public class RemotePackage {
 	private String type;
-	private String baseUrl;
+	private String sourceUrl;
 	private String displayName;
 	private String revision;
 	private String channel;
@@ -19,7 +19,7 @@ public class RemotePackage {
 
 	private RemotePackage(Builder builder) {
 		this.type = builder.type;
-		this.baseUrl = builder.baseUrl;
+		this.sourceUrl = builder.sourceUrl;
 		this.displayName = builder.displayName;
 		this.revision = builder.revision;
 		this.channel = builder.channel;
@@ -28,12 +28,12 @@ public class RemotePackage {
 		this.archives = builder.archives;
 	}
 
-	public String getBaseUrl() {
-		return baseUrl;
+	public String getSourceUrl() {
+		return sourceUrl;
 	}
 
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
+	public void setSourceUrl(String sourceUrl) {
+		this.sourceUrl = sourceUrl;
 	}
 
 	public String getType() {
@@ -94,7 +94,7 @@ public class RemotePackage {
 
 	public static class Builder {
 		private String type;
-		private String baseUrl;
+		private String sourceUrl;
 		private String displayName;
 		private String revision;
 		private String channel;
@@ -115,8 +115,8 @@ public class RemotePackage {
 			return this;
 		}
 
-		public Builder baseUrl(String value) {
-			this.baseUrl = value;
+		public Builder sourceUrl(String value) {
+			this.sourceUrl = value;
 			return this;
 		}
 

@@ -18,7 +18,7 @@
           <element id="library" level="project" name="apache-commons" />
           <element id="library" level="project" name="log4j-2.3" />
           <element id="library" level="project" name="slf4j-api-1.7.12" />
-          <element id="library" level="project" name="dom4j-1.6.1" />
+          <element id="library" level="project" name="dom4j-2.0.0" />
         </element>
       </element>
     </root>

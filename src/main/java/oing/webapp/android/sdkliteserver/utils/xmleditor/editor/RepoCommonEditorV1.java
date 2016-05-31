@@ -4,17 +4,17 @@ import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
 import oing.webapp.android.sdkliteserver.utils.xmleditor.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import org.apache.commons.lang3.Validate;
+import org.dom4j.*;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RepoCommonEditorV1 implements IRepoCommonEditor {
 	/**
@@ -31,98 +31,115 @@ public class RepoCommonEditorV1 implements IRepoCommonEditor {
 	}
 
 	@Override
-	public List<RemotePackage> getAllRemotePackages() {
-		//noinspection unchecked
-		List<Element> lListElements = (List<Element>)
-				DocumentHelper.createXPath("/sdk-repository/*/sdk:archives").selectNodes(mDocument);
-		ArrayList<RemotePackage> lListRemotePackages = new ArrayList<>(lListElements.size());
-		for (int i = 0, size = lListElements.size(); i < size; i++) {
-			Element lElement = lListElements.get(i).getParent();
-			Integer lnApiLevel;
-			String lStrRevision, lStrChannel = "stable", lStrDisplayName;
-			Boolean lzIsObsoleted;
-			List<Archive> lListArchives = new LinkedList<>();
-			RemotePackage lRemotePackage;
-
-			{
-				// Parse api-level to int or null.
-				String lStrApiLevel = lElement.elementText("api-level");
-				lnApiLevel = lStrApiLevel != null ? Integer.parseInt(lStrApiLevel) : null;
-			}
-			{
-				// Parse version and revision and combine them.
-				String version = lElement.elementText("version"), revision = "";
-				Element lElementRevision = lElement.element("revision");
-
-				if (lElementRevision != null) {
-					if (lElementRevision.elements().size() == 0) {
-						// revision is a number if there is no sub-elements in it.
-						revision = lElementRevision.getText();
-					} else {
-						// Otherwise, there will be 4 sub-elements.
-						revision = lElementRevision.elementText("major");// This element should be appear every time.
-						String lStrTemp = lElementRevision.elementText("minor");
-						if (lStrTemp != null) revision += "." + lStrTemp;
-						lStrTemp = lElementRevision.elementText("micro");
-						if (lStrTemp != null) revision += "." + lStrTemp;
-						lStrTemp = lElementRevision.elementText("preview");
-						if (lStrTemp != null) {
-							revision += "p" + lStrTemp;
-							lStrChannel = "preview";// Since we found element "preview".
-						}
-					}
-					revision = "r" + revision;
-				}
-				if (version != null) {
-					lStrRevision = version + "-" + revision;
-				} else {
-					lStrRevision = revision;
-				}
-			}
-			{
-				lStrDisplayName = lElement.elementText("name-display");
-				if (lStrDisplayName == null) lElement.elementText("description");
-			}
-			// This RemotePackage is obsoleted if element "obsolete" exists.
-			lzIsObsoleted = lElement.element("obsolete") != null;
-			// Build a RemotePackage
-			lRemotePackage = new RemotePackage.Builder()
-					.type(RemotePackageTypeV1.forString(lElement.getName()).getFriendlyName())
-					.baseUrl(mStrXmlDirUrl).displayName(lStrDisplayName).revision(lStrRevision).channel(lStrChannel)
-					.apiLevel(lnApiLevel).isObsoleted(lzIsObsoleted).build();
-			{
-				// Parse "sdk:archives"
-				//noinspection unchecked
-				List<Element> lListElementArchives = lElement.element("archives").elements("archive");
-				for (Element element : lListElementArchives) {
-					CompleteArchive archive = new CompleteArchive.Builder(lRemotePackage)
-							.size(Long.parseLong(element.elementText("size")))
-							.checksum(element.elementText("checksum"))
-							.url(element.elementText("url"))
-							.hostOs(HostOsType.forString(element.elementText("host-os")))
-							.hostBits(HostBitsType.forString(element.elementText("host-bits")))
-							.build();
-					lListArchives.add(archive);
-				}
-			}
-			lRemotePackage.setArchives(lListArchives);
-			lListRemotePackages.add(lRemotePackage);
+	public List<RemotePackage> extractAll() {
+		List<Node> lListNode;
+		{
+			XPath lXPath = DocumentHelper.createXPath("/*/sdk:*/sdk:archives");
+			lXPath.setNamespaceURIs(getNamespaceURIs());
+			lListNode = lXPath.selectNodes(mDocument);
 		}
+		List<RemotePackage> lListRemotePackages = new LinkedList<>();
+		lListRemotePackages.addAll(lListNode.stream().map(
+				node -> element2RemotePackage(node.getParent())
+		).collect(Collectors.toList()));
 		return lListRemotePackages;
+	}
+
+
+	private RemotePackage element2RemotePackage(Element element) {
+		/* We use Validate.isTrue instead of Validate.notNull, because we want a element that have a child element
+		 * named "archives". Validate.notNull throws "NullPointerException" which is doesn't make sense. */
+		Validate.isTrue(element.element("archives") != null, "Undesired element, given: " + element.getName());
+
+		Integer lnApiLevel;
+		String lStrRevision, lStrChannel = "stable", lStrDisplayName;
+		Boolean lzIsObsoleted;
+		RemotePackage lRemotePackage;
+
+		{
+			// Parse api-level to int or null.
+			String lStrApiLevel = element.elementText("api-level");
+			lnApiLevel = lStrApiLevel != null ? Integer.parseInt(lStrApiLevel) : null;
+		}
+		{
+			// Parse version and revision and combine them.
+			String version = element.elementText("version"), revision = "";
+			Element lElementRevision = element.element("revision");
+
+			if (lElementRevision != null) {
+				if (lElementRevision.elements().size() == 0) {
+					// revision is a number if there is no sub-elements in it.
+					revision = lElementRevision.getText();
+				} else {
+					// Otherwise, there will be 4 sub-elements.
+					revision = lElementRevision.elementText("major");// This element should be appear every time.
+					String lStrTemp = lElementRevision.elementText("minor");
+					if (lStrTemp != null) revision += "." + lStrTemp;
+					lStrTemp = lElementRevision.elementText("micro");
+					if (lStrTemp != null) revision += "." + lStrTemp;
+					lStrTemp = lElementRevision.elementText("preview");
+					if (lStrTemp != null) {
+						revision += "p" + lStrTemp;
+						lStrChannel = "preview";// Since we found element "preview".
+					}
+				}
+				revision = "r" + revision;
+			}
+			if (version != null) {
+				lStrRevision = version + "-" + revision;
+			} else {
+				lStrRevision = revision;
+			}
+		}
+		{
+			lStrDisplayName = element.elementText("name-display");
+			if (lStrDisplayName == null) element.elementText("description");
+		}
+		// This RemotePackage is obsoleted if element "obsolete" exists.
+		lzIsObsoleted = element.element("obsolete") != null;
+		// Build a RemotePackage
+		lRemotePackage = new RemotePackage.Builder()
+				.type(RemotePackageTypeV1.forString(element.getName()).getFriendlyName())
+				.sourceUrl(mStrXmlDirUrl).displayName(lStrDisplayName).revision(lStrRevision).channel(lStrChannel)
+				.apiLevel(lnApiLevel).isObsoleted(lzIsObsoleted).build();
+		// Convert element "archives" to List<Archive>.
+		lRemotePackage.setArchives(element2Archives(element.element("archives"), lRemotePackage));
+		return lRemotePackage;
+	}
+
+	private List<Archive> element2Archives(Element element, RemotePackage remotePackageRef) {
+		Validate.isTrue("archives".equals(element.getName()),
+				"Undesired element, desired: archives, given: " + element.getName());
+		List<Archive> lListArchives = new LinkedList<>();
+		// Parse "sdk:archives"
+		List<Element> lListElementArchives = element.elements("archive");
+		for (Element lElementArchive : lListElementArchives) {
+			CompleteArchive archive = new CompleteArchive.Builder(remotePackageRef)
+					.size(Long.parseLong(lElementArchive.elementText("size")))
+					.checksum(lElementArchive.elementText("checksum"))
+					.url(lElementArchive.elementText("url"))
+					.hostOs(HostOsType.forString(lElementArchive.elementText("host-os")))
+					.hostBits(HostBitsType.forString(lElementArchive.elementText("host-bits")))
+					.build();
+			lListArchives.add(archive);
+		}
+		return lListArchives;
 	}
 
 	@Override
 	public void updateArchivesUrl(List<String> listUrls) {
-		//noinspection unchecked
-		List<Element> lListElementURLs = (List<Element>)
-				DocumentHelper.createXPath("/sdk-repository/*/sdk:archives/sdk:archive/sdk:url")
-						.selectNodes(mDocument);
-		if (lListElementURLs.size() != listUrls.size()) {
-			throw new IllegalArgumentException(
-					"Count of URLs does not match xml elements, desired: " + lListElementURLs.size() + ", give: " + listUrls.size());
+		List<Node> lListNodeURL;
+		{
+			XPath lXPath = DocumentHelper.createXPath("/*/sdk:*/sdk:archives/sdk:archive/sdk:url");
+			lXPath.setNamespaceURIs(getNamespaceURIs());
+			lListNodeURL = lXPath.selectNodes(mDocument);
 		}
-		for (int i = 0, size = lListElementURLs.size(); i < size; i++) {
-			lListElementURLs.get(i).setText(listUrls.get(i));
+		if (lListNodeURL.size() != listUrls.size()) {
+			throw new IllegalArgumentException("Count of URLs does not match xml elements, "
+					+ "desired: " + lListNodeURL.size() + ", give: " + listUrls.size());
+		}
+		for (int i = 0, size = lListNodeURL.size(); i < size; i++) {
+			lListNodeURL.get(i).setText(listUrls.get(i));
 		}
 	}
 
@@ -132,13 +149,21 @@ public class RepoCommonEditorV1 implements IRepoCommonEditor {
 	}
 
 	@Override
-	public void save(File target) throws IOException {
+	public void save(File targetFile) throws IOException {
 		FileWriter writer = null;
 		try {
-			writer = new FileWriter(target);
+			writer = new FileWriter(targetFile);
 			mDocument.write(writer);
 		} finally {
 			IOUtils.closeQuietly(writer);
 		}
+	}
+
+	private Map<String, String> getNamespaceURIs() {
+		Map<String, String> lMapNamespaceURI = new HashMap<>();
+		for (Namespace namespace : mDocument.getRootElement().declaredNamespaces()) {
+			lMapNamespaceURI.put(namespace.getPrefix(), namespace.getURI());
+		}
+		return lMapNamespaceURI;
 	}
 }
