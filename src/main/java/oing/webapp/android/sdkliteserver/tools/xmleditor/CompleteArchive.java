@@ -1,4 +1,4 @@
-package oing.webapp.android.sdkliteserver.utils.xmleditor;
+package oing.webapp.android.sdkliteserver.tools.xmleditor;
 
 public class CompleteArchive extends Archive {
 	public CompleteArchive() {

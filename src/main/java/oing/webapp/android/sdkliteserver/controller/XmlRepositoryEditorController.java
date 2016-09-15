@@ -59,8 +59,8 @@ public class XmlRepositoryEditorController {
 	public String automatic_addition_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
 		try {
 			modelMap.put("xmlRepository", xmlRepositoryListService.getByName(repositoryName));
-			modelMap.put("url_addons_list_xml", ConfigurationUtil.get("url.addons_list_2_xml"));
-			modelMap.put("url_repository_xml", ConfigurationUtil.get("url.repository_11_xml"));
+			modelMap.put("url_addons_list_xml", ConfigurationUtil.get("url.repo_sites"));
+			modelMap.put("url_repository_xml", ConfigurationUtil.get("url.repo_common"));
 		} catch (Exception e) {
 			mLogger.info(e.toString(), e);
 			modelMap.put("objException", e);

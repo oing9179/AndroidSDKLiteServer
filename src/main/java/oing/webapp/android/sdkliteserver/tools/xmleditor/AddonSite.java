@@ -1,4 +1,4 @@
-package oing.webapp.android.sdkliteserver.utils.xmleditor;
+package oing.webapp.android.sdkliteserver.tools.xmleditor;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;

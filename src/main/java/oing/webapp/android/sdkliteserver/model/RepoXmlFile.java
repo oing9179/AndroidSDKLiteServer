@@ -6,6 +6,16 @@ public class RepoXmlFile {
 	private String fileName;
 	private String url;
 
+	public RepoXmlFile() {
+	}
+
+	private RepoXmlFile(Builder builder) {
+		this.id = builder.id;
+		this.idRepoXml = builder.idRepoXml;
+		this.fileName = builder.fileName;
+		this.url = builder.url;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -36,5 +46,36 @@ public class RepoXmlFile {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public static class Builder {
+		private Long id;
+		private Long idRepoXml;
+		private String fileName;
+		private String url;
+
+		public RepoXmlFile build() {
+			return new RepoXmlFile(this);
+		}
+
+		public Builder id(Long value) {
+			this.id = value;
+			return this;
+		}
+
+		public Builder idRepoXml(Long value) {
+			this.idRepoXml = value;
+			return this;
+		}
+
+		public Builder fileName(String value) {
+			this.fileName = value;
+			return this;
+		}
+
+		public Builder url(String value) {
+			this.url = value;
+			return this;
+		}
 	}
 }

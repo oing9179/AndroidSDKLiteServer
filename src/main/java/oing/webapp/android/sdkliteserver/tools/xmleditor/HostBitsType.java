@@ -1,4 +1,4 @@
-package oing.webapp.android.sdkliteserver.utils.xmleditor;
+package oing.webapp.android.sdkliteserver.tools.xmleditor;
 
 public enum HostBitsType {
 	Any(null), X86("32"), X86_64("64");

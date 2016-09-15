@@ -1,4 +1,4 @@
-package oing.webapp.android.sdkliteserver.utils.xmleditor;
+package oing.webapp.android.sdkliteserver.tools.xmleditor;
 
 public enum AddonSiteTypeV3 {
 	UNKNOWN_SITE_TYPE("unknown:unknownAddonSiteType", "UNKNOWN"),

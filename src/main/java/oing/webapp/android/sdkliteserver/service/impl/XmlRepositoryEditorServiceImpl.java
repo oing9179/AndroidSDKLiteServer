@@ -49,7 +49,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	@Override
 	public void automaticAddition(String repositoryName, boolean isPreferHttpsConnection, ProxyInfo proxyInfo,
 	                              AutomaticAdditionEventListener listener) throws Exception {
-		String URL_ADDONS_LIST_XML = ConfigurationUtil.get("url.addons_list_2_xml");
+		String URL_ADDONS_LIST_XML = ConfigurationUtil.get("url.repo_sites");
 		ArrayList<String> lListStrUrls = new ArrayList<>();
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
 
@@ -92,7 +92,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 				SdkAddonSite lSdkAddonSite = lListSdkAddonSites.get(i);
 				lListStrUrls.add(lSdkAddonSite.getUrl());
 				// Prepend index to prevent file name duplication.
-				/**
+				/*
 				 * i + 1: See: NOTE_0 in Step3.
 				 */
 				lSdkAddonSite.setUrl(i + "_" + UrlTextUtil.getFileName(lSdkAddonSite.getUrl()));
@@ -105,7 +105,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 		// Step 2: Fetch repository-11.xml and save it.
 		// Boring code, this is quite duplicated from Step3.
 		{
-			String lStrUrl = ConfigurationUtil.get("url.repository_11_xml");
+			String lStrUrl = ConfigurationUtil.get("url.repo_common");
 			lStrUrl = isPreferHttpsConnection ? UrlTextUtil.http2https(lStrUrl) : UrlTextUtil.https2http(lStrUrl);
 			listener.onPublish(0, "Fetching " + lStrUrl);
 			HttpResponse lHttpResponse = HttpRequest.get(lStrUrl)
@@ -137,7 +137,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 			if (lStrResponse.length() != 0) {
 				RepoXmlFile lRepoXmlFile = new RepoXmlFile();
 				lRepoXmlFile.setIdRepoXml(lRepoXml.getId());
-				/**
+				/*
 				 * NOTE_0: File rename.
 				 * File will be renamed to prevent name duplication, here is some file name after rename:
 				 * 	0_addon.xml
@@ -186,7 +186,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 
 	@Override
 	public void delete(String repositoryName, Long id, String name) throws IOException {
-		/**
+		/*
 		 * 1. Repository exists.
 		 * 2. Found a RepoXmlFile by id.
 		 * 3. Name from database equals to name from parameter.

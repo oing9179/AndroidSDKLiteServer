@@ -1,4 +1,4 @@
-package oing.webapp.android.sdkliteserver.utils.xmleditor;
+package oing.webapp.android.sdkliteserver.tools.xmleditor;
 
 /**
  * Remote package lookup for "repository-12.xml".

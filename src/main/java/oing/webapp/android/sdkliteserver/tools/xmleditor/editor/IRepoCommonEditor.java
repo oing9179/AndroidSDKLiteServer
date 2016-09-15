@@ -1,9 +1,9 @@
-package oing.webapp.android.sdkliteserver.utils.xmleditor.editor;
+package oing.webapp.android.sdkliteserver.tools.xmleditor.editor;
 
-import oing.webapp.android.sdkliteserver.utils.xmleditor.RemotePackage;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.RemotePackage;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -24,13 +24,7 @@ public interface IRepoCommonEditor {
 	void updateArchivesUrl(List<String> listUrls);
 
 	/**
-	 * Save XML file to local storage.
+	 * Write XML text to out.
 	 */
-	void save() throws IOException;
-
-	/**
-	 * Save XML file to another destination.
-	 * @param targetFile Destination file.
-	 */
-	void save(File targetFile) throws IOException;
+	void write(OutputStream out) throws IOException;
 }

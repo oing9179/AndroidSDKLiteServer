@@ -17,18 +17,18 @@
                   method="post" onsubmit="return false;" enctype="multipart/form-data">
                 <div class="row">
                     <!-- CheckBox: force https -->
-                    <div class="col switch s12 m12 l12" style="padding-top:12px;"
-                         title="NOTE: This feature will disabled when proxy type is socks.">
+                    <div class="col switch s12 m12 l12" style="padding-top:12px;">
                         <label style="position:relative; top:-2px;">
                             <input id="checkBoxForceHttps" name="isPreferHttpsConnection" type="checkbox"/>
                             <span class="lever"></span>
                         </label>Prefer HTTPS connection
                     </div>
                 </div>
-                <div class="row" style="margin:0; padding-top:12px;">
+                <!-- Disable proxy caused by jodd's http library doesn't support HTTPS through socks5. -->
+                <div class="row" style="margin:0; padding-top:12px; display: none;">
                     <div class="col s12 m12 l12 center-align">Server-side proxy settings</div>
                 </div>
-                <div class="row" style="margin-bottom: 0;">
+                <div class="row" style="margin-bottom: 0; display: none;">
                     <!-- Input field: proxy type -->
                     <div class="input-field col s12 m12 l3">
                         <select id="selectProxyInfo_type" name="proxyInfo.type" required="required">
@@ -51,7 +51,7 @@
                         <label for="textBoxProxyInfo_port">Proxy port</label>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" style="display: none;">
                     <!-- Input field: proxy user name(optional) -->
                     <div class="input-field col s12 m6 l6">
                         <input id="textBoxProxyInfo_userName" name="proxyInfo.userName" type="text"/>

@@ -1,15 +1,17 @@
-package oing.webapp.android.sdkliteserver.utils.xmleditor.editor;
+package oing.webapp.android.sdkliteserver.tools.xmleditor.editor;
 
+import oing.webapp.android.sdkliteserver.tools.xmleditor.*;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
-import oing.webapp.android.sdkliteserver.utils.xmleditor.*;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.dom4j.*;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,13 +23,15 @@ public class RepoCommonEditorV1 implements IRepoCommonEditor {
 	 * Where stores this xml file on internet.
 	 */
 	private final String mStrXmlDirUrl;
-	private File mFileXml;
 	private Document mDocument;
 
-	RepoCommonEditorV1(String url, File xmlFile) throws IOException, DocumentException {
+	public RepoCommonEditorV1(String url, InputStream inputStreamXmlContent) throws IOException, DocumentException {
+		this(url, inputStreamXmlContent, Charset.forName("UTF-8"));
+	}
+
+	public RepoCommonEditorV1(String url, InputStream inputStreamXmlContent, Charset charset) throws IOException, DocumentException {
 		mStrXmlDirUrl = UrlTextUtil.getDir(url);
-		mFileXml = xmlFile;
-		mDocument = DocumentHelper.parseText(FileUtils.readFileToString(mFileXml));
+		mDocument = DocumentHelper.parseText(IOUtils.toString(inputStreamXmlContent, charset));
 	}
 
 	@Override
@@ -144,19 +148,9 @@ public class RepoCommonEditorV1 implements IRepoCommonEditor {
 	}
 
 	@Override
-	public void save() throws IOException {
-		save(mFileXml);
-	}
-
-	@Override
-	public void save(File targetFile) throws IOException {
-		FileWriter writer = null;
-		try {
-			writer = new FileWriter(targetFile);
-			mDocument.write(writer);
-		} finally {
-			IOUtils.closeQuietly(writer);
-		}
+	public void write(OutputStream out) throws IOException {
+		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
+		writer.write(mDocument);
 	}
 
 	private Map<String, String> getNamespaceURIs() {

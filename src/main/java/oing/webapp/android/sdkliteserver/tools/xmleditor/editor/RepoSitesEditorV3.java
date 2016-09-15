@@ -1,16 +1,17 @@
-package oing.webapp.android.sdkliteserver.utils.xmleditor.editor;
+package oing.webapp.android.sdkliteserver.tools.xmleditor.editor;
 
+import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSite;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSiteTypeV3;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
-import oing.webapp.android.sdkliteserver.utils.xmleditor.AddonSite;
-import oing.webapp.android.sdkliteserver.utils.xmleditor.AddonSiteTypeV3;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,13 +19,15 @@ import java.util.Map;
 
 public class RepoSitesEditorV3 implements IRepoSitesEditor {
 	private final String mStrXmlDirUrl;
-	private File mFileXml;
 	private Document mDocument;
 
-	public RepoSitesEditorV3(String url, File xmlFile) throws IOException, DocumentException {
+	public RepoSitesEditorV3(String url, InputStream inputStreamXmlContent) throws IOException, DocumentException {
+		this(url, inputStreamXmlContent, Charset.forName("UTF-8"));
+	}
+
+	public RepoSitesEditorV3(String url, InputStream inputStreamXmlContent, Charset charset) throws IOException, DocumentException {
 		mStrXmlDirUrl = UrlTextUtil.getDir(url);
-		mFileXml = xmlFile;
-		mDocument = DocumentHelper.parseText(FileUtils.readFileToString(xmlFile));
+		mDocument = DocumentHelper.parseText(IOUtils.toString(inputStreamXmlContent, charset));
 	}
 
 	@Override
@@ -59,22 +62,9 @@ public class RepoSitesEditorV3 implements IRepoSitesEditor {
 	}
 
 	@Override
-	public void save() throws IOException {
-		save(mFileXml);
-	}
-
-	@Override
-	public void save(File targetFile) throws IOException {
-		XMLWriter writer = null;
-		try {
-			writer = new XMLWriter(new FileWriter(targetFile), OutputFormat.createPrettyPrint());
-			writer.write(mDocument);
-		} finally {
-			try {
-				if (writer != null) writer.close();
-			} catch (Exception ignore) {
-			}
-		}
+	public void write(OutputStream out) throws IOException {
+		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
+		writer.write(out);
 	}
 
 	private QName createQNameAttribute_type() {

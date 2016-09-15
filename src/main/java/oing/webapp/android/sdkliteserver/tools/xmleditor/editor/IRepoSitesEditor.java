@@ -1,9 +1,9 @@
-package oing.webapp.android.sdkliteserver.utils.xmleditor.editor;
+package oing.webapp.android.sdkliteserver.tools.xmleditor.editor;
 
-import oing.webapp.android.sdkliteserver.utils.xmleditor.AddonSite;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSite;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 public interface IRepoSitesEditor {
@@ -20,14 +20,7 @@ public interface IRepoSitesEditor {
 	void rebuild(List<AddonSite> listAddonSite);
 
 	/**
-	 * Save XML file to local storage.
-	 */
-	void save() throws IOException;
-
-	/**
 	 * Save XML file to another destination.
-	 *
-	 * @param targetFile Destination file.
 	 */
-	void save(File targetFile) throws IOException;
+	void write(OutputStream out) throws IOException;
 }

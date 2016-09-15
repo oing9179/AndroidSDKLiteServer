@@ -1,4 +1,4 @@
-package oing.webapp.android.sdkliteserver.utils.xmleditor;
+package oing.webapp.android.sdkliteserver.tools.xmleditor;
 
 /**
  * Types from repository2-*.xml on element /remotePackage/type-details.xsi:type.

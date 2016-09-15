@@ -12,7 +12,7 @@
             <transactionManager type="MANAGED">
                 <property name="closeConnection" value="false"/>
             </transactionManager>
-            <dataSource type="POOLED"></dataSource>
+            <dataSource type="POOLED"/>
         </environment>
     </environments>
     <mappers>

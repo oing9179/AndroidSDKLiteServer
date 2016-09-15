@@ -1,4 +1,4 @@
-package oing.webapp.android.sdkliteserver.utils.xmleditor;
+package oing.webapp.android.sdkliteserver.tools.xmleditor;
 
 public enum HostOsType {
 	Any(null), Linux("linux"), MacOSX("macosx"), Windows("windows");
