@@ -2,8 +2,9 @@ package oing.webapp.android.sdkliteserver.service;
 
 import jodd.http.ProxyInfo;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
-import oing.webapp.android.sdkliteserver.model.SdkAddonSite;
-import oing.webapp.android.sdkliteserver.model.SdkArchive;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSite;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.Archive;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.RemotePackage;
 import org.dom4j.DocumentException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,37 +58,37 @@ public interface XmlRepositoryEditorService {
 	void delete(String repositoryName, Long id, String name) throws IOException;
 
 	/**
-	 * Parse "addons_list-2.xml" from a specific repository, then return all of the {@link SdkAddonSite}
+	 * Parse "addons_list-3.xml" from a specific repository, then return all of the {@link AddonSite}s.
 	 *
 	 * @param repositoryName XML repository name where xml file lives in.
 	 * @param id             XML file id in database, we will find xml file only from {@code repositoryName}.
 	 */
-	List<SdkAddonSite> getSdkAddonSitesById(String repositoryName, Long id) throws IOException, DocumentException;
+	List<AddonSite> getAddonSitesById(String repositoryName, Long id) throws IOException, DocumentException;
 
 	/**
-	 * Parse a xml file from specific repository, then return all of the {@link SdkArchive}.
+	 * Parse a xml file from specific repository, then return all of the {@link Archive}.
 	 *
 	 * @param repositoryName XML repository name where xml file lives in.
 	 * @param id             XML file id in database, we will find xml file only from {@code repositoryName}.
 	 */
-	List<SdkArchive> getSdkArchivesById(String repositoryName, Long id) throws IOException, DocumentException;
+	List<RemotePackage> getRemotePackagesById(String repositoryName, Long id) throws IOException, DocumentException;
+
+	/**
+	 * Update URLs to "addons_list-3.xml" specially.
+	 * NOTE: All elements from "addons_list-3.xml" will REMOVED, then fill {@code addonSites} into xml file.
+	 *
+	 * @param repositoryName XML repository name where xml file lives in.
+	 * @param id             XML file id in database, we will find xml file only from {@code repositoryName}.
+	 * @param addonSites     The {@link AddonSite}s will replace into "addons_list-2.xml".
+	 */
+	void updateAddonSite(String repositoryName, Long id, List<AddonSite> addonSites) throws IOException, DocumentException;
 
 	/**
 	 * Update URLs to xml file
 	 *
 	 * @param repositoryName XML repository name where xml file lives in.
-	 * @param id             XML file id in database, we will find xml file only from {@code repositoryName}.
+	 * @param id             XML file id in database from given {@code repositoryName}.
 	 * @param urls           URLs that will update into xml file.
 	 */
-	void updateSdkArchiveURLs(String repositoryName, Long id, String[] urls) throws IOException, DocumentException;
-
-	/**
-	 * Update URLs to "addons_list-2.xml" specially.
-	 * NOTE: All elements from "addons_list-2.xml" will REMOVED, then fill {@code sdkAddonSites} in to xml file.
-	 *
-	 * @param repositoryName XML repository name where xml file lives in.
-	 * @param id             XML file id in database, we will find xml file only from {@code repositoryName}.
-	 * @param sdkAddonSites  The {@link SdkAddonSite}s will replace into "addons_list-2.xml".
-	 */
-	void updateSdkAddonSiteURLs(String repositoryName, Long id, List<SdkAddonSite> sdkAddonSites) throws IOException, DocumentException;
+	void updateArchiveURLs(String repositoryName, Long id, String[] urls) throws IOException, DocumentException;
 }

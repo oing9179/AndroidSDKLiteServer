@@ -52,10 +52,11 @@
                                 <tr>
                                     <td style="width:60px;">#</td>
                                     <td>Value</td>
+                                    <td style="width:60px;">Type</td>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <c:forEach var="sdkArchive" items="${sdkArchives}" varStatus="varStatus">
+                                <%-- <c:forEach var="sdkArchive" items="${sdkArchives}" varStatus="varStatus">
                                     <tr>
                                         <td>${varStatus.index+1}</td>
                                         <td>
@@ -63,6 +64,26 @@
                                                    data-original-url="${sdkArchive.url}" placeholder="${sdkArchive.url}"/>
                                         </td>
                                     </tr>
+                                </c:forEach> --%>
+                                <c:set var="lnIndex" value="${0}" scope="page"/>
+                                <c:forEach var="remotePackage" items="${remotePackages}">
+                                    <c:forEach var="archive" items="${remotePackage.archives}">
+                                        <tr>
+                                            <td>${lnIndex = lnIndex + 1}</td>
+                                            <td>
+                                                <input type="text" name="url" required="required" value="${archive.url}"
+                                                       data-original-url="${archive.url}" placeholder="${archive.url}"/>
+                                            </td>
+                                            <td>
+                                                <c:catch var="exception">
+                                                    <c:set var="lStrPackageType" value="Patch: ${archive.basedOn}" scope="page"/>
+                                                </c:catch>
+                                                <c:if test="${not empty exception}">
+                                                    <c:set var="lStrPackageType" value="Complete" scope="page"/>
+                                                </c:if>${lStrPackageType}
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
                                 </c:forEach>
                                 </tbody>
                             </table>

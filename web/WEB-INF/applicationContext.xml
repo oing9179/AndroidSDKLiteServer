@@ -63,7 +63,7 @@
     <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>
-                <bean class="oing.webapp.android.sdkliteserver.model.converter.StringToSdkAddonSiteTypeConverter"/>
+                <bean class="oing.webapp.android.sdkliteserver.controller.resolver.ModelRequestParamArgumentResolver.StringToAddonSiteTypeV3Converter"/>
             </set>
         </property>
     </bean>

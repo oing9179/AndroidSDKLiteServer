@@ -4,11 +4,11 @@ import jodd.io.FileUtil;
 import oing.webapp.android.sdkliteserver.model.SdkArchive;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
-import org.dom4j.*;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -66,7 +66,7 @@ public class RepositoryXmlEditor {
 	 */
 	@SuppressWarnings("Duplicates")
 	public List<SdkArchive> getSdkArchives() {
-		List<Element> lListElements;
+		/*List<Element> lListElements;
 		{
 			XPath lXPathSdkArchives = DocumentHelper.createXPath("//sdk:archives");
 			HashMap<String, String> lMapNamespaceURLs = new HashMap<>();
@@ -99,7 +99,7 @@ public class RepositoryXmlEditor {
 						/**
 						 * Condition 1:
 						 * <sdk:revision>20.1.2</sdk:revision>
-						 */
+
 						lStrRevision = elementRevision.getText();
 					} else {
 						/**
@@ -110,7 +110,7 @@ public class RepositoryXmlEditor {
 						 *     <sdk:micro>2</sdk:micro>
 						 *     <sdk:preview>1</sdk:preview>
 						 * </sdk:revision>
-						 */
+
 						lStrRevision = elementRevision.elementText("major");
 						String lStrTemp = elementRevision.elementText("minor");
 						if (lStrTemp != null) lStrRevision += "." + lStrTemp;
@@ -165,7 +165,8 @@ public class RepositoryXmlEditor {
 				}
 			}
 		}
-		return lListSdkArchives;
+		return lListSdkArchives;*/
+		return null;
 	}
 
 	/**
@@ -204,7 +205,7 @@ public class RepositoryXmlEditor {
 	 */
 	@SuppressWarnings("Duplicates")
 	public void updateURLs(List<String> urlsList) {
-		List<Element> lListElementURLs;
+		/*List<Element> lListElementURLs;
 		{
 			XPath lXPathURLs = DocumentHelper.createXPath("//sdk:url");
 			HashMap<String, String> lMapNamespaceURLs = new HashMap<>();
@@ -219,7 +220,7 @@ public class RepositoryXmlEditor {
 		}
 		for (int i = 0, size = lListElementURLs.size(); i < size; i++) {
 			lListElementURLs.get(i).setText(urlsList.get(i));
-		}
+		}*/
 	}
 
 	public void write() throws IOException {

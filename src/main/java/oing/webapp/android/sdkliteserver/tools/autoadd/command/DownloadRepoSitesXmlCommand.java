@@ -44,6 +44,11 @@ public class DownloadRepoSitesXmlCommand implements Command<Void>, CommandListAw
 	}
 
 	@Override
+	public String getDescription() {
+		return "Download " + mStrDownloadUrl;
+	}
+
+	@Override
 	public Void execute() throws Exception {
 		HttpResponse lHttpResponse = HttpRequest.get(mStrDownloadUrl).send();
 		if (lHttpResponse.statusCode() != 200) { // HTTP_OK = 200
@@ -58,13 +63,13 @@ public class DownloadRepoSitesXmlCommand implements Command<Void>, CommandListAw
 		mRepoXmlFileDao.insert(lRepoXmlFile);
 		// Save xml file to local storage.
 		File lFileXml = new File(ConfigurationUtil.getXmlRepositoryDir(mRepoXml.getName()),
-				File.pathSeparator + lRepoXmlFile.getFileName());
+				File.separator + lRepoXmlFile.getFileName());
 		FileUtil.writeString(lFileXml, lHttpResponse.bodyText());
 		// Parse xml
 		IRepoSitesEditor lEditor;
 		{
 			InputStream inputStream = IOUtils.toInputStream(lHttpResponse.bodyText(), "UTF-8");
-			lEditor = RepoXmlEditorFactory.createAddonsListEditor(mStrDownloadUrl, inputStream);
+			lEditor = RepoXmlEditorFactory.createRepoSitesEditor(mStrDownloadUrl, inputStream);
 			IOUtils.closeQuietly(inputStream);
 		}
 		List<AddonSite> lListAddonSites = lEditor.extractAll();
@@ -73,12 +78,12 @@ public class DownloadRepoSitesXmlCommand implements Command<Void>, CommandListAw
 			String lStrFileName = UrlTextUtil.getFileName(lAddonSite.getUrl());
 			// Avoid file name conflict by perform string formatting, an example after string formatting "addon2-1-x86_2.xml".
 			lStrFileName = String.format("%s_%d.%s",
-					lStrFileName.substring(lStrFileName.lastIndexOf('.')),
+					lStrFileName.substring(0, lStrFileName.indexOf('.')),
 					i,
 					lStrFileName.substring(lStrFileName.lastIndexOf('.') + 1)
 			);
-			lAddonSite.setUrl(lStrFileName);
 			mListCommands.add(new DownloadRepoCommonXmlCommand(mRepoXmlFileDao, mRepoXml, lAddonSite.getAbsoluteUrl(), lStrFileName));
+			lAddonSite.setUrl(lStrFileName);
 		}
 		// Commit changes back to xml file itself.
 		lEditor.rebuild(lListAddonSites);

@@ -121,13 +121,34 @@ public class RepoCommonEditorV2 implements IRepoCommonEditor {
 			Element lElementPatches = lElementArchive.element("patches");
 			if (lElementPatches != null) {
 				// Elements "patches/patch"
-				lListArchives.addAll(lElementPatches.elements("patch").stream().map(
+				List<Element> lElementArrPatch = lElementPatches.elements();
+				for (Element lElementPatch : lElementArrPatch) {
+					String lStrBasedOn;
+					{
+						Element lElementBasedOn = lElementPatch.element("based-on");
+						lStrBasedOn = lElementBasedOn.elementText("major");
+						String lStrTemp = lElementBasedOn.elementText("minor");
+						if (lStrTemp != null) lStrBasedOn += "." + lStrTemp;
+						lStrTemp = lElementBasedOn.elementText("micro");
+						if (lStrTemp != null) lStrBasedOn += "." + lStrTemp;
+						lStrTemp = lElementBasedOn.elementText("preview");
+						if (lStrTemp != null) lStrBasedOn += "p" + lStrTemp;
+					}
+					Archive lArchive = new PatchArchive.Builder(remotePackageRef)
+							.size(Long.parseLong(lElementPatch.elementText("size")))
+							.checksum(lElementPatch.elementText("checksum"))
+							.url(lElementPatch.elementText("url"))
+							.hostOs(HOST_OS).hostBits(HOST_BITS).basedOn(lStrBasedOn).build();
+					lListArchives.add(lArchive);
+				}
+
+				/*lListArchives.addAll(lElementPatches.elements("patch").stream().map(
 						lElementPatch -> new PatchArchive.Builder(remotePackageRef)
 								.size(Long.parseLong(lElementPatch.elementText("size")))
 								.checksum(lElementPatch.elementText("checksum"))
 								.url(lElementPatch.elementText("url"))
 								.hostOs(HOST_OS).hostBits(HOST_BITS).basedOn("").build()
-				).collect(Collectors.toList()));
+				).collect(Collectors.toList()));*/
 			}
 		}
 
@@ -141,7 +162,7 @@ public class RepoCommonEditorV2 implements IRepoCommonEditor {
 		if (lListNodeUrl.size() != listUrls.size()) {
 			throw new IllegalArgumentException(
 					"Count of URLs does not match xml elements, desired: " + lListNodeUrl.size()
-							+ ", give: " + listUrls.size());
+							+ ", given: " + listUrls.size());
 		}
 		for (int i = 0, size = lListNodeUrl.size(); i < size; i++) {
 			lListNodeUrl.get(i).setText(listUrls.get(i));

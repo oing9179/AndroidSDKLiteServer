@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -90,7 +91,10 @@ public class XmlRepositoryListServiceImpl implements XmlRepositoryListService {
 		repoZipDao.updateClearDependencyFromRepoXml(lRepoXml.getId());
 		// 4. Delete files from this repository.
 		File lFileDirTargetXmlRepo = ConfigurationUtil.getXmlRepositoryDir(lRepoXml.getName());
-		FileUtil.deleteDir(lFileDirTargetXmlRepo);
+		try {
+			FileUtil.deleteDir(lFileDirTargetXmlRepo);
+		} catch (FileNotFoundException ignore) {
+		}
 		// 5. Delete record of xml_repo.
 		repoXmlDao.deleteById(lRepoXml.getId());
 	}

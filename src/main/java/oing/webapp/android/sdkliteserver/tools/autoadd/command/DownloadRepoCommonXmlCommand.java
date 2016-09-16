@@ -47,6 +47,11 @@ public class DownloadRepoCommonXmlCommand implements Command<Void> {
 	}
 
 	@Override
+	public String getDescription() {
+		return "Download " + mStrDownloadUrl;
+	}
+
+	@Override
 	public Void execute() throws Exception {
 		HttpResponse lHttpResponse = HttpRequest.get(mStrDownloadUrl).send();
 		if (lHttpResponse.statusCode() != 200) { // HTTP_OK = 200
@@ -61,7 +66,7 @@ public class DownloadRepoCommonXmlCommand implements Command<Void> {
 		mRepoXmlFileDao.insert(lRepoXmlFile);
 		// Save xml file to local storage.
 		File lFileXml = new File(ConfigurationUtil.getXmlRepositoryDir(mRepoXml.getName()),
-				File.pathSeparator + lRepoXmlFile.getFileName());
+				File.separator + lRepoXmlFile.getFileName());
 		FileUtil.writeString(lFileXml, lHttpResponse.bodyText());
 		return null;
 	}

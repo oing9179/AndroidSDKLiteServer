@@ -19,7 +19,8 @@
                     <!-- CheckBox: force https -->
                     <div class="col switch s12 m12 l12" style="padding-top:12px;">
                         <label style="position:relative; top:-2px;">
-                            <input id="checkBoxForceHttps" name="isPreferHttpsConnection" type="checkbox"/>
+                            <input id="checkBoxForceHttps" name="isPreferHttpsConnection" type="checkbox"
+                                   disabled="disabled" checked="checked"/>
                             <span class="lever"></span>
                         </label>Prefer HTTPS connection
                     </div>

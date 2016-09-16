@@ -30,6 +30,6 @@ public enum AddonSiteTypeV3 {
 
 	@Override
 	public String toString() {
-		return super.toString() + "(" + this.friendlyName + ")";
+		return this.friendlyName;
 	}
 }

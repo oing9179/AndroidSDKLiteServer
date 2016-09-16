@@ -83,7 +83,7 @@ public class ZipRepositoryEditorController {
 			List<SdkArchive> lListSdkArchives = zipRepositoryEditorService.getAllSdkArchiveInfo(repositoryName,
 					isIncludeSysLinux, isIncludeSysOSX, isIncludeSysWin, isIncludeObsoleted, isIncludeExisted);
 			JSONObject lJsonObj = new JSONObject();
-			/**
+			/*
 			 * The final json content would like this:
 			 * {
 			 *     // API Level as key.

@@ -1,7 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/pages/common/jsp_header.jsp" %>
-<%@ page import="oing.webapp.android.sdkliteserver.model.SdkAddonSite" %>
+<%@ page import="oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSiteTypeV3" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -62,6 +62,37 @@
                             </tr>
                             </thead>
                             <tbody>
+                            <c:set var="AddonSite_Types" value="<%=AddonSiteTypeV3.values()%>" scope="page"/>
+                            <c:forEach var="addonSite" items="${addonSites}">
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <select name="addonSite.type" class="browser-default" required="required">
+                                            <option disabled="disabled">Select an option</option>
+                                            <c:forEach var="AddonSite_Type" items="${AddonSite_Types}">
+                                                <option value="${AddonSite_Type.value()}"
+                                                    ${AddonSite_Type.equals(addonSite.getType()) ? "selected" : ""}>
+                                                        ${AddonSite_Type.toString()}
+                                                </option>
+                                            </c:forEach>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="addonSite.displayName" required="required" value="${addonSite.displayName}"/>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="addonSite.url" required="required" value="${addonSite.url}"
+                                               placeholder="${addonSite.url}" data-original-url="${addonSite.url}"/>
+                                    </td>
+                                    <td>
+                                        <button type="button" data-action="deleteAddonSiteByOrdinal"
+                                                class="btn-flat btn-less-padding red-text waves-effect waves-red">
+                                            <i class="material-icons">delete</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                            <%--
                             <c:set var="SdkAddonSite_Types" value="<%=SdkAddonSite.Type.values()%>" scope="page"/>
                             <c:forEach var="sdkAddonSite" items="${sdkAddonSites}">
                                 <tr>
@@ -91,7 +122,7 @@
                                         </button>
                                     </td>
                                 </tr>
-                            </c:forEach>
+                            </c:forEach> --%>
                             </tbody>
                         </table>
                         <button type="button" data-action="addAddonSite"
@@ -112,15 +143,15 @@
 <tr>
     <td></td>
     <td>
-        <select name="sdkAddonSite.type" class="browser-default" required>
+        <select name="addonSite.type" class="browser-default" required>
             <option disabled selected>Select an option</option>
-            <c:forEach var="SdkAddonSite_Type" items="${SdkAddonSite_Types}">
-                <option value="${SdkAddonSite_Type.toString()}">${SdkAddonSite_Type.toString()}</option>
+            <c:forEach var="AddonSite_Type" items="${AddonSite_Types}">
+                <option value="${AddonSite_Type.toString()}">${AddonSite_Type.toString()}</option>
             </c:forEach>
         </select>
     </td>
-    <td><input type="text" name="sdkAddonSite.name" required/></td>
-    <td><input type="text" name="sdkAddonSite.url" required/></td>
+    <td><input type="text" name="addonSite.name" required/></td>
+    <td><input type="text" name="addonSite.url" required/></td>
     <td>
         <button type="button" data-action="deleteAddonSiteByOrdinal"
                 class="btn-flat btn-less-padding red-text waves-effect waves-red">

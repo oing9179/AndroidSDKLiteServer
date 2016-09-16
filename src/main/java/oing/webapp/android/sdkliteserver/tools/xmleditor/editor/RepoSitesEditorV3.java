@@ -37,7 +37,6 @@ public class RepoSitesEditorV3 implements IRepoSitesEditor {
 		final QName lQNameAttribute_type = createQNameAttribute_type();
 
 		for (Element lElement : lListElement) {
-			System.out.println(lElement.getName() + ", " + lElement.attribute(lQNameAttribute_type));
 			AddonSite lAddonSite = new AddonSite.Builder().sourceUrl(mStrXmlDirUrl)
 					.type(AddonSiteTypeV3.forString(lElement.attributeValue(lQNameAttribute_type)))
 					.displayName(lElement.elementText("displayName"))
@@ -58,13 +57,12 @@ public class RepoSitesEditorV3 implements IRepoSitesEditor {
 			lElementSite.addElement("displayName").setText(addonSite.getDisplayName());
 			lElementSite.addElement("url").setText(addonSite.getUrl());
 		}
-		System.out.println(mDocument.asXML());
 	}
 
 	@Override
 	public void write(OutputStream out) throws IOException {
 		XMLWriter writer = new XMLWriter(out, OutputFormat.createPrettyPrint());
-		writer.write(out);
+		writer.write(mDocument);
 	}
 
 	private QName createQNameAttribute_type() {

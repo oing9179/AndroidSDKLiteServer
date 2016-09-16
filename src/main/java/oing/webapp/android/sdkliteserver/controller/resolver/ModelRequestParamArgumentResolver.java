@@ -1,10 +1,12 @@
 package oing.webapp.android.sdkliteserver.controller.resolver;
 
+import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSiteTypeV3;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.ReflectUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -13,8 +15,8 @@ import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -32,11 +34,14 @@ import java.util.Map;
  *     // The string "books" will be the Annotation "ModelRequestParam" parameter,
  *     // following with an index "[0 1 2 etc...]" start from 0.
  *     // The max index value you put, the max length of List you got, so we got a "List.size() = 3".
- *     <input type="text" name="books[0].title"/>
- *     <input type="text" name="books[0].price"/>
- *     <input type="text" name="books[1].title"/>// A book not for sale.
- *     <input type="text" name="books[2].title"/>
- *     <input type="text" name="books[2].price"/>
+ *     <input type="text" name="books.title" value="Java"/>
+ *     <input type="text" name="books.price" value="$5"/>
+ *     <input type="text" name="books.title" value="Spring"/>
+ *     <!-- A book not for sale, just left null for books.price.
+ *     <input type="text" name="books.price" value="$5"/>
+ *     -->
+ *     <input type="text" name="books.title" value="Mybatis"/>
+ *     <input type="text" name="books.price" value="$5"/>
  *     etc...
  * </from>
  * }</pre>
@@ -70,35 +75,29 @@ public class ModelRequestParamArgumentResolver implements HandlerMethodArgumentR
 		Map<String, String[]> lMapRequestParams = webRequest.getParameterMap();
 		// Check if ModelRequestParam annotated besides a List<Whatever>.
 		final boolean lzIsList = methodParameter.getParameterType().equals(List.class);
-		Class lClazzBeanType;// For list "List<Whatever>", we got a bean class type "Whatever".
-		// String[] lStrArrPropertyNames;// Bean property names from form field.
-		PropertyDescriptor[] lPropertyDescriptorsArrBean;// Property info all of "lClazzBeanType".
+		Class lClassBeanType;// For list "List<Whatever>", we got a bean class type "Whatever".
+		PropertyDescriptor[] lPropertyDescriptorsArrBean;// Property info all of "lClassBeanType".
 
 		// Find out Bean class type.
 		if (lzIsList) {
 			ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) methodParameter.getGenericParameterType();
-			lClazzBeanType = (Class) parameterizedType.getActualTypeArguments()[0];
+			lClassBeanType = (Class) parameterizedType.getActualTypeArguments()[0];
 		} else {
-			lClazzBeanType = (Class) methodParameter.getParameterType();
+			lClassBeanType = (Class) methodParameter.getParameterType();
 		}
-		lPropertyDescriptorsArrBean = ReflectUtils.getBeanProperties(lClazzBeanType);
+		lPropertyDescriptorsArrBean = ReflectUtils.getBeanProperties(lClassBeanType);
 
-		/**
-		 * The largest number i in form field "field[i].prop".
-		 * This local variable uses when form contains fields like "field[i].prop" only,
-		 * It determines the max length of Model List.
+		/*
+		 * Determines the max length of Model List.
 		 */
 		int lnModelListLength = -1;
 		if (lzIsList) {
-			final String PARAM_NAME_WITH_LEFTBRACKET = lStrFormFieldName + "[";
-			for (Iterator<String> it = webRequest.getParameterNames(); it.hasNext(); ) {
-				String lStrName = it.next();
-				if (lStrName.startsWith(PARAM_NAME_WITH_LEFTBRACKET)) {
-					int lnIndex = Integer.parseInt(lStrName.substring(PARAM_NAME_WITH_LEFTBRACKET.length(), lStrName.indexOf(']')));
-					if (lnIndex > lnModelListLength) lnModelListLength = lnIndex;
+			for (String lStrName : lMapRequestParams.keySet()) {
+				if (lStrName.startsWith(lStrFormFieldName)) {
+					int lnLength = lMapRequestParams.get(lStrName).length;
+					if (lnLength > lnModelListLength) lnModelListLength = lnLength;
 				}
 			}
-			lnModelListLength++;
 		}
 		// Instantiate beans
 		if (!lzIsList) {
@@ -108,18 +107,18 @@ public class ModelRequestParamArgumentResolver implements HandlerMethodArgumentR
 						lStrFormFieldName + "." + lPropertyDescriptorsArrBean[i].getName());
 				if (lStrArrValues != null && lStrArrValues.length == 1) lStrArrPropertyValues[i] = lStrArrValues[0];
 			}
-			return instantiateBean(lClazzBeanType, lPropertyDescriptorsArrBean, lStrArrPropertyValues);
+			return instantiateBean(lClassBeanType, lPropertyDescriptorsArrBean, lStrArrPropertyValues);
 		} else {
 			ArrayList<Object> lListModels = new ArrayList<>();
 			for (int i = 0; i < lnModelListLength; i++) {
 				String[] lStrArrPropertyValues = new String[lPropertyDescriptorsArrBean.length];
 				for (int j = 0; j < lPropertyDescriptorsArrBean.length; j++) {
 					PropertyDescriptor propertyDescriptor = lPropertyDescriptorsArrBean[j];
-					String lStrName = lStrFormFieldName + "[" + i + "]." + propertyDescriptor.getName();
+					String lStrName = lStrFormFieldName + "." + propertyDescriptor.getName();
 					String[] lStrArrValues = lMapRequestParams.get(lStrName);
-					if (lStrArrValues != null) lStrArrPropertyValues[j] = lStrArrValues[0];
+					if (lStrArrValues != null) lStrArrPropertyValues[j] = lStrArrValues[i];
 				}
-				lListModels.add(instantiateBean(lClazzBeanType, lPropertyDescriptorsArrBean, lStrArrPropertyValues));
+				lListModels.add(instantiateBean(lClassBeanType, lPropertyDescriptorsArrBean, lStrArrPropertyValues));
 			}
 			return lListModels;
 		}
@@ -137,10 +136,18 @@ public class ModelRequestParamArgumentResolver implements HandlerMethodArgumentR
 		for (int i = 0; i < propertyDescriptors.length; i++) {
 			PropertyDescriptor propertyDescriptor = propertyDescriptors[i];
 			Class lClazzPropertyType = BeanUtils.findPropertyType(propertyDescriptor.getName(), beanClass);
-			// We can do it by using PropertyEditor instead of ConversionService.
 			Object lObjPropertyValue = conversionService.convert(propertyValues[i], lClazzPropertyType);
-			propertyDescriptor.getWriteMethod().invoke(lObjBean, lObjPropertyValue);
+			Method lMethodSetter = propertyDescriptor.getWriteMethod();
+			if (lMethodSetter == null) continue;
+			lMethodSetter.invoke(lObjBean, lObjPropertyValue);
 		}
 		return lObjBean;
+	}
+
+	public static class StringToAddonSiteTypeV3Converter implements Converter<String, AddonSiteTypeV3> {
+		@Override
+		public AddonSiteTypeV3 convert(String s) {
+			return AddonSiteTypeV3.forString(s);
+		}
 	}
 }

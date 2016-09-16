@@ -7,9 +7,9 @@ import java.util.EventListener;
 public interface CommandExecutionListener extends EventListener {
 	void onPrepare();
 
-	void onPreExecute(Command command);
+	void onPreExecute(int totalTasks, int currentIndex, Command command);
 
-	void onPostExecute(Command command);
+	void onPostExecute(int totalTasks, int currentIndex, Command command);
 
 	void onFinalize();
 }

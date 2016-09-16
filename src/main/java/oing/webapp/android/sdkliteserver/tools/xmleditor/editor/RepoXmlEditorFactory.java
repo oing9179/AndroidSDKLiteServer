@@ -9,8 +9,7 @@ import java.io.InputStream;
 
 public final class RepoXmlEditorFactory {
 	public static IRepoCommonEditor createRepoCommonEditor(String url, InputStream inputStreamXmlContent) throws IOException, DocumentException {
-		Validate.isTrue(url.startsWith("http://") || url.startsWith("https://"),
-				"URL must start with 'http://' or 'https://'");
+		validateUrlStartWith(url);
 		String lStrFileName = UrlTextUtil.getFileName(url);
 
 		if (lStrFileName.startsWith("repository2")) {
@@ -29,12 +28,18 @@ public final class RepoXmlEditorFactory {
 		throw new IllegalArgumentException("Unknown repo-common xml: " + url);
 	}
 
-	public static IRepoSitesEditor createAddonsListEditor(String url, InputStream inputStreamXmlContent) throws IOException, DocumentException {
+	public static IRepoSitesEditor createRepoSitesEditor(String url, InputStream inputStreamXmlContent) throws IOException, DocumentException {
+		validateUrlStartWith(url);
 		String lStrFileName = UrlTextUtil.getFileName(url);
 
 		if (lStrFileName.equals("addons_list-3.xml")) {
 			return new RepoSitesEditorV3(url, inputStreamXmlContent);
 		}
 		throw new IllegalArgumentException("Unknown addons_list xml: " + url);
+	}
+
+	private static void validateUrlStartWith(String url) {
+		Validate.isTrue(url.startsWith("http://") || url.startsWith("https://"),
+				"URL must start with 'http://' or 'https://'");
 	}
 }

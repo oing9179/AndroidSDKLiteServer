@@ -7,10 +7,10 @@ import jodd.http.ProxyInfo;
 import oing.webapp.android.sdkliteserver.controller.resolver.ModelRequestParam;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
-import oing.webapp.android.sdkliteserver.model.SdkAddonSite;
 import oing.webapp.android.sdkliteserver.service.AutomaticAdditionEventListener;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryEditorService;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryListService;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSite;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -102,7 +102,7 @@ public class XmlRepositoryEditorController {
 				private OutputStreamWriter mWriter = new OutputStreamWriter(response.getOutputStream(), "UTF8");
 
 				/**
-				 * Publish a message to client(browser).
+				 * Publish a message to client(web browser).
 				 */
 				@Override
 				public synchronized void onPublish(float progress, String message) {
@@ -257,23 +257,27 @@ public class XmlRepositoryEditorController {
 		return lStrViewPath;
 	}
 
-	// @RequestMapping(value = "/xml_editor_general.do", method = RequestMethod.GET)
-	public String xml_editor_general_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-	                                      @RequestParam("id") Long id) {
+	// @RequestMapping(value = "/xml_editor_for_addons_list.do", method = RequestMethod.GET)
+	public String xml_editor_for_addons_list_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                                              @RequestParam("id") Long id) {
 		try {
-			modelMap.put("sdkArchives", xmlRepositoryEditorService.getSdkArchivesById(repositoryName, id));
+			modelMap.put("addonSites", xmlRepositoryEditorService.getAddonSitesById(repositoryName, id));
 		} catch (Exception e) {
 			mLogger.warn(e.toString(), e);
 			modelMap.put("objException", e);
 		}
-		return "admin/repository/xml/repositoryName/xml_editor_general";
+		return "admin/repository/xml/repositoryName/xml_editor_repo_sites";
 	}
 
-	@RequestMapping(value = "/xml_editor_general.do", method = RequestMethod.POST)
-	public String xml_editor_general(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-	                                 @RequestParam("id") Long id, @RequestParam("url") String[] urls) {
+	@RequestMapping(value = "/xml_editor_for_addons_list.do", method = RequestMethod.POST)
+	public String xml_editor_for_addons_list(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                                         @RequestParam("id") Long id,
+	                                         @ModelRequestParam(value = "addonSite") List<AddonSite> addonSites) {
 		try {
-			xmlRepositoryEditorService.updateSdkArchiveURLs(repositoryName, id, urls);
+			for (AddonSite addonSite : addonSites) {
+				Validate.isTrue(addonSite.getUrl().endsWith(".xml"), "Invalid XML file name: " + addonSite.getUrl());
+			}
+			xmlRepositoryEditorService.updateAddonSite(repositoryName, id, addonSites);
 		} catch (Exception e) {
 			mLogger.warn(e.toString(), e);
 			String lStrViewPath = xml_editor_redirector(modelMap, repositoryName, id);
@@ -283,27 +287,23 @@ public class XmlRepositoryEditorController {
 		return "redirect:/admin/repository/xml/" + repositoryName + "/";
 	}
 
-	// @RequestMapping(value = "/xml_editor_for_addons_list.do", method = RequestMethod.GET)
-	public String xml_editor_for_addons_list_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-	                                              @RequestParam("id") Long id) {
+	// @RequestMapping(value = "/xml_editor_general.do", method = RequestMethod.GET)
+	public String xml_editor_general_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                                      @RequestParam("id") Long id) {
 		try {
-			modelMap.put("sdkAddonSites", xmlRepositoryEditorService.getSdkAddonSitesById(repositoryName, id));
+			modelMap.put("remotePackages", xmlRepositoryEditorService.getRemotePackagesById(repositoryName, id));
 		} catch (Exception e) {
 			mLogger.warn(e.toString(), e);
 			modelMap.put("objException", e);
 		}
-		return "admin/repository/xml/repositoryName/xml_editor_for_addons_list";
+		return "admin/repository/xml/repositoryName/xml_editor_repo_common";
 	}
 
-	@RequestMapping(value = "/xml_editor_for_addons_list.do", method = RequestMethod.POST)
-	public String xml_editor_for_addons_list(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-	                                         @RequestParam("id") Long id,
-	                                         @ModelRequestParam(value = "sdkAddonSite") List<SdkAddonSite> sdkAddonSites) {
+	@RequestMapping(value = "/xml_editor_general.do", method = RequestMethod.POST)
+	public String xml_editor_general(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                                 @RequestParam("id") Long id, @RequestParam("url") String[] urls) {
 		try {
-			for (SdkAddonSite sdkAddonSite : sdkAddonSites) {
-				Validate.isTrue(sdkAddonSite.getUrl().endsWith(".xml"), "Invalid XML file name: " + sdkAddonSite.getUrl());
-			}
-			xmlRepositoryEditorService.updateSdkAddonSiteURLs(repositoryName, id, sdkAddonSites);
+			xmlRepositoryEditorService.updateArchiveURLs(repositoryName, id, urls);
 		} catch (Exception e) {
 			mLogger.warn(e.toString(), e);
 			String lStrViewPath = xml_editor_redirector(modelMap, repositoryName, id);
