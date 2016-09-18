@@ -38,5 +38,6 @@
     <orderEntry type="library" name="apache-commons" level="project" />
     <orderEntry type="library" name="servlet-api" level="project" />
     <orderEntry type="library" name="dom4j-2.0.0" level="project" />
+    <orderEntry type="library" name="guava-19.0" level="project" />
   </component>
 </module>

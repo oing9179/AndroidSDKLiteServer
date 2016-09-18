@@ -1,3 +1,7 @@
+<!--
+Refer from:
+ANDROID_STUDIO/plugins/android/lib/repository.jar!/com/android/repository/api/repo-common-01.xsd
+-->
 <some:package>
 	<channel id="channel-[0-9]">Channel name like "stable", "beta" etc.</channel>
 	<!--

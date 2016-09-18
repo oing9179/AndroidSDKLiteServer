@@ -61,11 +61,10 @@
         </property>
     </bean>
     <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <!--
         <property name="converters">
-            <set>
-                <bean class="oing.webapp.android.sdkliteserver.controller.resolver.ModelRequestParamArgumentResolver.StringToAddonSiteTypeV3Converter"/>
-            </set>
-        </property>
+            <set></set>
+        </property>-->
     </bean>
 
     <context:component-scan base-package="oing.webapp.android.sdkliteserver"/>

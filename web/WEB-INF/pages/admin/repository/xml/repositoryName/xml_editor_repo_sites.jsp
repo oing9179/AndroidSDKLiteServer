@@ -1,7 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ include file="/WEB-INF/pages/common/jsp_header.jsp" %>
-<%@ page import="oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSiteTypeV3" %>
+<%@ page import="oing.webapp.android.sdkliteserver.tools.xmleditor.RepoSiteType" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,7 +22,7 @@
             <span>${xmlRepository.name} / ${xmlFile.fileName}</span>
             <div class="divider" style="margin:0 -20px;"></div>
             <form id="formXmlEditor" method="post"
-                  action="admin/repository/xml/${xmlRepository.name}/xml_editor_for_addons_list.do">
+                  action="admin/repository/xml/${xmlRepository.name}/xml_editor_for_repo_sites.do">
                 <input type="hidden" name="id" value="${xmlFile.id}"/>
                 <div class="row" style="padding-top:6px;">
                     <div class="col s12 m12 l6">
@@ -62,70 +62,39 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <c:set var="AddonSite_Types" value="<%=AddonSiteTypeV3.values()%>" scope="page"/>
-                            <c:forEach var="addonSite" items="${addonSites}">
+                            <c:set var="repoSiteTypes" value="<%=RepoSiteType.values()%>" scope="page"/>
+                            <c:forEach var="repoSite" items="${repoSites}">
                                 <tr>
                                     <td></td>
                                     <td>
-                                        <select name="addonSite.type" class="browser-default" required="required">
+                                        <select name="repoSite.type" class="browser-default" required="required">
                                             <option disabled="disabled">Select an option</option>
-                                            <c:forEach var="AddonSite_Type" items="${AddonSite_Types}">
-                                                <option value="${AddonSite_Type.value()}"
-                                                    ${AddonSite_Type.equals(addonSite.getType()) ? "selected" : ""}>
-                                                        ${AddonSite_Type.toString()}
+                                            <c:forEach var="repoSiteType" items="${repoSiteTypes}">
+                                                <option value="${repoSiteType}"
+                                                    ${repoSiteType.equals(repoSite.type) ? "selected" : ""}>
+                                                        ${repoSiteType.friendlyName}
                                                 </option>
                                             </c:forEach>
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="addonSite.displayName" required="required" value="${addonSite.displayName}"/>
+                                        <input type="text" name="repoSite.displayName" required="required" value="${repoSite.displayName}"/>
                                     </td>
                                     <td>
-                                        <input type="text" name="addonSite.url" required="required" value="${addonSite.url}"
-                                               placeholder="${addonSite.url}" data-original-url="${addonSite.url}"/>
+                                        <input type="text" name="repoSite.url" required="required" value="${repoSite.url}"
+                                               placeholder="${repoSite.url}" data-original-url="${repoSite.url}"/>
                                     </td>
                                     <td>
-                                        <button type="button" data-action="deleteAddonSiteByOrdinal"
+                                        <button type="button" data-action="deleteRepoSiteByOrdinal"
                                                 class="btn-flat btn-less-padding red-text waves-effect waves-red">
                                             <i class="material-icons">delete</i>
                                         </button>
                                     </td>
                                 </tr>
                             </c:forEach>
-                            <%--
-                            <c:set var="SdkAddonSite_Types" value="<%=SdkAddonSite.Type.values()%>" scope="page"/>
-                            <c:forEach var="sdkAddonSite" items="${sdkAddonSites}">
-                                <tr>
-                                    <td></td>
-                                    <td>
-                                        <select name="sdkAddonSite.type" class="browser-default" required="required">
-                                            <option disabled="disabled">Select an option</option>
-                                            <c:forEach var="SdkAddonSite_Type" items="${SdkAddonSite_Types}">
-                                                <option value="${SdkAddonSite_Type.toString()}"
-                                                    ${SdkAddonSite_Type.equals(sdkAddonSite.getType()) ? "selected" : ""}>
-                                                        ${SdkAddonSite_Type.toString()}
-                                                </option>
-                                            </c:forEach>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="text" name="sdkAddonSite.name" required="required" value="${sdkAddonSite.name}"/>
-                                    </td>
-                                    <td>
-                                        <input type="text" name="sdkAddonSite.url" required="required" value="${sdkAddonSite.url}"
-                                               placeholder="${sdkAddonSite.url}" data-original-url="${sdkAddonSite.url}"/>
-                                    </td>
-                                    <td>
-                                        <button type="button" data-action="deleteAddonSiteByOrdinal"
-                                                class="btn-flat btn-less-padding red-text waves-effect waves-red">
-                                            <i class="material-icons">delete</i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </c:forEach> --%>
                             </tbody>
                         </table>
-                        <button type="button" data-action="addAddonSite"
+                        <button type="button" data-action="addRepoSite"
                                 class="btn cyan darken-2 waves-effect waves-light">
                             <i class="material-icons left">add</i>Add
                         </button>
@@ -143,17 +112,17 @@
 <tr>
     <td></td>
     <td>
-        <select name="addonSite.type" class="browser-default" required>
+        <select name="repoSite.type" class="browser-default" required>
             <option disabled selected>Select an option</option>
-            <c:forEach var="AddonSite_Type" items="${AddonSite_Types}">
-                <option value="${AddonSite_Type.toString()}">${AddonSite_Type.toString()}</option>
+            <c:forEach var="repoSiteType" items="${repoSiteTypes}">
+                <option value="${repoSiteType}">${repoSiteType.friendlyName}</option>
             </c:forEach>
         </select>
     </td>
-    <td><input type="text" name="addonSite.name" required/></td>
-    <td><input type="text" name="addonSite.url" required/></td>
+    <td><input type="text" name="repoSite.name" required/></td>
+    <td><input type="text" name="repoSite.url" required/></td>
     <td>
-        <button type="button" data-action="deleteAddonSiteByOrdinal"
+        <button type="button" data-action="deleteRepoSiteByOrdinal"
                 class="btn-flat btn-less-padding red-text waves-effect waves-red">
             <i class="material-icons">delete</i>
         </button>
@@ -198,28 +167,15 @@
         });
     }
 
-    function formXmlEditor_buttonAddAddonSite_onClick(e) {
+    function formXmlEditor_buttonAddRepoSite_onClick(e) {
         $("#tableEditor > tbody").append(mTemplate_templateTableRow());
         $("#tableEditor").trigger("updateOrdinal");
     }
 
-    function formXmlEditor_buttonDeleteAddonSiteByOrdinal_onClick(e) {
+    function formXmlEditor_buttonDeleteRepoSiteByOrdinal_onClick(e) {
         $(this).parent().parent().remove();
         $("#tableEditor").trigger("updateOrdinal");
         console.log(e);
-    }
-
-    function formXmlEditor_onSubmit(e) {
-        $("#tableEditor > tbody > tr").each(function (index, element) {
-            var lnIndex = index;
-            $(element).find("td > *[name^='sdkAddonSite.']").each(function (index, element) {
-                element = $(element);
-                var lStrName = element.attr("name");
-                lStrName = lStrName.substr(0, lStrName.indexOf(".")) + "[" + lnIndex + "]" +
-                        lStrName.substr(lStrName.indexOf("."));
-                element.attr("name", lStrName);
-            });
-        });
     }
 
     function tableEditor_onUpdateOrdinal(e) {
@@ -228,8 +184,8 @@
             element = $(element);
             element.find("td:nth-child(1)").html(index + 1);
         });
-        $("#formXmlEditor button[data-action='deleteAddonSiteByOrdinal']").unbind("click")
-                .bind("click", formXmlEditor_buttonDeleteAddonSiteByOrdinal_onClick);
+        $("#formXmlEditor button[data-action='deleteRepoSiteByOrdinal']").unbind("click")
+                .bind("click", formXmlEditor_buttonDeleteRepoSiteByOrdinal_onClick);
     }
 
     function document_onReady() {
@@ -237,8 +193,8 @@
         $("#formXmlEditor button[data-action='urlToFileNameOnly']").bind("click", formXmlEditor_buttonUrlToFileNameOnly_onClick);
         $("#formXmlEditor button[data-action='addPrefixToUrl']").bind("click", formXmlEditor_buttonAddPrefixToUrl_onClick);
         $("#formXmlEditor button[data-action='reset']").bind("click", formXmlEditor_buttonReset_onClick);
-        $("#formXmlEditor button[data-action='addAddonSite']").bind("click", formXmlEditor_buttonAddAddonSite_onClick);
-        $("#formXmlEditor").bind("submit", formXmlEditor_onSubmit);
+        $("#formXmlEditor button[data-action='addRepoSite']").bind("click", formXmlEditor_buttonAddRepoSite_onClick);
+        // $("#formXmlEditor").bind("submit", formXmlEditor_onSubmit);
         $("#tableEditor").bind("updateOrdinal", tableEditor_onUpdateOrdinal);
         $("#tableEditor").trigger("updateOrdinal");
     }

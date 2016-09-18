@@ -1,0 +1,14 @@
+<!--
+Refer from:
+ANDROID_STUDIO/plugins/android/lib/sdklib.jar!/com/android/sdklib/repository/sdk-addons-list-2.xsd
+-->
+<sdk:sdk-addons-list xmlns:sdk="http://schemas.android.com/sdk/android/addons-list/2">
+    <sdk:addon-site>
+        <sdk:name>Google Inc.</sdk:name>
+        <sdk:url>addon.xml</sdk:url>
+    </sdk:addon-site>
+    <sdk:sys-img-site>
+        <sdk:name>Android System Images</sdk:name>
+        <sdk:url>sys-img/android/sys-img.xml</sdk:url>
+    </sdk:sys-img-site>
+</sdk:sdk-addons-list>

@@ -3,16 +3,16 @@ package oing.webapp.android.sdkliteserver.tools.xmleditor;
 import com.alibaba.fastjson.annotation.JSONField;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
 
-public class AddonSite {
+public class RepoSite {
 	private String sourceUrl;
-	private AddonSiteTypeV3 type;
+	private RepoSiteType type;
 	private String displayName;
 	private String url;
 
-	public AddonSite() {
+	public RepoSite() {
 	}
 
-	private AddonSite(Builder builder) {
+	private RepoSite(Builder builder) {
 		this.sourceUrl = builder.sourceUrl;
 		this.type = builder.type;
 		this.displayName = builder.displayName;
@@ -27,11 +27,11 @@ public class AddonSite {
 		this.sourceUrl = sourceUrl;
 	}
 
-	public AddonSiteTypeV3 getType() {
+	public RepoSiteType getType() {
 		return type;
 	}
 
-	public void setType(AddonSiteTypeV3 type) {
+	public void setType(RepoSiteType type) {
 		this.type = type;
 	}
 
@@ -58,15 +58,15 @@ public class AddonSite {
 
 	public static class Builder {
 		private String sourceUrl;
-		private AddonSiteTypeV3 type;
+		private RepoSiteType type;
 		private String displayName;
 		private String url;
 
 		public Builder() {
 		}
 
-		public AddonSite build() {
-			return new AddonSite(this);
+		public RepoSite build() {
+			return new RepoSite(this);
 		}
 
 		public Builder sourceUrl(String value) {
@@ -74,7 +74,7 @@ public class AddonSite {
 			return this;
 		}
 
-		public Builder type(AddonSiteTypeV3 value) {
+		public Builder type(RepoSiteType value) {
 			this.type = value;
 			return this;
 		}

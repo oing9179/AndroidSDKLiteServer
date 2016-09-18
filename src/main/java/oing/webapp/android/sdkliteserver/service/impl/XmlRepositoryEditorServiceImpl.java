@@ -13,8 +13,8 @@ import oing.webapp.android.sdkliteserver.tools.autoadd.command.DownloadRepoCommo
 import oing.webapp.android.sdkliteserver.tools.autoadd.command.DownloadRepoSitesXmlCommand;
 import oing.webapp.android.sdkliteserver.tools.autoadd.executor.CommandExecutionListener;
 import oing.webapp.android.sdkliteserver.tools.autoadd.executor.CommandExecutor;
-import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSite;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.RemotePackage;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.RepoSite;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.editor.IRepoCommonEditor;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.editor.IRepoSitesEditor;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.editor.RepoXmlEditorFactory;
@@ -55,8 +55,10 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
 		List<Command> lListCommands = new ArrayList<>();
 
-		lListCommands.add(new DownloadRepoSitesXmlCommand(repoXmlFileDao, lRepoXml, ConfigurationUtil.get("url.repo_sites")));
-		lListCommands.add(new DownloadRepoCommonXmlCommand(repoXmlFileDao, lRepoXml, ConfigurationUtil.get("url.repo_common")));
+		lListCommands.add(new DownloadRepoSitesXmlCommand(repoXmlFileDao, lRepoXml, ConfigurationUtil.get("url.repo_sites_v3")));
+		lListCommands.add(new DownloadRepoSitesXmlCommand(repoXmlFileDao, lRepoXml, ConfigurationUtil.get("url.repo_sites_v2")));
+		lListCommands.add(new DownloadRepoCommonXmlCommand(repoXmlFileDao, lRepoXml, ConfigurationUtil.get("url.repo_common_v2")));
+		lListCommands.add(new DownloadRepoCommonXmlCommand(repoXmlFileDao, lRepoXml, ConfigurationUtil.get("url.repo_common_v1")));
 		new CommandExecutor(lListCommands, new CommandExecutionListenerImpl(listener)).execute();
 	}
 
@@ -105,7 +107,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	}
 
 	@Override
-	public List<AddonSite> getAddonSitesById(String repositoryName, Long id) throws IOException, DocumentException {
+	public List<RepoSite> getRepoSitesById(String repositoryName, Long id) throws IOException, DocumentException {
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
 		RepoXmlFile lRepoXmlFile = getByIdDependsRepoXmlId(id, lRepoXml.getId());
 		InputStream lInputStreamXml = new BufferedInputStream(new FileInputStream(new File(
@@ -131,7 +133,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	}
 
 	@Override
-	public void updateAddonSite(String repositoryName, Long id, List<AddonSite> addonSites) throws IOException, DocumentException {
+	public void updateRepoSite(String repositoryName, Long id, List<RepoSite> repoSites) throws IOException, DocumentException {
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
 		RepoXmlFile lRepoXmlFile = getByIdDependsRepoXmlId(id, lRepoXml.getId());
 		File lFileXml = new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName), lRepoXmlFile.getFileName());
@@ -140,7 +142,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 		IRepoSitesEditor lEditor = RepoXmlEditorFactory.createRepoSitesEditor(lRepoXmlFile.getUrl(), lInputStreamXml);
 		IOUtils.closeQuietly(lInputStreamXml);
 		// Update XML file
-		lEditor.rebuild(addonSites);
+		lEditor.rebuild(repoSites);
 		// Save XML file
 		OutputStream lOutputStreamXml = new BufferedOutputStream(new FileOutputStream(lFileXml));
 		lEditor.write(lOutputStreamXml);

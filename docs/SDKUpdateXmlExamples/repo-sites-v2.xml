@@ -1,3 +1,7 @@
+<!--
+Refer from:
+ANDROID_STUDIO/plugins/android/lib/repository.jar!/com/android/repository/api/repo-sites-common-1.xsd
+-->
 <common:site-list>
     <!-- One example explains everything. -->
     <site xsi:type="sdk:sysImgSiteType|sdk:addonSiteType">

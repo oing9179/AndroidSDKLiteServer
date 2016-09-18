@@ -2,9 +2,9 @@ package oing.webapp.android.sdkliteserver.service;
 
 import jodd.http.ProxyInfo;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
-import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSite;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.Archive;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.RemotePackage;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.RepoSite;
 import org.dom4j.DocumentException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,12 +58,12 @@ public interface XmlRepositoryEditorService {
 	void delete(String repositoryName, Long id, String name) throws IOException;
 
 	/**
-	 * Parse "addons_list-3.xml" from a specific repository, then return all of the {@link AddonSite}s.
+	 * Parse "addons_list-3.xml" from a specific repository, then return all of the {@link RepoSite}s.
 	 *
 	 * @param repositoryName XML repository name where xml file lives in.
 	 * @param id             XML file id in database, we will find xml file only from {@code repositoryName}.
 	 */
-	List<AddonSite> getAddonSitesById(String repositoryName, Long id) throws IOException, DocumentException;
+	List<RepoSite> getRepoSitesById(String repositoryName, Long id) throws IOException, DocumentException;
 
 	/**
 	 * Parse a xml file from specific repository, then return all of the {@link Archive}.
@@ -75,13 +75,13 @@ public interface XmlRepositoryEditorService {
 
 	/**
 	 * Update URLs to "addons_list-3.xml" specially.
-	 * NOTE: All elements from "addons_list-3.xml" will REMOVED, then fill {@code addonSites} into xml file.
+	 * NOTE: All elements from "addons_list-3.xml" will REMOVED, then fill {@code repoSites} into xml file.
 	 *
 	 * @param repositoryName XML repository name where xml file lives in.
 	 * @param id             XML file id in database, we will find xml file only from {@code repositoryName}.
-	 * @param addonSites     The {@link AddonSite}s will replace into "addons_list-2.xml".
+	 * @param repoSites     The {@link RepoSite}s will replace into "addons_list-2.xml".
 	 */
-	void updateAddonSite(String repositoryName, Long id, List<AddonSite> addonSites) throws IOException, DocumentException;
+	void updateRepoSite(String repositoryName, Long id, List<RepoSite> repoSites) throws IOException, DocumentException;
 
 	/**
 	 * Update URLs to xml file

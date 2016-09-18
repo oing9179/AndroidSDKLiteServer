@@ -19,11 +19,11 @@ public final class RepoXmlEditorFactory {
 		} else if (lStrFileName.startsWith("sys-img2")) {
 			return new RepoCommonEditorV2(url, inputStreamXmlContent);
 		} else if (lStrFileName.startsWith("repository-")) {
-			return new RepoCommonEditorV1(url, inputStreamXmlContent);
+			return new RepoCommonEditorV1_12(url, inputStreamXmlContent);
 		} else if (lStrFileName.startsWith("addon")) {
-			return new RepoCommonEditorV1(url, inputStreamXmlContent);
+			return new RepoCommonEditorV1_12(url, inputStreamXmlContent);
 		} else if (lStrFileName.startsWith("sys-img")) {
-			return new RepoCommonEditorV1(url, inputStreamXmlContent);
+			return new RepoCommonEditorV1_12(url, inputStreamXmlContent);
 		}
 		throw new IllegalArgumentException("Unknown repo-common xml: " + url);
 	}
@@ -33,7 +33,9 @@ public final class RepoXmlEditorFactory {
 		String lStrFileName = UrlTextUtil.getFileName(url);
 
 		if (lStrFileName.equals("addons_list-3.xml")) {
-			return new RepoSitesEditorV3(url, inputStreamXmlContent);
+			return new RepoSitesEditorV2(url, inputStreamXmlContent);
+		} else if (lStrFileName.equals("addons_list-2.xml")) {
+			return new RepoSitesEditorV1_2(url, inputStreamXmlContent);
 		}
 		throw new IllegalArgumentException("Unknown addons_list xml: " + url);
 	}

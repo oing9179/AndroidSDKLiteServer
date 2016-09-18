@@ -18,18 +18,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class RepoCommonEditorV1 implements IRepoCommonEditor {
+public class RepoCommonEditorV1_12 implements IRepoCommonEditor {
 	/**
 	 * Where stores this xml file on internet.
 	 */
 	private final String mStrXmlDirUrl;
 	private Document mDocument;
 
-	public RepoCommonEditorV1(String url, InputStream inputStreamXmlContent) throws IOException, DocumentException {
+	public RepoCommonEditorV1_12(String url, InputStream inputStreamXmlContent) throws IOException, DocumentException {
 		this(url, inputStreamXmlContent, Charset.forName("UTF-8"));
 	}
 
-	public RepoCommonEditorV1(String url, InputStream inputStreamXmlContent, Charset charset) throws IOException, DocumentException {
+	public RepoCommonEditorV1_12(String url, InputStream inputStreamXmlContent, Charset charset) throws IOException, DocumentException {
 		mStrXmlDirUrl = UrlTextUtil.getDir(url);
 		mDocument = DocumentHelper.parseText(IOUtils.toString(inputStreamXmlContent, charset));
 	}

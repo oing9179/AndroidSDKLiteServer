@@ -8,7 +8,7 @@ import oing.webapp.android.sdkliteserver.dao.RepoXmlFileDao;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
 import oing.webapp.android.sdkliteserver.tools.autoadd.executor.CommandListAware;
-import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSite;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.RepoSite;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.editor.IRepoSitesEditor;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.editor.RepoXmlEditorFactory;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
@@ -72,21 +72,21 @@ public class DownloadRepoSitesXmlCommand implements Command<Void>, CommandListAw
 			lEditor = RepoXmlEditorFactory.createRepoSitesEditor(mStrDownloadUrl, inputStream);
 			IOUtils.closeQuietly(inputStream);
 		}
-		List<AddonSite> lListAddonSites = lEditor.extractAll();
-		for (int i = 0, length = lListAddonSites.size(); i < length; i++) {
-			AddonSite lAddonSite = lListAddonSites.get(i);
-			String lStrFileName = UrlTextUtil.getFileName(lAddonSite.getUrl());
+		List<RepoSite> lListRepoSites = lEditor.extractAll();
+		for (int i = 0, length = lListRepoSites.size(); i < length; i++) {
+			RepoSite lRepoSite = lListRepoSites.get(i);
+			String lStrFileName = UrlTextUtil.getFileName(lRepoSite.getUrl());
 			// Avoid file name conflict by perform string formatting, an example after string formatting "addon2-1-x86_2.xml".
 			lStrFileName = String.format("%s_%d.%s",
 					lStrFileName.substring(0, lStrFileName.indexOf('.')),
 					i,
 					lStrFileName.substring(lStrFileName.lastIndexOf('.') + 1)
 			);
-			mListCommands.add(new DownloadRepoCommonXmlCommand(mRepoXmlFileDao, mRepoXml, lAddonSite.getAbsoluteUrl(), lStrFileName));
-			lAddonSite.setUrl(lStrFileName);
+			mListCommands.add(new DownloadRepoCommonXmlCommand(mRepoXmlFileDao, mRepoXml, lRepoSite.getAbsoluteUrl(), lStrFileName));
+			lRepoSite.setUrl(lStrFileName);
 		}
 		// Commit changes back to xml file itself.
-		lEditor.rebuild(lListAddonSites);
+		lEditor.rebuild(lListRepoSites);
 		{
 			OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(lFileXml));
 			lEditor.write(outputStream);

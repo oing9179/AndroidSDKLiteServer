@@ -1,3 +1,9 @@
+<!--
+Refer from:
+ANDROID_STUDIO/plugins/android/lib/sdklib.jar!/com/android/sdklib/repository/sdk-repository-12.xsd
+ANDROID_STUDIO/plugins/android/lib/sdklib.jar!/com/android/sdklib/repository/sdk-addon-7.xsd
+ANDROID_STUDIO/plugins/android/lib/sdklib.jar!/com/android/sdklib/repository/sdk-sys-img-3.xsd
+-->
 <sdk:sdk-repository xmlns:sdk="http://schemas.android.com/sdk/android/repository/12">
 	<!-- sdk:<something> can be replaced by
 	{

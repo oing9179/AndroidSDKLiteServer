@@ -1,12 +1,10 @@
 package oing.webapp.android.sdkliteserver.controller.resolver;
 
-import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSiteTypeV3;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.ReflectUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -142,12 +140,5 @@ public class ModelRequestParamArgumentResolver implements HandlerMethodArgumentR
 			lMethodSetter.invoke(lObjBean, lObjPropertyValue);
 		}
 		return lObjBean;
-	}
-
-	public static class StringToAddonSiteTypeV3Converter implements Converter<String, AddonSiteTypeV3> {
-		@Override
-		public AddonSiteTypeV3 convert(String s) {
-			return AddonSiteTypeV3.forString(s);
-		}
 	}
 }

@@ -1,7 +1,9 @@
 package oing.webapp.android.sdkliteserver.tools.xmleditor.editor;
 
-import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSite;
-import oing.webapp.android.sdkliteserver.tools.xmleditor.AddonSiteTypeV3;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.RepoSite;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.RepoSiteType;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.*;
@@ -17,45 +19,55 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class RepoSitesEditorV3 implements IRepoSitesEditor {
+public class RepoSitesEditorV2 implements IRepoSitesEditor {
 	private final String mStrXmlDirUrl;
 	private Document mDocument;
+	private static final BiMap<RepoSiteType, String> mBiMapRepoSiteTypeToXmlText;
+	private static final RepoSiteType REPO_SITE_TYPE_DEFAULT = RepoSiteType.UNKNOWN;
+	private static final String REPO_SITE_TYPE_DEFAULT_STRING = "unknown:unknownRepoSiteType";
 
-	public RepoSitesEditorV3(String url, InputStream inputStreamXmlContent) throws IOException, DocumentException {
+	static {
+		mBiMapRepoSiteTypeToXmlText = HashBiMap.create();
+		mBiMapRepoSiteTypeToXmlText.put(REPO_SITE_TYPE_DEFAULT, REPO_SITE_TYPE_DEFAULT_STRING);
+		mBiMapRepoSiteTypeToXmlText.put(RepoSiteType.ADDON_SITE, "sdk:addonSiteType");
+		mBiMapRepoSiteTypeToXmlText.put(RepoSiteType.SYSTEM_IMAGE_SITE, "sdk:sysImgSiteType");
+	}
+
+	public RepoSitesEditorV2(String url, InputStream inputStreamXmlContent) throws IOException, DocumentException {
 		this(url, inputStreamXmlContent, Charset.forName("UTF-8"));
 	}
 
-	public RepoSitesEditorV3(String url, InputStream inputStreamXmlContent, Charset charset) throws IOException, DocumentException {
+	public RepoSitesEditorV2(String url, InputStream inputStreamXmlContent, Charset charset) throws IOException, DocumentException {
 		mStrXmlDirUrl = UrlTextUtil.getDir(url);
 		mDocument = DocumentHelper.parseText(IOUtils.toString(inputStreamXmlContent, charset));
 	}
 
 	@Override
-	public List<AddonSite> extractAll() {
-		List<AddonSite> lListAddonSite = new LinkedList<>();
+	public List<RepoSite> extractAll() {
+		List<RepoSite> lListRepoSite = new LinkedList<>();
 		List<Element> lListElement = mDocument.getRootElement().elements("site");
 		final QName lQNameAttribute_type = createQNameAttribute_type();
 
 		for (Element lElement : lListElement) {
-			AddonSite lAddonSite = new AddonSite.Builder().sourceUrl(mStrXmlDirUrl)
-					.type(AddonSiteTypeV3.forString(lElement.attributeValue(lQNameAttribute_type)))
+			RepoSite lRepoSite = new RepoSite.Builder().sourceUrl(mStrXmlDirUrl)
+					.type(mBiMapRepoSiteTypeToXmlText.inverse().getOrDefault(lElement.attributeValue(lQNameAttribute_type), REPO_SITE_TYPE_DEFAULT))
 					.displayName(lElement.elementText("displayName"))
 					.url(lElement.elementText("url")).build();
-			lListAddonSite.add(lAddonSite);
+			lListRepoSite.add(lRepoSite);
 		}
-		return lListAddonSite;
+		return lListRepoSite;
 	}
 
-	public void rebuild(List<AddonSite> listAddonSite) {
+	public void rebuild(List<RepoSite> listRepoSite) {
 		Element lElementRoot = mDocument.getRootElement();
 		lElementRoot.elements().clear();
 		final QName lQNameAttribute_type = createQNameAttribute_type();
 
-		for (AddonSite addonSite : listAddonSite) {
+		for (RepoSite repoSite : listRepoSite) {
 			Element lElementSite = lElementRoot.addElement("site")
-					.addAttribute(lQNameAttribute_type, addonSite.getType().value());
-			lElementSite.addElement("displayName").setText(addonSite.getDisplayName());
-			lElementSite.addElement("url").setText(addonSite.getUrl());
+					.addAttribute(lQNameAttribute_type, mBiMapRepoSiteTypeToXmlText.getOrDefault(repoSite.getType(), REPO_SITE_TYPE_DEFAULT_STRING));
+			lElementSite.addElement("displayName").setText(repoSite.getDisplayName());
+			lElementSite.addElement("url").setText(repoSite.getUrl());
 		}
 	}
 

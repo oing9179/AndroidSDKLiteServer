@@ -18,7 +18,7 @@
                 <span>${xmlRepository.name} / ${xmlFile.fileName}</span>
                 <div class="divider" style="margin:0 -20px;"></div>
                 <form id="formXmlEditor" method="post"
-                      action="admin/repository/xml/${xmlRepository.name}/xml_editor_general.do">
+                      action="admin/repository/xml/${xmlRepository.name}/xml_editor_for_repo_common.do">
                     <input type="hidden" name="id" value="${xmlFile.id}"/>
                     <div class="row" style="padding-top:6px;">
                         <div class="col s12 m12 l6">
@@ -56,15 +56,6 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <%-- <c:forEach var="sdkArchive" items="${sdkArchives}" varStatus="varStatus">
-                                    <tr>
-                                        <td>${varStatus.index+1}</td>
-                                        <td>
-                                            <input type="text" name="url" required="required" value="${sdkArchive.url}"
-                                                   data-original-url="${sdkArchive.url}" placeholder="${sdkArchive.url}"/>
-                                        </td>
-                                    </tr>
-                                </c:forEach> --%>
                                 <c:set var="lnIndex" value="${0}" scope="page"/>
                                 <c:forEach var="remotePackage" items="${remotePackages}">
                                     <c:forEach var="archive" items="${remotePackage.archives}">
