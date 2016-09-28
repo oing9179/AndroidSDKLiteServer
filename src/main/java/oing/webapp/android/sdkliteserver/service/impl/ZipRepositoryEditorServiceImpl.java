@@ -1,153 +1,169 @@
 package oing.webapp.android.sdkliteserver.service.impl;
 
-import jodd.io.FileUtil;
 import oing.webapp.android.sdkliteserver.dao.RepoXmlDao;
 import oing.webapp.android.sdkliteserver.dao.RepoXmlFileDao;
 import oing.webapp.android.sdkliteserver.dao.RepoZipDao;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
 import oing.webapp.android.sdkliteserver.model.RepoZip;
-import oing.webapp.android.sdkliteserver.model.SdkArchive;
 import oing.webapp.android.sdkliteserver.service.ZipRepositoryEditorService;
 import oing.webapp.android.sdkliteserver.service.ZipRepositoryListService;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.Archive;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.HostOsType;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.RemotePackage;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.editor.IRepoCommonEditor;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.editor.RepoXmlEditorFactory;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
-import oing.webapp.android.sdkliteserver.utils.RepositoryXmlEditor;
-import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.Validate;
+import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Component
+@Service
 public class ZipRepositoryEditorServiceImpl implements ZipRepositoryEditorService {
-	private static final Logger mLogger = LoggerFactory.getLogger(ZipRepositoryEditorServiceImpl.class);
-	@Autowired
-	private RepoZipDao repoZipDao;
 	@Autowired
 	private RepoXmlDao repoXmlDao;
 	@Autowired
 	private RepoXmlFileDao repoXmlFileDao;
 	@Autowired
+	private RepoZipDao repoZipDao;
+	@Autowired
 	private ZipRepositoryListService zipRepositoryListService;
 
 	@Override
 	public void updateRepositoryDependency(String repositoryName, Long targetRepoId) {
-		RepoZip lRepoZip = zipRepositoryListService.getByName(repositoryName);
+		RepoZip lRepoZip = zipRepositoryListService.getByNameOrThrow(repositoryName);
 		lRepoZip.setIdRepoXml(targetRepoId);
 		repoZipDao.updateById(lRepoZip);
 	}
 
-	private List<SdkArchive> getAllSdkArchiveInfo(String repositoryName) {
-		RepoZip lRepoZip = repoZipDao.selectByName(repositoryName);
-		RepoXml lRepoXml = repoXmlDao.selectById(lRepoZip.getIdRepoXml());
-		File lFileXmlRepo = ConfigurationUtil.getXmlRepositoryDir(lRepoXml.getName());
-		final File lFileZipRepo = ConfigurationUtil.getZipRepositoryDir(lRepoZip.getName());
-		List<RepoXmlFile> lListRepoXmlFiles = repoXmlFileDao.selectDependsRepoXmlId(lRepoXml.getId());
-		List<SdkArchive> lListSdkArchives = new ArrayList<>();
-
-		try {
-			for (RepoXmlFile item : lListRepoXmlFiles) {
-				if (item.getFileName().startsWith("addons_list")) continue;
-				RepositoryXmlEditor repositoryXmlEditor = new RepositoryXmlEditor(item.getUrl(), new File(lFileXmlRepo, item.getFileName()));
-				lListSdkArchives.addAll(repositoryXmlEditor.getSdkArchives(true, true));
-			}
-		} catch (Exception e) {
-			mLogger.warn(e.toString(), e);
-			e.printStackTrace();
-		}
-		lListSdkArchives.forEach(sdkArchive -> {
-			File lFile = new File(lFileZipRepo, UrlTextUtil.getFileName(sdkArchive.getUrl()));
-			sdkArchive.setIsExisted(lFile.exists());
-		});
-		return lListSdkArchives;
-	}
-
+	@SuppressWarnings("ConstantConditions")
 	@Override
-	public List<SdkArchive> getAllSdkArchiveInfo(String repositoryName, boolean isIncludeSysLinux, boolean isIncludeSysOSX,
-	                                             boolean isIncludeSysWin, boolean isIncludeObsoleted, boolean isIncludeExisted) {
-		List<SdkArchive> lListSdkArchives = getAllSdkArchiveInfo(repositoryName);
+	public List<RemotePackage> getAllRemotePackages(String repositoryName, boolean isIncludeSysLinux,
+	                                                boolean isIncludeSysOSX, boolean isIncludeSysWin,
+	                                                boolean isIncludeObsoleted, boolean isIncludeExisted) throws IOException, DocumentException {
+		RepoZip lRepoZip = zipRepositoryListService.getByNameOrThrow(repositoryName);
+		List<RemotePackage> lListRemotePackages = getAllRemotePackages(lRepoZip.getRepoXml_name(), lRepoZip.getName());
 
-		// Do filter
-		for (int i = 0; i < lListSdkArchives.size(); i++) {
-			SdkArchive sdkArchive = lListSdkArchives.get(i);
-			String lStrHostOs = sdkArchive.getHostOs();
-			// 根据操作系统过滤掉不想要的zip包.
-			if (lStrHostOs != null && ((!isIncludeSysLinux && lStrHostOs.equalsIgnoreCase("linux")) ||
-					(!isIncludeSysOSX && lStrHostOs.equalsIgnoreCase("macosx")) ||
-					(!isIncludeSysWin && lStrHostOs.equalsIgnoreCase("windows")))) {
-				lListSdkArchives.remove(i--);
+		// filter RemotePackages
+		for (int index = 0; index < lListRemotePackages.size(); index++) {
+			RemotePackage remotePackage = lListRemotePackages.get(index);
+			if (!isIncludeObsoleted && remotePackage.isObsoleted()) {
+				lListRemotePackages.remove(index--);
 				continue;
 			}
-			// 判断是否排除该zip包
-			int n = 0;
-			n += !sdkArchive.isObsoleted() && !sdkArchive.isExisted() ? 1 : 0;// 该包不过时并且文件不存在.
-			n += sdkArchive.isObsoleted() ? 1 : 0;// 该包已过时
-			n -= !isIncludeObsoleted && sdkArchive.isObsoleted() ? 1 : 0;// 过时包需要被排除 并且 该包已过时
-			n += sdkArchive.isExisted() ? 1 : 0;// 该包已存在
-			n -= !isIncludeExisted && sdkArchive.isExisted() ? 1 : 0;// 已存在的包需要被排除 并且 该包已存在
-			if (n <= 0) {// 最终结果<=0 则代表该包需要被排除
-				lListSdkArchives.remove(i--);
+			List<Archive> lListArchives = remotePackage.getArchives();
+			for (int index2 = 0; index2 < lListArchives.size(); index2++) {
+				Archive lArchive = lListArchives.get(index2);
+				if ((!isIncludeSysLinux && lArchive.getHostOs() == HostOsType.Linux)
+						|| (!isIncludeSysOSX && lArchive.getHostOs() == HostOsType.MacOSX)
+						|| (!isIncludeSysWin && lArchive.getHostOs() == HostOsType.Windows)) {
+					lListArchives.remove(index2--);
+					continue;
+				}
+				if (!isIncludeExisted && lArchive.isFileExisted()) {
+					lListArchives.remove(index2--);
+				}
 			}
 		}
-		return lListSdkArchives;
+		return lListRemotePackages;
 	}
 
 	@Override
-	public List<SdkArchive> getNoLongerNeededArchives(String repositoryName, boolean isAbandonObsoleted, boolean isAbandonNotExisted) {
-		RepoZip lRepoZip = repoZipDao.selectByName(repositoryName);
-		File lFileRepoZip = ConfigurationUtil.getZipRepositoryDir(lRepoZip.getName());
-		List<File> lListZipFiles = Arrays.asList(lFileRepoZip.listFiles((dir, name) -> {
-			return name.endsWith(".zip");
-		}));
-		lListZipFiles = new ArrayList<>(lListZipFiles);// Make it mutable.
-		List<SdkArchive> lListSdkArchives = getAllSdkArchiveInfo(repositoryName);
-		ArrayList<SdkArchive> lListAbandonedArchives = new ArrayList<>();
+	public List<Archive> getNoLongerNeededArchives(String repositoryName, boolean isIncludeObsoleted,
+	                                               boolean isIncludeNotInRepo) throws IOException, DocumentException {
+		RepoZip lRepoZip = zipRepositoryListService.getByNameOrThrow(repositoryName);
+		List<RemotePackage> lListRemotePackages = getAllRemotePackages(lRepoZip.getRepoXml_name(), lRepoZip.getName());
+		List<Archive> lListArchivesUnwanted = new LinkedList<>();
 
-		for (SdkArchive sdkArchive : lListSdkArchives) {
-			// 筛出 已经废弃的并且文件存在的SdkArchive
-			if (isAbandonObsoleted && sdkArchive.isObsoleted() && sdkArchive.isExisted()) {
-				lListAbandonedArchives.add(sdkArchive);
-			}
-			// 过滤出zip文件: 存在于zip仓库 但 不存在于所关联的xml仓库.
-			for (int j = 0; j < lListZipFiles.size(); j++) {
-				File lFileZip = lListZipFiles.get(j);
-				// 若 文件能在关联的xml仓库中找到 则剔除, 反之保留.
-				if (sdkArchive.getFileName().equals(lFileZip.getName())) {
-					lListZipFiles.remove(j);
-					break;
+		// Find out obsoleted and existed file, then add it into lListArchivesUnwanted.
+		lListRemotePackages.stream()
+				.filter(remotePackage -> isIncludeObsoleted && remotePackage.isObsoleted())
+				.forEach(remotePackage -> {
+							lListArchivesUnwanted.addAll(remotePackage.getArchives()
+									.stream()
+									.filter(Archive::isFileExisted)
+									.collect(Collectors.toList()));
+						}
+				);
+		{
+			// Find out zip files which is not defined in related xml repository.
+			File lFileZipRepo = ConfigurationUtil.getZipRepositoryDir(lRepoZip.getName());
+			File[] lFileArrZip = lFileZipRepo.listFiles((dir, name) -> name.lastIndexOf(".zip") != -1);
+			if (lFileArrZip != null) {
+				Arrays.parallelSort(lFileArrZip);
+				List<Archive> lListArchivesNotExisted = new ArrayList<>();
+				lListRemotePackages.forEach(remotePackage -> {
+							lListArchivesNotExisted.addAll(remotePackage.getArchives().stream()
+									/*
+									 * The reason of "!archive.isFileExisted()" is:
+									 * If archive does exist on local storage, that means the definition of this archive
+									 * can be found in given xml repository, otherwise not.
+									 */
+									.filter(archive -> !archive.isFileExisted())
+									.collect(Collectors.toList())
+							);
+						}
+				);
+				for (File file : lFileArrZip) {
+					lListArchivesNotExisted.forEach(archive -> {
+						if (file.equals(new File(lFileZipRepo, archive.getUrl()))) {
+							lListArchivesUnwanted.add(archive);
+						}
+					});
 				}
-				// 当前循环的外侧循环结束后, 剩下的就是不存在于xml仓库的zip文件.
 			}
 		}
-		// 最后, 将不存在与xml仓库的zip文件 加入到 要被废弃的SdkArchive列表.
-		for (File lFileZip : lListZipFiles) {
-			SdkArchive sdkArchive = new SdkArchive();
-			sdkArchive.setIsExisted(false);
-			sdkArchive.setDisplayName(lFileZip.getName());
-			sdkArchive.setSize(lFileZip.length());
-			sdkArchive.setUrl(lFileZip.getName());
-			lListAbandonedArchives.add(sdkArchive);
-		}
-		return lListAbandonedArchives;
+		return lListArchivesUnwanted;
 	}
 
 	@Override
 	public void doRedundancyCleanup(String repositoryName, String[] fileNames) throws IOException {
-		// Remove all path-separate characters in file name.
-		for (int i = 0; i < fileNames.length; i++) {
-			fileNames[i] = fileNames[i].replaceAll("/*", "").replaceAll("\\*", "");
-		}
-		// Do delete files
 		final File lFileRepoZip = ConfigurationUtil.getZipRepositoryDir(repositoryName);
 		for (String fileName : fileNames) {
-			// deleteFile will fail if fileName is not an actual file.
-			FileUtil.deleteFile(new File(lFileRepoZip, fileName));
+			File lFileZip = new File(lFileRepoZip, fileName);
+			if (isFileInDir(lFileRepoZip, lFileZip)) {
+				FileUtils.forceDelete(lFileZip);
+			}
 		}
+	}
+
+	/**
+	 * Get all {@link RemotePackage}s from given xml repository name.
+	 *
+	 * @param repoNameXml XML repository name.
+	 */
+	private List<RemotePackage> getAllRemotePackages(String repoNameXml, String repoNameZip) throws IOException, DocumentException {
+		RepoXml lRepoXml = repoXmlDao.selectByName(repoNameXml);
+		Validate.notNull(lRepoXml, "XML repository not found: " + repoNameXml);
+		List<RepoXmlFile> lListRepoXmlFiles = repoXmlFileDao.selectDependsRepoXmlId(lRepoXml.getId());
+		List<RemotePackage> lListRemotePackages = new LinkedList<>();
+		File lFileZipRepo = ConfigurationUtil.getZipRepositoryDir(repoNameZip);
+		for (RepoXmlFile repoXmlFile : lListRepoXmlFiles) {
+			if (repoXmlFile.getFileName().startsWith("addons_list")) {
+				continue;
+			}
+			InputStream lInputStream = new BufferedInputStream(new FileInputStream(new File(
+					ConfigurationUtil.getXmlRepositoryDir(repoNameXml),
+					repoXmlFile.getFileName()
+			)));
+			IRepoCommonEditor lEditor = RepoXmlEditorFactory.createRepoCommonEditor(repoXmlFile.getUrl(), lInputStream);
+			IOUtils.closeQuietly(lInputStream);
+			lListRemotePackages.addAll(lEditor.extractAll(lFileZipRepo));
+		}
+		return lListRemotePackages;
+	}
+
+	private static boolean isFileInDir(File dir, File file) {
+		return file.getAbsolutePath().startsWith(dir.getAbsolutePath()) && file.exists();
 	}
 }

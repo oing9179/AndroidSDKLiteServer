@@ -1,28 +1,30 @@
 package oing.webapp.android.sdkliteserver.tools.xmleditor;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
 
 public abstract class Archive {
+	@JsonBackReference
 	protected transient RemotePackage remotePackageRef;
 	protected Long size;
 	protected String checksum;
 	protected String url;
 	protected HostOsType hostOs;
 	protected HostBitsType hostBits;
-	protected Boolean isExisted;
+	protected Boolean isFileExisted;
 
 	public Archive() {
 	}
 
-	protected Archive(Builder builder) {
+	Archive(Builder builder) {
 		this.remotePackageRef = builder.remotePackageRef;
 		this.size = builder.size;
 		this.checksum = builder.checksum;
 		this.url = builder.url;
 		this.hostOs = builder.hostOs;
 		this.hostBits = builder.hostBits;
-		this.isExisted = builder.isExisted;
+		this.isFileExisted = builder.isFileExisted;
 	}
 
 	public RemotePackage getRemotePackageRef() {
@@ -82,12 +84,12 @@ public abstract class Archive {
 		this.hostBits = hostBits;
 	}
 
-	public Boolean isExisted() {
-		return isExisted;
+	public Boolean isFileExisted() {
+		return isFileExisted;
 	}
 
-	public void setExisted(Boolean existed) {
-		isExisted = existed;
+	public void setFileExisted(Boolean existed) {
+		isFileExisted = existed;
 	}
 
 	protected abstract static class Builder {
@@ -97,7 +99,7 @@ public abstract class Archive {
 		private String url;
 		private HostOsType hostOs;
 		private HostBitsType hostBits;
-		private Boolean isExisted;
+		private Boolean isFileExisted;
 
 		public Builder(RemotePackage remotePackage) {
 			this.remotePackageRef = remotePackage;
@@ -130,8 +132,8 @@ public abstract class Archive {
 			return this;
 		}
 
-		public Builder isExisted(Boolean value) {
-			this.isExisted = value;
+		public Builder isFileExisted(Boolean value) {
+			this.isFileExisted = value;
 			return this;
 		}
 	}

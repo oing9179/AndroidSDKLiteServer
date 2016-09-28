@@ -45,7 +45,7 @@ public class ZipRepositoryListController {
 
 	@RequestMapping(value = "/deletion.do", method = RequestMethod.GET)
 	public String deletion_view(ModelMap modelMap, @RequestParam("id") Long id) {
-		modelMap.put("zipRepository", zipRepositoryListService.getById(id));
+		modelMap.put("zipRepository", zipRepositoryListService.getByIdOrThrow(id));
 		return "admin/repository/zip/deletion";
 	}
 

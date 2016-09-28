@@ -150,7 +150,7 @@ public class DataRepositoryController {
 	private RepoZip getRepoZip(ServletContext servletContext) {
 		Long ljId = (Long) servletContext.getAttribute(ApplicationConstants.KEY_REPOSITORY_ZIP_ID);
 		Validate.notNull(ljId, "You have not deploy an ZIP Repository.");
-		return zipRepositoryListService.getById(ljId);
+		return zipRepositoryListService.getByIdOrThrow(ljId);
 	}
 
 	private HashMap<String, String> getHeaders(HttpServletRequest request) {

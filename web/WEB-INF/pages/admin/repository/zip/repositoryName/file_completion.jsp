@@ -5,6 +5,27 @@
 <head>
     <%@ include file="/WEB-INF/pages/common/html_head.jsp" %>
     <script type="text/javascript" src="static/js/jquery-fileSizeFormat.js"></script>
+    <style type="text/css">
+        ul#ulRemotePackageList ul > li i.material-icons.left {
+            width: .6em;
+            line-height: .8;
+            height: .1em;
+            margin-right: 12px;
+        }
+
+        ul#ulRemotePackageList ul > li {
+            padding: 1px 6px;
+            margin-bottom: 16px;
+        }
+
+        ul#ulRemotePackageList ul > li > div{
+            padding-left: 16px;
+        }
+
+        ul#ulRemotePackageList ul > li:nth-child(even) {
+            background-color: hsl(0, 0%, 95%);
+        }
+    </style>
 </head>
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
@@ -25,15 +46,15 @@
                 <div class="col s12 right-align">
                     <form id="formGetAllArchives" method="post"
                           action="admin/repository/zip/${zipRepository.name}/get_all_archives.do">
-                        <input id="checkBoxIncludeSysLinux" name="isIncludeSysLinux" type="checkbox" class="filled-in"/>
+                        <input id="checkBoxIncludeSysLinux" name="isIncludeSysLinux" type="checkbox" class="filled-in" checked/>
                         <label for="checkBoxIncludeSysLinux" title="Include Linux archives.">Linux</label>
-                        <input id="checkBoxIncludeSysMacOSX" name="isIncludeSysOSX" type="checkbox" class="filled-in"/>
+                        <input id="checkBoxIncludeSysMacOSX" name="isIncludeSysOSX" type="checkbox" class="filled-in" checked/>
                         <label for="checkBoxIncludeSysMacOSX" title="Include Mac OSX archives.">Mac OSX</label>
-                        <input id="checkBoxIncludeSysWindows" name="isIncludeSysWin" type="checkbox" class="filled-in"/>
+                        <input id="checkBoxIncludeSysWindows" name="isIncludeSysWin" type="checkbox" class="filled-in" checked/>
                         <label for="checkBoxIncludeSysWindows" title="Include Windows archives.">Windows</label>
-                        <input id="checkBoxIncludeObsoleteArchives" name="isIncludeObsoleted" type="checkbox" class="filled-in"/>
+                        <input id="checkBoxIncludeObsoleteArchives" name="isIncludeObsoleted" type="checkbox" class="filled-in" checked/>
                         <label for="checkBoxIncludeObsoleteArchives" title="Include obsoleted archives.">Obsoleted</label>
-                        <input id="checkBoxIncludeExistedArchives" name="isIncludeExisted" type="checkbox" class="filled-in"/>
+                        <input id="checkBoxIncludeExistedArchives" name="isIncludeExisted" type="checkbox" class="filled-in" checked/>
                         <label for="checkBoxIncludeExistedArchives" title="Include existed archives.">Existed</label>
                         <button id="buttonPerformFilter" type="button"
                                 class="btn btn-less-padding waves-effect waves-light indigo">
@@ -47,7 +68,9 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col s12"><ul id="ulSdkArchives" class="collapsible" data-collapsible="expandable"></ul></div>
+                <div class="col s12">
+                    <ul id="ulRemotePackageList" class="collapsible" data-collapsible="expandable"></ul>
+                </div>
             </div>
         </div>
     </div>
@@ -55,7 +78,10 @@
 <div id="modalExportURLs" class="modal">
     <div class="modal-content">
         <h4>Export URLs</h4>
-        <pre></pre>
+        Total size: <span class="my-badge green white-text spanTotalFileSize"></span>
+        <pre class="preUrls"></pre>
+        <h5>SHA1 Checksums</h5>
+        <pre class="preChecksums"></pre>
     </div>
     <div class="modal-footer">
         <a href="javascript:" class="btn-flat modal-action modal-close waves-effect waves-green">Dismiss</a>
@@ -69,7 +95,7 @@
                 {{#ifExists apiLevel}}
                 API {{apiLevel}}
                 {{else}}
-                others
+                Others
                 {{/ifExists}}
             </label>
         </div>
@@ -82,26 +108,54 @@
             <input id="checkBoxArchive_{{ordinal}}" type="checkbox" class="filled-in" data-json="{{json}}"
                    data-parent-checkbox="{{idParentCheckBox}}" title="Check to include this archive."/>
             <label for="checkBoxArchive_{{ordinal}}" title="{{htmlTitle}}">
-                {{#if existed}}<i class="material-icons left green-text text-darken-3" title="This archive already exist.">check</i>{{/if}}
                 {{#if obsoleted}}<i class="material-icons left red-text text-darken-3" title="This archive is obsoleted.">watch_later</i>{{/if}}
+                {{#if fileExisted}}<i class="material-icons left green-text text-darken-3" title="This archive already exist.">check</i>{{/if}}
                 {{type}}
-                {{#ifExists displayName}}
-                {{displayName}}
-                {{else}}
-                {{description}}
-                {{/ifExists}} - r{{revision}}
+                {{#ifExists displayName}} {{displayName}} {{/ifExists}} - r{{revision}}({{channel}})
                 {{#ifExists hostOs}} {{hostOs}} {{/ifExists}}
-                {{#ifExists hostBits}} {{hostBits}}bit {{/ifExists}}
+                {{#ifExists hostBits}} {{hostBits}} {{/ifExists}}
             </label>
-        <td/>
+        </td>
     </tr>
+</script>
+<script id="templateRemotePackages" type="text/x-handlebars-template">
+{{#forEach remotePackages}}
+<li>
+    <div class="collapsible-header">
+        <input id="checkBoxRemotePackageGroup_API{{key}}" type="checkbox" class="filled-in"/>
+        <label for="checkBoxRemotePackageGroup_API{{key}}">API {{key}}</label>
+    </div>
+    <div class="collapsible-body" style="padding: 3px 12px;">
+        <ul>
+            {{#forEach data}}
+            <li>
+                <h6>
+                    {{#if data.obsoleted}}<i class="material-icons left red-text text-darken-3" title="This archive is obsoleted.">watch_later</i>{{/if}}
+                    {{data.type}} - {{data.displayName}} - {{data.revision}}
+                </h6>
+                {{#forEach data.archives}}
+                <div>
+                    {{#if data.fileExisted}}<i class="material-icons left green-text text-darken-3" title="This archive already exist.">check</i>{{/if}}
+                    <input id="checkBoxArchive_ordinal-{{data._ordinal}}" type="checkbox" class="filled-in" data-json="{{data.asJson}}"/>
+                    <label for="checkBoxArchive_ordinal-{{data._ordinal}}">{{data.fileName}}</label>
+                    <span class="my-badge blue white-text">{{#humanReadableFileSize data.size}}{{/humanReadableFileSize}}</span>
+                    <span class="my-badge green white-text">SHA1: {{data.checksum}}</span>
+                </div>
+                {{/forEach}}
+            </li>
+            {{/forEach}}
+        </ul>
+    </div>
+</li>
+{{/forEach}}
 </script>
 <script type="text/javascript">
     var mTemplate_templateLiArchiveGroup = null;
     var mTemplate_templateCheckBoxWithLabel = null;
+    var mTemplate_templateRemotePackages = null;
 
     function buttonPerformFilter_onClick(e) {
-        var $form = $("#formGetAllArchives");
+        $form = $("#formGetAllArchives");
         $("#ulSdkArchives").html("");
         $.ajax({
             url: $form.attr("action"),
@@ -111,72 +165,110 @@
             processData: false,
             contentType: false,
             success: function (data, textStatus, jqXHR) {
-                $("#ulSdkArchives").trigger("updateContent", data);
+                $("#ulRemotePackageList").trigger("updateContent", data);
             }
         });
     }
 
-    function ulSdkArchives_onUpdateContent(e, data) {
+    function ulRemotePackageList_onUpdateContent(e, data) {
         data = data.data;
-        var lnOrdinal = 0;
-        var $ul = $("#ulSdkArchives").html("");
-        for (var lStrKey in data) {
-            var lJsonArrArchives = data[lStrKey];
-            var $li, $tbody, lStrIdCheckBoxParent;
-            {
-                var lJsonObj = lJsonArrArchives[0];
-                lnOrdinal++;
-                lJsonObj["ordinal"] = lnOrdinal;
-                $li = $(mTemplate_templateLiArchiveGroup(lJsonObj));
-                $tbody = $li.find("table > tbody");
-                lStrIdCheckBoxParent = "#" + $li.find("input[type='checkbox']").attr("id");
+        $ul = $("#ulRemotePackageList").html("");
+        lJsonObjRemotePackages = {};
+        // Group RemotePackages by apiLevel.
+        for (i in data) {
+            lJsonObjRemotePackage = data[i];
+            lStrApiLevel = lJsonObjRemotePackage["apiLevel"];
+            if (lStrApiLevel == null) {
+                lStrApiLevel = "others";
             }
-            for(var i in lJsonArrArchives){
-                var lJsonObj = lJsonArrArchives[i];
-                lnOrdinal++;
-                lJsonObj["ordinal"] = lnOrdinal;
-                lJsonObj["idParentCheckBox"] = lStrIdCheckBoxParent;
-                lJsonObj["json"] = JSON.stringify(lJsonObj);
-                lJsonObj["htmlTitle"] = lJsonObj["fileName"] + "\n" +
-                        "Size: " + $.format.fileSize(lJsonObj["size"]) + " (" + lJsonObj["size"] + " Bytes)\n" +
-                        lJsonObj["checksumType"] + ": " + lJsonObj["checksum"] + "\n" +
-                        lJsonObj["url"];
-                $tbody.append(mTemplate_templateCheckBoxWithLabel(lJsonObj));
+            if(!lJsonObjRemotePackages[lStrApiLevel]) {
+                lJsonObjRemotePackages[lStrApiLevel] = [];
             }
-            $ul.append($li);
-            $(lStrIdCheckBoxParent).bind("change", checkBoxArchiveGroup_onChange);
+            lnIndex = lJsonObjRemotePackages[lStrApiLevel].length;
+            lJsonObjRemotePackages[lStrApiLevel][lnIndex] = lJsonObjRemotePackage;
         }
-    }
-
-    function checkBoxArchiveGroup_onChange(e) {
-        var $target = $(e.target);
-        var $checkBoxies = $target.parent().parent().find("input[data-parent-checkbox='" + ("#" + $target.attr("id")) + "']");
-        $checkBoxies.prop("checked", $target.prop("checked"));
+        // Add ordinal to every archive, they will be used to prevent CheckBox id conflict.
+        {
+            lnOrdinal = 0;
+            for (lStrApiLevel in lJsonObjRemotePackages) {
+                lJsonArrRemotePackages = lJsonObjRemotePackages[lStrApiLevel];
+                for (lnIndex in lJsonArrRemotePackages) {
+                    lJsonObjRemotePackage = lJsonArrRemotePackages[lnIndex];
+                    for (lnIndex2 in lJsonObjRemotePackage["archives"]) {
+                        lJsonObjArchive = lJsonObjRemotePackage["archives"][lnIndex2];
+                        lJsonObjArchive["_ordinal"] = lnOrdinal++;
+                        lJsonObjArchive["asJson"] = JSON.stringify(lJsonObjArchive);
+                    }
+                }
+            }
+        }
+        // Update html
+        $ul.html(mTemplate_templateRemotePackages({"remotePackages": lJsonObjRemotePackages}));
+        // Bind events
+        $("input[type='checkbox'][id^='checkBoxRemotePackageGroup_API']").bind("change", function (e) {
+            //$("input[type='checkbox'][id^='checkBoxArchive_ordinal-'][data-url]").prop("checked", $(e.target).prop("checked"));
+            // console.log(e.target);
+            $target = $(e.target);
+            $($target).parent().parent().find("ul > li > div > input[type='checkbox']")
+                    .prop("checked", $(e.target).prop("checked"));
+        });
     }
 
     function buttonExportURLs_onClick(e){
-        var $checkBoxies = $("#ulSdkArchives input[type='checkbox'][data-parent-checkbox]:checked");
-        var lStrUrls = "";
+        $checkBoxies = $("#ulRemotePackageList input[type='checkbox'][id^='checkBoxArchive_ordinal-']:checked");
+        lStrUrls = "";
+        lnTotalFileSize = 0;
+        lStrChecksums = "";
         $checkBoxies.each(function (index, element) {
-            element = $(element);
-            var lJsonObj = JSON.parse(element.attr("data-json"));
-            lStrUrls += lJsonObj.url + "\n";
+            lJsonObj = JSON.parse($(element).attr("data-json"));
+            lStrUrls += lJsonObj["absoluteUrl"] + "\n";
+            lnTotalFileSize += parseInt(lJsonObj["size"]);
+            lStrChecksums += lJsonObj["checksum"] + " *" + lJsonObj["fileName"] + "\n";
         });
-        var $modal = $("#modalExportURLs");
-        $modal.find("div.modal-content>pre").text(lStrUrls);
+        console.log(lStrChecksums);
+        $modal = $("#modalExportURLs");
+        $modal.find("span.spanTotalFileSize").text($.format.fileSize(lnTotalFileSize));
+        $modal.find("div.modal-content>pre.preUrls").text(lStrUrls);
+        $modal.find("div.modal-content>pre.preChecksums").text(lStrChecksums);
         $modal.openModal();
     }
 
+    function handlebarsHelper_forEach(items, options) {
+        lStrHtml = "";
+        lnIndex = 0;
+        for (key in items) {
+            lJsonObjItem = {
+                "index": lnIndex,
+                "key": key,
+                "_random": parseInt(Math.random() * 100000000) + "",
+                "data": items[key]
+            };
+            lStrHtml += options.fn(lJsonObjItem);
+        }
+        if (lStrHtml.length > 0) return lStrHtml;
+        return options.inverse(this);
+    }
+
+    function handlebarsHelper_humanReadableFileSize(item, options) {
+        if (item != null) {
+            return $.format.fileSize(item);
+        }
+        return item;
+    }
+
     function document_onReady() {
-        Handlebars.registerHelper("ifExists", function (p0, options) {
-            if (p0 != "undefined" && p0 != null) return options.fn(this);
+        Handlebars.registerHelper("ifExists", function (items, options) {
+            if (items != "undefined" && items != null) return options.fn(this);
             return options.inverse(this);
         });
+        Handlebars.registerHelper("forEach", handlebarsHelper_forEach);
+        Handlebars.registerHelper("humanReadableFileSize", handlebarsHelper_humanReadableFileSize);
         mTemplate_templateLiArchiveGroup = Handlebars.compile($("#templateLiArchiveGroup").html());
         mTemplate_templateCheckBoxWithLabel = Handlebars.compile($("#templateCheckBoxWithLabel").html());
+        mTemplate_templateRemotePackages = Handlebars.compile($("#templateRemotePackages").html());
         $("#buttonPerformFilter").bind("click", buttonPerformFilter_onClick);
         $("#buttonExportURLs").bind("click", buttonExportURLs_onClick);
-        $("#ulSdkArchives").bind("updateContent", ulSdkArchives_onUpdateContent);
+        $("#ulRemotePackageList").bind("updateContent", ulRemotePackageList_onUpdateContent);
     }
 
     $(document).ready(document_onReady);

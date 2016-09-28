@@ -1,5 +1,7 @@
 package oing.webapp.android.sdkliteserver.tools.xmleditor;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,6 +13,7 @@ public class RemotePackage {
 	private String channel;
 	private Integer apiLevel;
 	private Boolean isObsoleted;
+	@JsonManagedReference
 	private List<Archive> archives;
 
 	public RemotePackage() {
@@ -76,7 +79,7 @@ public class RemotePackage {
 		this.apiLevel = apiLevel;
 	}
 
-	public Boolean getObsoleted() {
+	public Boolean isObsoleted() {
 		return isObsoleted;
 	}
 

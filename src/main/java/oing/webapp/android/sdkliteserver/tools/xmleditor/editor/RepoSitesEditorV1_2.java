@@ -10,9 +10,10 @@ import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -83,8 +84,8 @@ public class RepoSitesEditorV1_2 implements IRepoSitesEditor {
 		return mDocument.getRootElement().getNamespaceForPrefix("sdk");
 	}
 
-	public static void main(String[] args) throws Exception {
-		File lFile = new File("./out/artifacts/AndroidSDKLiteServer_war_exploded/DataRepository/xml/xml_20160916_orig/addons_list-2.xml");
+	/*public static void main(String[] args) throws Exception {
+		/*File lFile = new File("./out/artifacts/AndroidSDKLiteServer_war_exploded/DataRepository/xml/xml_20160916_orig/addons_list-2.xml");
 		InputStream inputStream = new BufferedInputStream(new FileInputStream(lFile));
 		RepoSitesEditorV1_2 lEditor = new RepoSitesEditorV1_2("https://dl.google.com/android/repository/addons_list-2.xml", inputStream);
 		IOUtils.closeQuietly(inputStream);
@@ -103,5 +104,8 @@ public class RepoSitesEditorV1_2 implements IRepoSitesEditor {
 		);
 		lEditor.rebuild(lListRepoSites);
 		System.out.println(lEditor.mDocument.asXML());
-	}
+		int i = 2;
+		System.out.println(i--);
+		System.out.println(i);
+	}*/
 }

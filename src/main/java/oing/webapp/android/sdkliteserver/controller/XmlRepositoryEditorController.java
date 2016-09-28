@@ -213,7 +213,7 @@ public class XmlRepositoryEditorController {
 		try {
 			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
 			modelMap.put("xmlRepository", lRepoXml);
-			modelMap.put("xmlFile", xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId()));
+			modelMap.put("xmlFile", xmlRepositoryEditorService.getByIdDependsRepoXmlIdOrThrow(id, lRepoXml.getId()));
 		} catch (Exception e) {
 			mLogger.warn(e.toString(), e);
 			modelMap.put("objException", e);
@@ -242,7 +242,7 @@ public class XmlRepositoryEditorController {
 		try {
 			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
 			modelMap.put("xmlRepository", lRepoXml);
-			RepoXmlFile lRepoXmlFile = xmlRepositoryEditorService.getByIdDependsRepoXmlId(id, lRepoXml.getId());
+			RepoXmlFile lRepoXmlFile = xmlRepositoryEditorService.getByIdDependsRepoXmlIdOrThrow(id, lRepoXml.getId());
 			modelMap.put("xmlFile", lRepoXmlFile);
 			if (lRepoXmlFile.getFileName().startsWith("addons_list")) {
 				lStrViewPath = xml_editor_for_repo_sites_view(modelMap, repositoryName, id);

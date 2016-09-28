@@ -62,8 +62,8 @@ public class PatchArchive extends Archive {
 		}
 
 		@Override
-		public Builder isExisted(Boolean value) {
-			super.isExisted(value);
+		public Builder isFileExisted(Boolean value) {
+			super.isFileExisted(value);
 			return this;
 		}
 

@@ -2,7 +2,6 @@ package oing.webapp.android.sdkliteserver.service;
 
 import jodd.http.ProxyInfo;
 import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
-import oing.webapp.android.sdkliteserver.tools.xmleditor.Archive;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.RemotePackage;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.RepoSite;
 import org.dom4j.DocumentException;
@@ -18,7 +17,7 @@ public interface XmlRepositoryEditorService {
 	 * @param id        ID for repo_xml_file
 	 * @param repoXmlId ID for repo_xml
 	 */
-	RepoXmlFile getByIdDependsRepoXmlId(Long id, Long repoXmlId);
+	RepoXmlFile getByIdDependsRepoXmlIdOrThrow(Long id, Long repoXmlId);
 
 	/**
 	 * Get all files from specific repository
@@ -66,7 +65,7 @@ public interface XmlRepositoryEditorService {
 	List<RepoSite> getRepoSitesById(String repositoryName, Long id) throws IOException, DocumentException;
 
 	/**
-	 * Parse a xml file from specific repository, then return all of the {@link Archive}.
+	 * Parse a xml file from specific repository, then return all of the {@link RemotePackage}.
 	 *
 	 * @param repositoryName XML repository name where xml file lives in.
 	 * @param id             XML file id in database, we will find xml file only from {@code repositoryName}.
@@ -79,7 +78,7 @@ public interface XmlRepositoryEditorService {
 	 *
 	 * @param repositoryName XML repository name where xml file lives in.
 	 * @param id             XML file id in database, we will find xml file only from {@code repositoryName}.
-	 * @param repoSites     The {@link RepoSite}s will replace into "addons_list-2.xml".
+	 * @param repoSites      The {@link RepoSite}s will replace into "addons_list-2.xml".
 	 */
 	void updateRepoSite(String repositoryName, Long id, List<RepoSite> repoSites) throws IOException, DocumentException;
 

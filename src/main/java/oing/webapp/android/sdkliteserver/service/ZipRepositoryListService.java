@@ -15,12 +15,12 @@ public interface ZipRepositoryListService {
 	/**
 	 * Select RepoZip by id
 	 */
-	RepoZip getById(Long id);
+	RepoZip getByIdOrThrow(Long id);
 
 	/**
 	 * Select RepoZip by name
 	 */
-	RepoZip getByName(String name);
+	RepoZip getByNameOrThrow(String name);
 
 	/**
 	 * Find out how many zip repositories depends on this({@code repoXmlId}) xml repository.

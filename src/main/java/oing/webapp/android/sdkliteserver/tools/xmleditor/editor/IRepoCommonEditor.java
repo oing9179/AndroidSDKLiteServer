@@ -2,6 +2,7 @@ package oing.webapp.android.sdkliteserver.tools.xmleditor.editor;
 
 import oing.webapp.android.sdkliteserver.tools.xmleditor.RemotePackage;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -14,6 +15,13 @@ public interface IRepoCommonEditor {
 	 * Extract all {@link RemotePackage}s from given xml document.
 	 */
 	List<RemotePackage> extractAll();
+
+	/**
+	 * Extract all {@link RemotePackage}s from given xml document.
+	 *
+	 * @param zipRepoDir Refer to an existing zip repository, gives ability to check zip file exists or not.
+	 */
+	List<RemotePackage> extractAll(File zipRepoDir);
 
 	/**
 	 * Update URLs into xml document.<br/>

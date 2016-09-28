@@ -1,5 +1,7 @@
 package oing.webapp.android.sdkliteserver.tools.xmleditor.editor;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.*;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
 import org.apache.commons.io.IOUtils;
@@ -8,6 +10,7 @@ import org.dom4j.*;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,6 +28,20 @@ public class RepoCommonEditorV1_12 implements IRepoCommonEditor {
 	private final String mStrXmlDirUrl;
 	private Document mDocument;
 
+	private static final RemotePackageType DEFAULT_REMOTE_PACKAGE_TYPE = RemotePackageType.GENERIC_TYPE;
+	private static final String DEFAULT_REMOTE_PACKAGE_TYPE_STRING = "unknown-to-generic-type";
+	private static final BiMap<RemotePackageType, String> mBiMapRemotePackageType2XmlText;
+
+	static {
+		mBiMapRemotePackageType2XmlText = HashBiMap.create();
+		mBiMapRemotePackageType2XmlText.put(DEFAULT_REMOTE_PACKAGE_TYPE, DEFAULT_REMOTE_PACKAGE_TYPE_STRING);
+		mBiMapRemotePackageType2XmlText.put(RemotePackageType.PLATFORM_TYPE, "platform");
+		mBiMapRemotePackageType2XmlText.put(RemotePackageType.SOURCE_TYPE, "source");
+		mBiMapRemotePackageType2XmlText.put(RemotePackageType.SYSTEM_IMAGE_TYPE, "system-image");
+		mBiMapRemotePackageType2XmlText.put(RemotePackageType.ADDON_TYPE, "addon");
+		mBiMapRemotePackageType2XmlText.put(RemotePackageType.ADDON_EXTRA_TYPE, "extra");
+	}
+
 	public RepoCommonEditorV1_12(String url, InputStream inputStreamXmlContent) throws IOException, DocumentException {
 		this(url, inputStreamXmlContent, Charset.forName("UTF-8"));
 	}
@@ -36,6 +53,11 @@ public class RepoCommonEditorV1_12 implements IRepoCommonEditor {
 
 	@Override
 	public List<RemotePackage> extractAll() {
+		return extractAll(null);
+	}
+
+	@Override
+	public List<RemotePackage> extractAll(File zipRepoDir) {
 		List<Node> lListNode;
 		{
 			XPath lXPath = DocumentHelper.createXPath("/*/sdk:*/sdk:archives");
@@ -44,13 +66,13 @@ public class RepoCommonEditorV1_12 implements IRepoCommonEditor {
 		}
 		List<RemotePackage> lListRemotePackages = new LinkedList<>();
 		lListRemotePackages.addAll(lListNode.stream().map(
-				node -> element2RemotePackage(node.getParent())
+				node -> element2RemotePackage(zipRepoDir, node.getParent())
 		).collect(Collectors.toList()));
 		return lListRemotePackages;
 	}
 
 
-	private RemotePackage element2RemotePackage(Element element) {
+	private RemotePackage element2RemotePackage(File zipRepoDir, Element element) {
 		/* We use Validate.isTrue instead of Validate.notNull, because we want a element that have a child element
 		 * named "archives". Validate.notNull throws "NullPointerException" which is doesn't make sense. */
 		Validate.isTrue(element.element("archives") != null, "Undesired element, given: " + element.getName());
@@ -97,33 +119,43 @@ public class RepoCommonEditorV1_12 implements IRepoCommonEditor {
 		}
 		{
 			lStrDisplayName = element.elementText("name-display");
-			if (lStrDisplayName == null) element.elementText("description");
+			if (lStrDisplayName == null) lStrDisplayName = element.elementText("description");
+			if (lStrDisplayName == null) lStrDisplayName = element.getName();
 		}
 		// This RemotePackage is obsoleted if element "obsolete" exists.
 		lzIsObsoleted = element.element("obsolete") != null;
 		// Build a RemotePackage
 		lRemotePackage = new RemotePackage.Builder()
-				.type(RemotePackageTypeV1.forString(element.getName()).getFriendlyName())
+				.type(mBiMapRemotePackageType2XmlText.inverse()
+						.getOrDefault(element.getName(), DEFAULT_REMOTE_PACKAGE_TYPE).getFriendlyName()
+				)
+				// .type(RemotePackageTypeV1.forString(element.getName()).getFriendlyName())
 				.sourceUrl(mStrXmlDirUrl).displayName(lStrDisplayName).revision(lStrRevision).channel(lStrChannel)
 				.apiLevel(lnApiLevel).isObsoleted(lzIsObsoleted).build();
 		// Convert element "archives" to List<Archive>.
-		lRemotePackage.setArchives(element2Archives(element.element("archives"), lRemotePackage));
+		lRemotePackage.setArchives(element2Archives(zipRepoDir, element.element("archives"), lRemotePackage));
 		return lRemotePackage;
 	}
 
-	private List<Archive> element2Archives(Element element, RemotePackage remotePackageRef) {
+	private List<Archive> element2Archives(File zipRepoDir, Element element, RemotePackage remotePackageRef) {
 		Validate.isTrue("archives".equals(element.getName()),
 				"Undesired element, desired: archives, given: " + element.getName());
 		List<Archive> lListArchives = new LinkedList<>();
 		// Parse "sdk:archives"
 		List<Element> lListElementArchives = element.elements("archive");
 		for (Element lElementArchive : lListElementArchives) {
+			String lStrUrl = lElementArchive.elementText("url");
+			File lFileZip = null;
+			if (zipRepoDir != null) {
+				lFileZip = new File(zipRepoDir, lStrUrl);
+			}
 			CompleteArchive archive = new CompleteArchive.Builder(remotePackageRef)
 					.size(Long.parseLong(lElementArchive.elementText("size")))
 					.checksum(lElementArchive.elementText("checksum"))
-					.url(lElementArchive.elementText("url"))
+					.url(lStrUrl)
 					.hostOs(HostOsType.forString(lElementArchive.elementText("host-os")))
 					.hostBits(HostBitsType.forString(lElementArchive.elementText("host-bits")))
+					.isFileExisted(lFileZip != null && lFileZip.exists())
 					.build();
 			lListArchives.add(archive);
 		}

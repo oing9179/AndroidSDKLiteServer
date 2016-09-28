@@ -39,7 +39,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	private RepoXmlFileDao repoXmlFileDao;
 
 	@Override
-	public RepoXmlFile getByIdDependsRepoXmlId(Long id, Long repoXmlId) {
+	public RepoXmlFile getByIdDependsRepoXmlIdOrThrow(Long id, Long repoXmlId) {
 		RepoXmlFile lRepoXmlFile = repoXmlFileDao.selectByIdDependsRepoXmlId(id, repoXmlId);
 		if (lRepoXmlFile != null) return lRepoXmlFile;
 		throw new IllegalArgumentException("XML file not found: id=" + id);
@@ -109,7 +109,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	@Override
 	public List<RepoSite> getRepoSitesById(String repositoryName, Long id) throws IOException, DocumentException {
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
-		RepoXmlFile lRepoXmlFile = getByIdDependsRepoXmlId(id, lRepoXml.getId());
+		RepoXmlFile lRepoXmlFile = getByIdDependsRepoXmlIdOrThrow(id, lRepoXml.getId());
 		InputStream lInputStreamXml = new BufferedInputStream(new FileInputStream(new File(
 				ConfigurationUtil.getXmlRepositoryDir(repositoryName),
 				lRepoXmlFile.getFileName()
@@ -122,7 +122,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	@Override
 	public List<RemotePackage> getRemotePackagesById(String repositoryName, Long id) throws IOException, DocumentException {
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
-		RepoXmlFile lRepoXmlFile = getByIdDependsRepoXmlId(id, lRepoXml.getId());
+		RepoXmlFile lRepoXmlFile = getByIdDependsRepoXmlIdOrThrow(id, lRepoXml.getId());
 		InputStream lInputStreamXml = new BufferedInputStream(new FileInputStream(new File(
 				ConfigurationUtil.getXmlRepositoryDir(repositoryName),
 				lRepoXmlFile.getFileName()
@@ -135,7 +135,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	@Override
 	public void updateRepoSite(String repositoryName, Long id, List<RepoSite> repoSites) throws IOException, DocumentException {
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
-		RepoXmlFile lRepoXmlFile = getByIdDependsRepoXmlId(id, lRepoXml.getId());
+		RepoXmlFile lRepoXmlFile = getByIdDependsRepoXmlIdOrThrow(id, lRepoXml.getId());
 		File lFileXml = new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName), lRepoXmlFile.getFileName());
 		// Load XML file
 		InputStream lInputStreamXml = new BufferedInputStream(new FileInputStream(lFileXml));
@@ -152,7 +152,7 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	@Override
 	public void updateArchiveURLs(String repositoryName, Long id, String[] urls) throws IOException, DocumentException {
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
-		RepoXmlFile lRepoXmlFile = getByIdDependsRepoXmlId(id, lRepoXml.getId());
+		RepoXmlFile lRepoXmlFile = getByIdDependsRepoXmlIdOrThrow(id, lRepoXml.getId());
 		File lFileXml = new File(ConfigurationUtil.getXmlRepositoryDir(repositoryName), lRepoXmlFile.getFileName());
 		// Load XML file
 		InputStream lInputStreamXml = new BufferedInputStream(new FileInputStream(lFileXml));
