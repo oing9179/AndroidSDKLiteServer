@@ -18,9 +18,10 @@
     </c:if>
     <div class="card">
         <div class="card-content" style="padding-top:0;">
-            <span class="card-title">XML editor</span><br/>
+            <h4 class="card-title" style="margin: 0;">XML editor</h4>
             <span>${xmlRepository.name} / ${xmlFile.fileName}</span>
-            <div class="divider" style="margin:0 -20px;"></div>
+            <span class="my-badge pink lighten-2 white-text">${xmlFile.url}</span>
+            <div class="divider" style="margin:6px -20px 3px -20px;"></div>
             <form id="formXmlEditor" method="post"
                   action="admin/repository/xml/${xmlRepository.name}/xml_editor_for_repo_sites.do">
                 <input type="hidden" name="id" value="${xmlFile.id}"/>

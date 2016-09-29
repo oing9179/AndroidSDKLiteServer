@@ -9,6 +9,7 @@ import oing.webapp.android.sdkliteserver.model.RepoZip;
 import oing.webapp.android.sdkliteserver.service.ZipRepositoryEditorService;
 import oing.webapp.android.sdkliteserver.service.ZipRepositoryListService;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.Archive;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.CompleteArchive;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.HostOsType;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.RemotePackage;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.editor.IRepoCommonEditor;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,42 +87,50 @@ public class ZipRepositoryEditorServiceImpl implements ZipRepositoryEditorServic
 		List<Archive> lListArchivesUnwanted = new LinkedList<>();
 
 		// Find out obsoleted and existed file, then add it into lListArchivesUnwanted.
-		lListRemotePackages.stream()
-				.filter(remotePackage -> isIncludeObsoleted && remotePackage.isObsoleted())
-				.forEach(remotePackage -> {
-							lListArchivesUnwanted.addAll(remotePackage.getArchives()
-									.stream()
-									.filter(Archive::isFileExisted)
-									.collect(Collectors.toList()));
-						}
-				);
-		{
-			// Find out zip files which is not defined in related xml repository.
+		if (isIncludeObsoleted) {
+			lListRemotePackages.stream()
+					.filter(RemotePackage::isObsoleted)
+					.forEach(remotePackage -> {
+								lListArchivesUnwanted.addAll(remotePackage.getArchives()
+										.stream()
+										.filter(Archive::isFileExisted)
+										.collect(Collectors.toList()));
+							}
+					);
+		}
+		// Find out zip files which is not defined in related xml repository.
+		if (isIncludeNotInRepo) {
 			File lFileZipRepo = ConfigurationUtil.getZipRepositoryDir(lRepoZip.getName());
-			File[] lFileArrZip = lFileZipRepo.listFiles((dir, name) -> name.lastIndexOf(".zip") != -1);
-			if (lFileArrZip != null) {
-				Arrays.parallelSort(lFileArrZip);
-				List<Archive> lListArchivesNotExisted = new ArrayList<>();
-				lListRemotePackages.forEach(remotePackage -> {
-							lListArchivesNotExisted.addAll(remotePackage.getArchives().stream()
-									/*
-									 * The reason of "!archive.isFileExisted()" is:
-									 * If archive does exist on local storage, that means the definition of this archive
-									 * can be found in given xml repository, otherwise not.
-									 */
-									.filter(archive -> !archive.isFileExisted())
-									.collect(Collectors.toList())
-							);
-						}
+			List<File> lListFilesZip = (List<File>) FileUtils.listFiles(lFileZipRepo, new String[]{"zip"}, true);
+			Collections.sort(lListFilesZip);
+			List<Archive> lListArchivesExisted = new ArrayList<>();
+			// Find out all archives which existed in local storage.
+			lListRemotePackages.forEach(remotePackage -> {
+						lListArchivesExisted.addAll(remotePackage.getArchives().stream()
+								.filter(Archive::isFileExisted)
+								.collect(Collectors.toList())
+						);
+					}
+			);
+			/*
+			* Remove all files which can be found in local zip files list.
+			*/
+			lListArchivesExisted.forEach(archive -> {
+				File lFileZip = new File(lFileZipRepo, archive.getUrl());
+				lListFilesZip.remove(lFileZip);
+			});
+			RemotePackage lRemotePackageFake = new RemotePackage.Builder()
+					.displayName("Fake Remote Package")
+					.sourceUrl("https://fakeurl.com").build();
+			lListFilesZip.forEach(file -> {
+				String lStrUrl = lFileZipRepo.toURI().relativize(file.toURI()).getPath();
+				lListArchivesUnwanted.add(new CompleteArchive.Builder(lRemotePackageFake)
+						.url(lStrUrl)
+						.size(file.length())
+						.isFileExisted(true)
+						.build()
 				);
-				for (File file : lFileArrZip) {
-					lListArchivesNotExisted.forEach(archive -> {
-						if (file.equals(new File(lFileZipRepo, archive.getUrl()))) {
-							lListArchivesUnwanted.add(archive);
-						}
-					});
-				}
-			}
+			});
 		}
 		return lListArchivesUnwanted;
 	}

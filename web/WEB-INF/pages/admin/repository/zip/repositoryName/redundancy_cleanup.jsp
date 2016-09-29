@@ -4,6 +4,7 @@
 <html>
 <head>
     <%@ include file="/WEB-INF/pages/common/html_head.jsp" %>
+    <script type="text/javascript" src="static/js/jquery-fileSizeFormat.js"></script>
 </head>
 <body>
 <%@ include file="/WEB-INF/pages/common/navbar_materialize.jsp" %>
@@ -24,12 +25,13 @@
                 <div class="col s12 right-align">
                     <form id="formRedundancyCleanup" method="post"
                           action="admin/repository/zip/${zipRepository.name}/get_no_longer_needed_archives.do">
-                        <input id="checkBoxAbandonObsoletedArchives" type="checkbox" name="isAbandonObsoleted"
+                        <input id="checkBoxIncludeObsoletedArchives" type="checkbox" name="isIncludeObsoleted"
                                checked="checked" class="filled-in"/>
-                        <label for="checkBoxAbandonObsoletedArchives" title="Abandon obsoleted archives.">Obsoleted</label>
-                        <input id="checkBoxAbandonNotExistedArchives" type="checkbox" name="isAbandonNotExisted"
+                        <label for="checkBoxIncludeObsoletedArchives" title="Include obsoleted archives.">Obsoleted</label>
+                        <input id="checkBoxIncludeNotInRepoArchives" type="checkbox" name="isIncludeNotInRepo"
                                checked="checked" class="filled-in"/>
-                        <label for="checkBoxAbandonNotExistedArchives" title="Abandon not-existed archives.">Not existed</label>
+                        <label for="checkBoxIncludeNotInRepoArchives"
+                               title="Include archives which definition is not in xml repository.">Not in repo</label>
                         <button id="buttonPerformFilter" type="button"
                                 class="btn btn-less-padding waves-effect waves-light indigo">
                             <i class="material-icons left">filter_list</i>Filter
@@ -78,17 +80,8 @@
             <input id="checkBoxArchive_{{ordinal}}" type="checkbox" class="filled-in"
                    title="Check to include this archive." data-json="{{json}}"/>
             <label for="checkBoxArchive_{{ordinal}}" title="{{url}}">
-                {{#if obsoleted}}<i class="material-icons left red-text text-darken-3" title="This archive is obsoleted.">watch_later</i>{{/if}}
-                {{#if existed}}{{else}}<i class="material-icons left red-text text-darken-3"
-                                          title="This archive was not found in xml repository '${xmlRepository.name}'.">delete</i>{{/if}}
-                {{type}}
-                {{#ifExists displayName}}
-                {{displayName}}
-                {{else}}
-                {{description}}
-                {{/ifExists}}{{#ifExists revision}} - r{{revision}}{{/ifExists}}
-                {{#ifExists hostOs}} {{hostOs}} {{/ifExists}}
-                {{#ifExists hostBits}} {{hostBits}}bit {{/ifExists}}
+                {{url}}
+                <span class="my-badge red darken-4 white-text">{{#humanReadableFileSize size}}{{/humanReadableFileSize}}</span>
             </label>
         </td>
     </tr>
@@ -99,6 +92,7 @@
 
     function buttonPerformFilter_onClick(e) {
         var $form = $("#formRedundancyCleanup");
+        $("#checkBoxArchiveCheckAll").prop("checked", false);
         $("#tableSdkArchiveList>tbody").html("");
         $.ajax({
             url: $form.attr("action"),
@@ -126,7 +120,7 @@
         data = data.data;
 
         if (data.length == 0) {
-            Materialize.toast("No files can be found in this condition.", 3000);
+            Materialize.toast("No files can be found in current condition.", 3000);
             return;
         }
         var $tbody = $(e.target).find("tbody");
@@ -148,9 +142,9 @@
             element = $(element);
             if (!element.prop("checked")) return true;// Go next loop (aka java: continue;).
             var lJsonObj = JSON.parse(element.attr("data-json"));
-            $pre.append(lJsonObj["fileName"] + "\n");
+            $pre.append(lJsonObj["url"] + "\n");
             $form.append(
-                    $("<input/>").attr("type", "hidden").attr("name", "fileNames").attr("value", lJsonObj["fileName"])
+                    $("<input/>").attr("type", "hidden").attr("name", "fileNames").attr("value", lJsonObj["url"])
             );
         });
         if ($form.find("input").length == 0) {
@@ -182,11 +176,19 @@
         });
     }
 
+    function handlebarsHelper_humanReadableFileSize(item, options) {
+        if (item != null) {
+            return $.format.fileSize(item);
+        }
+        return item;
+    }
+
     function document_onReady() {
         Handlebars.registerHelper("ifExists", function (p0, options) {
             if (p0 != "undefined" && p0 != null) return options.fn(this);
             return options.inverse(this);
         });
+        Handlebars.registerHelper("humanReadableFileSize", handlebarsHelper_humanReadableFileSize);
         mTemplate_templateTableRow = Handlebars.compile($("#templateTableRow").html());
         $("#buttonPerformFilter").bind("click", buttonPerformFilter_onClick);
         $("#buttonDeleteArchives").bind("click", buttonDeleteArchives_onClick);

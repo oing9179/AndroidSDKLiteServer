@@ -105,7 +105,7 @@ public class ZipRepositoryEditorController {
 	@ResponseBody
 	public JSONObject get_no_longer_needed_archives(@PathVariable("repositoryName") String repositoryName,
 	                                                @RequestParam(value = "isIncludeObsoleted", required = false, defaultValue = "false") boolean isIncludeObsoleted,
-	                                                @RequestParam(value = "inIncludeNotExisted", required = false, defaultValue = "false") boolean isIncludeNotInRepo)
+	                                                @RequestParam(value = "isIncludeNotInRepo", required = false, defaultValue = "false") boolean isIncludeNotInRepo)
 			throws IOException, DocumentException {
 		JSONObject lJsonObjResponse = new JSONObject();
 		lJsonObjResponse.put("data", zipRepositoryEditorService.getNoLongerNeededArchives(repositoryName, isIncludeObsoleted, isIncludeNotInRepo));

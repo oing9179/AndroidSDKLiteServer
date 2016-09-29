@@ -70,13 +70,13 @@
     <context:component-scan base-package="oing.webapp.android.sdkliteserver"/>
     <mvc:annotation-driven conversion-service="conversionService"/>
     <mvc:default-servlet-handler/>
-    <mvc:interceptors>
+    <!-- <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/admin/**"/>
             <mvc:exclude-mapping path="/admin/login.do"/>
             <bean class="oing.webapp.android.sdkliteserver.controller.interceptor.AdminAuthHandlerInterceptorAdapter"/>
         </mvc:interceptor>
-    </mvc:interceptors>
+    </mvc:interceptors> -->
 
     <bean id="webappStartupListener" class="oing.webapp.android.sdkliteserver.misc.WebappStartupListener"
           init-method="onStartup">

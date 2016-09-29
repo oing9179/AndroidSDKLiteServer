@@ -36,13 +36,14 @@ import java.util.List;
 @Controller
 @RequestMapping("/android/repository/")
 public class DataRepositoryController {
+	private static final String REQUEST_MAPPING_URI = "/android/repository/";
 	private static final Logger mLogger = LoggerFactory.getLogger(DataRepositoryController.class);
 	@Autowired
 	private XmlRepositoryListService xmlRepositoryListService;
 	@Autowired
 	private ZipRepositoryListService zipRepositoryListService;
 
-	@RequestMapping("/*.*")
+	@RequestMapping("**")
 	public ResponseEntity _index(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, HttpSessionRequiredException {
 		{
@@ -71,7 +72,7 @@ public class DataRepositoryController {
 			RepoXml lRepoXml = getRepoXml(request.getServletContext());
 			lFileXml = ConfigurationUtil.getXmlRepositoryDir(lRepoXml.getName());
 			String lStrFileName = request.getRequestURI();
-			lStrFileName = lStrFileName.substring(lStrFileName.lastIndexOf('/') + 1);
+			lStrFileName = lStrFileName.substring(lStrFileName.indexOf(REQUEST_MAPPING_URI) + REQUEST_MAPPING_URI.length());
 			lFileXml = new File(lFileXml, lStrFileName);
 		}
 		if (!lFileXml.exists()) {
@@ -97,7 +98,7 @@ public class DataRepositoryController {
 			RepoZip lRepoZip = getRepoZip(request.getServletContext());
 			lFileZip = ConfigurationUtil.getZipRepositoryDir(lRepoZip.getName());
 			String lStrFileName = request.getRequestURI();
-			lStrFileName = lStrFileName.substring(lStrFileName.lastIndexOf('/') + 1);
+			lStrFileName = lStrFileName.substring(lStrFileName.indexOf(REQUEST_MAPPING_URI) + REQUEST_MAPPING_URI.length());
 			lFileZip = new File(lFileZip, lStrFileName);
 		}
 		if (!lFileZip.exists()) {

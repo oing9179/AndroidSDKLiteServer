@@ -52,7 +52,7 @@
                         <label for="checkBoxIncludeSysMacOSX" title="Include Mac OSX archives.">Mac OSX</label>
                         <input id="checkBoxIncludeSysWindows" name="isIncludeSysWin" type="checkbox" class="filled-in" checked/>
                         <label for="checkBoxIncludeSysWindows" title="Include Windows archives.">Windows</label>
-                        <input id="checkBoxIncludeObsoleteArchives" name="isIncludeObsoleted" type="checkbox" class="filled-in" checked/>
+                        <input id="checkBoxIncludeObsoleteArchives" name="isIncludeObsoleted" type="checkbox" class="filled-in"/>
                         <label for="checkBoxIncludeObsoleteArchives" title="Include obsoleted archives.">Obsoleted</label>
                         <input id="checkBoxIncludeExistedArchives" name="isIncludeExisted" type="checkbox" class="filled-in" checked/>
                         <label for="checkBoxIncludeExistedArchives" title="Include existed archives.">Existed</label>
@@ -87,37 +87,6 @@
         <a href="javascript:" class="btn-flat modal-action modal-close waves-effect waves-green">Dismiss</a>
     </div>
 </div>
-<script id="templateLiArchiveGroup" type="text/x-handlebars-template">
-    <li>
-        <div class="collapsible-header">
-            <input id="checkBoxArchiveGroup_{{ordinal}}" type="checkbox" class="filled-in"/>
-            <label for="checkBoxArchiveGroup_{{ordinal}}">
-                {{#ifExists apiLevel}}
-                API {{apiLevel}}
-                {{else}}
-                Others
-                {{/ifExists}}
-            </label>
-        </div>
-        <div class="collapsible-body" style="padding-left:30px;"><table><tbody></tbody></table></div>
-    </li>
-</script>
-<script id="templateCheckBoxWithLabel" type="text/x-handlebars-template">
-    <tr>
-        <td style="padding:6px;">
-            <input id="checkBoxArchive_{{ordinal}}" type="checkbox" class="filled-in" data-json="{{json}}"
-                   data-parent-checkbox="{{idParentCheckBox}}" title="Check to include this archive."/>
-            <label for="checkBoxArchive_{{ordinal}}" title="{{htmlTitle}}">
-                {{#if obsoleted}}<i class="material-icons left red-text text-darken-3" title="This archive is obsoleted.">watch_later</i>{{/if}}
-                {{#if fileExisted}}<i class="material-icons left green-text text-darken-3" title="This archive already exist.">check</i>{{/if}}
-                {{type}}
-                {{#ifExists displayName}} {{displayName}} {{/ifExists}} - r{{revision}}({{channel}})
-                {{#ifExists hostOs}} {{hostOs}} {{/ifExists}}
-                {{#ifExists hostBits}} {{hostBits}} {{/ifExists}}
-            </label>
-        </td>
-    </tr>
-</script>
 <script id="templateRemotePackages" type="text/x-handlebars-template">
 {{#forEach remotePackages}}
 <li>
@@ -150,8 +119,6 @@
 {{/forEach}}
 </script>
 <script type="text/javascript">
-    var mTemplate_templateLiArchiveGroup = null;
-    var mTemplate_templateCheckBoxWithLabel = null;
     var mTemplate_templateRemotePackages = null;
 
     function buttonPerformFilter_onClick(e) {
@@ -223,7 +190,7 @@
             lJsonObj = JSON.parse($(element).attr("data-json"));
             lStrUrls += lJsonObj["absoluteUrl"] + "\n";
             lnTotalFileSize += parseInt(lJsonObj["size"]);
-            lStrChecksums += lJsonObj["checksum"] + " *" + lJsonObj["fileName"] + "\n";
+            lStrChecksums += lJsonObj["checksum"] + " *" + lJsonObj["url"] + "\n";
         });
         console.log(lStrChecksums);
         $modal = $("#modalExportURLs");
@@ -263,8 +230,6 @@
         });
         Handlebars.registerHelper("forEach", handlebarsHelper_forEach);
         Handlebars.registerHelper("humanReadableFileSize", handlebarsHelper_humanReadableFileSize);
-        mTemplate_templateLiArchiveGroup = Handlebars.compile($("#templateLiArchiveGroup").html());
-        mTemplate_templateCheckBoxWithLabel = Handlebars.compile($("#templateCheckBoxWithLabel").html());
         mTemplate_templateRemotePackages = Handlebars.compile($("#templateRemotePackages").html());
         $("#buttonPerformFilter").bind("click", buttonPerformFilter_onClick);
         $("#buttonExportURLs").bind("click", buttonExportURLs_onClick);
