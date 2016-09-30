@@ -4,6 +4,7 @@ import oing.webapp.android.sdkliteserver.controller.interceptor.HttpSessionListe
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,16 @@ public class WebappStartupListener {
 	private SqlSessionFactory sqlSessionFactory;
 	private Logger mLogger = LoggerFactory.getLogger(WebappStartupListener.class);
 
-	public void onStartup() throws IOException, SQLException {
+	public void onStartup() throws IOException, SQLException, DocumentException {
 		loadConfiguration();
 		createDataRepositoryDirsIfNotExist();
 		createDatabaseIfNotExist();
 		servletContext.addListener(new HttpSessionListenerImpl());
 	}
 
-	private void loadConfiguration() throws IOException {
-		ConfigurationUtil.load(new File(servletContext.getRealPath("/WEB-INF/config.properties")));
+	private void loadConfiguration() throws IOException, DocumentException {
+		// ConfigurationUtil.load(new File(servletContext.getRealPath("/WEB-INF/config.properties")));
+		ConfigurationUtil.load(new File(servletContext.getRealPath("/WEB-INF/config.xml")));
 	}
 
 	private void createDatabaseIfNotExist() throws IOException, SQLException {

@@ -1,45 +1,93 @@
 package oing.webapp.android.sdkliteserver.utils;
 
+import org.apache.commons.io.IOUtils;
+import org.dom4j.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
 
 import javax.servlet.ServletContext;
 import java.io.*;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * A global configuration utility
- *
- * @author oing9179
- */
 @Component
 public class ConfigurationUtil implements ServletContextAware {
-	private static ServletContext servletContext;
-	private static Properties mProperties;
-	private static File mFileLastLoaded;
+	private static final String ELEMENT_NAME_PROPERTY = "property";
+	private static ServletContext mServletContext;
+	private static Document mDocument;
 
-	public static void load(File file) throws IOException {
-		mProperties = new Properties();
-		mProperties.load(new InputStreamReader(new FileInputStream(file), "UTF8"));
-		mFileLastLoaded = file;
+	private ConfigurationUtil() {
 	}
 
-	public static void save() throws IOException {
-		OutputStreamWriter lWriter = new OutputStreamWriter(new FileOutputStream(mFileLastLoaded), "UTF8");
-		mProperties.store(lWriter, "File encoded as UTF-8\nDO NOT DO ANYTHING to this file if you DON'T know what are you doing.");
+	public static void load(File configFile) throws IOException, DocumentException {
+		InputStream lInputStreamXml = new BufferedInputStream(new FileInputStream(configFile));
+		String lStrXmlContent = IOUtils.toString(lInputStreamXml, "UTF-8");
+		IOUtils.closeQuietly(lInputStreamXml);
+		mDocument = DocumentHelper.parseText(lStrXmlContent);
+	}
+
+	public static void save(File configFile) throws IOException {
+		OutputStreamWriter lOutputStreamWriter = new OutputStreamWriter(new FileOutputStream(configFile));
+		mDocument.write(lOutputStreamWriter);
+		IOUtils.closeQuietly(lOutputStreamWriter);
 	}
 
 	public static String get(String key) {
-		return mProperties.getProperty(key);
+		Element lElement = element(key);
+		if (lElement == null) return null;
+		return lElement.getText();
+	}
+
+	public static List<String> getList(String key) {
+		Element lElement = element(key);
+		if (lElement == null) return null;
+		List<Element> lListElementsValue = lElement.element("list").elements("value");
+		List<String> lListStrValues = new ArrayList<>(lListElementsValue.size());
+		for (Element element : lListElementsValue) {
+			lListStrValues.add(element.getText());
+		}
+		return lListStrValues;
 	}
 
 	public static void put(String key, String value) {
-		mProperties.put(key, value);
+		Element lElement = element(key);
+		if (lElement == null) {
+			lElement = mDocument.getRootElement().addElement(ELEMENT_NAME_PROPERTY);
+		}
+		lElement.addAttribute("key", key).setText(value);
+	}
+
+	public static void put(String key, List<String> values) {
+		Element lElement = element(key);
+		if (lElement == null) {
+			lElement = mDocument.getRootElement().addElement(ELEMENT_NAME_PROPERTY);
+			lElement = lElement.addElement("list");
+		} else {
+			lElement.element("list");
+		}
+		lElement.clearContent();
+		for (String value : values) {
+			lElement.addElement("value").setText(value);
+		}
+	}
+
+	@Override
+	public void setServletContext(ServletContext servletContext) {
+		mServletContext = servletContext;
+	}
+
+	private static Element element(String key) {
+		List<Element> lListElementsProperty = mDocument.getRootElement().elements(ELEMENT_NAME_PROPERTY);
+		for (Element element : lListElementsProperty) {
+			Attribute lAttribute = element.attribute("key");
+			if (lAttribute != null && lAttribute.getValue().equals(key)) return element;
+		}
+		return null;
 	}
 
 	// ---------- Quick access methods ----------
 	public static File getWebappRootDir() {
-		return new File(servletContext.getRealPath("/"));
+		return new File(mServletContext.getRealPath("/"));
 	}
 
 	private static final String TEXT_ABSOLUTE_COLON = "absolute:";
@@ -59,10 +107,5 @@ public class ConfigurationUtil implements ServletContextAware {
 
 	public static File getZipRepositoryDir(String repositoryName) {
 		return new File(getDataRepositoryDir(), "/zip/" + repositoryName);
-	}
-
-	@Override
-	public void setServletContext(ServletContext servletContext) {
-		ConfigurationUtil.servletContext = servletContext;
 	}
 }

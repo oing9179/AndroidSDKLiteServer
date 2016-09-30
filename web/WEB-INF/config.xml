@@ -1,0 +1,13 @@
+<config>
+    <property key="admin.password_sha256">aaffebecec560fec66e75f24062224ffa4e07696d2ae9a1fee3707c3f8fd9373</property>
+    <property key="data_repository.location">DataRepository/</property>
+    <property key="database.location">main.sqlite3</property>
+    <property key="url.initial_repo_update">
+        <list>
+            <value>https://dl.google.com/android/repository/addons_list-3.xml</value>
+            <value>https://dl.google.com/android/repository/addons_list-2.xml</value>
+            <value>https://dl.google.com/android/repository/repository2-1.xml</value>
+            <value>https://dl.google.com/android/repository/repository-11.xml</value>
+        </list>
+    </property>
+</config>

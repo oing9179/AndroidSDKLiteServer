@@ -9,8 +9,7 @@ import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
 import oing.webapp.android.sdkliteserver.service.AutomaticAdditionEventListener;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryEditorService;
 import oing.webapp.android.sdkliteserver.tools.autoadd.command.Command;
-import oing.webapp.android.sdkliteserver.tools.autoadd.command.DownloadRepoCommonXmlCommand;
-import oing.webapp.android.sdkliteserver.tools.autoadd.command.DownloadRepoSitesXmlCommand;
+import oing.webapp.android.sdkliteserver.tools.autoadd.command.DownloadRepoXmlCommandFactory;
 import oing.webapp.android.sdkliteserver.tools.autoadd.executor.CommandExecutionListener;
 import oing.webapp.android.sdkliteserver.tools.autoadd.executor.CommandExecutor;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.RemotePackage;
@@ -54,11 +53,10 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	public void automaticAddition(String repositoryName, boolean isPreferHttpsConnection, ProxyInfo proxyInfo, AutomaticAdditionEventListener listener) throws Exception {
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
 		List<Command> lListCommands = new ArrayList<>();
-
-		lListCommands.add(new DownloadRepoSitesXmlCommand(repoXmlFileDao, lRepoXml, ConfigurationUtil.get("url.repo_sites_v3")));
-		lListCommands.add(new DownloadRepoSitesXmlCommand(repoXmlFileDao, lRepoXml, ConfigurationUtil.get("url.repo_sites_v2")));
-		lListCommands.add(new DownloadRepoCommonXmlCommand(repoXmlFileDao, lRepoXml, ConfigurationUtil.get("url.repo_common_v2")));
-		lListCommands.add(new DownloadRepoCommonXmlCommand(repoXmlFileDao, lRepoXml, ConfigurationUtil.get("url.repo_common_v1")));
+		List<String> lListUrls = ConfigurationUtil.getList("url.initial_repo_update");
+		for (String url : lListUrls) {
+			lListCommands.add(DownloadRepoXmlCommandFactory.createCommand(repoXmlFileDao, lRepoXml, url));
+		}
 		new CommandExecutor(lListCommands, new CommandExecutionListenerImpl(listener)).execute();
 	}
 
