@@ -35,7 +35,7 @@ public interface XmlRepositoryEditorService {
 	 * @param listener                The event listener let controller knows how many jobs completed in this service.
 	 */
 	void automaticAddition(String repositoryName, boolean isPreferHttpsConnection, ProxyInfo proxyInfo,
-	                       AutomaticAdditionEventListener listener) throws Exception;
+	                       String[] xmlDownloadUrls, AutomaticAdditionEventListener listener) throws Exception;
 
 	/**
 	 * Fill(or update) a xml repository manually.

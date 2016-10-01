@@ -50,11 +50,12 @@ public class XmlRepositoryEditorServiceImpl implements XmlRepositoryEditorServic
 	}
 
 	@Override
-	public void automaticAddition(String repositoryName, boolean isPreferHttpsConnection, ProxyInfo proxyInfo, AutomaticAdditionEventListener listener) throws Exception {
+	public void automaticAddition(String repositoryName, boolean isPreferHttpsConnection, ProxyInfo proxyInfo,
+	                              String[] xmlDownloadUrls, AutomaticAdditionEventListener listener) throws Exception {
 		RepoXml lRepoXml = getRepoXmlByNameOrThrow(repositoryName);
 		List<Command> lListCommands = new ArrayList<>();
-		List<String> lListUrls = ConfigurationUtil.getList("url.initial_repo_update");
-		for (String url : lListUrls) {
+		//noinspection ConstantConditions
+		for (String url : xmlDownloadUrls) {
 			lListCommands.add(DownloadRepoXmlCommandFactory.createCommand(repoXmlFileDao, lRepoXml, url));
 		}
 		new CommandExecutor(lListCommands, new CommandExecutionListenerImpl(listener)).execute();

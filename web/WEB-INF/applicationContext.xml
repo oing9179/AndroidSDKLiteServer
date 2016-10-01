@@ -10,7 +10,7 @@
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
-    <context:property-placeholder location="WEB-INF/config.properties" file-encoding="UTF8"/>
+    <context:property-placeholder location="WEB-INF/config.database.properties" file-encoding="UTF8"/>
     <!-- DataSource and TransactionManager -->
     <bean id="dataSource" class="oing.webapp.android.sdkliteserver.dao.DataRepositoryDataSource">
         <property name="databaseLocation" value="${database.location}"/>
@@ -70,13 +70,13 @@
     <context:component-scan base-package="oing.webapp.android.sdkliteserver"/>
     <mvc:annotation-driven conversion-service="conversionService"/>
     <mvc:default-servlet-handler/>
-    <!-- <mvc:interceptors>
+    <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/admin/**"/>
             <mvc:exclude-mapping path="/admin/login.do"/>
             <bean class="oing.webapp.android.sdkliteserver.controller.interceptor.AdminAuthHandlerInterceptorAdapter"/>
         </mvc:interceptor>
-    </mvc:interceptors> -->
+    </mvc:interceptors>
 
     <bean id="webappStartupListener" class="oing.webapp.android.sdkliteserver.misc.WebappStartupListener"
           init-method="onStartup">

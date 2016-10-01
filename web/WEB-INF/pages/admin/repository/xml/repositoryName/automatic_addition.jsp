@@ -14,7 +14,7 @@
             <span class="black-text">${xmlRepository.name}</span>
             <div class="divider" style="margin:0 -20px;"></div>
             <form id="formTaskOptions" action="admin/repository/xml/${xmlRepository.name}/automatic_addition.do"
-                  method="post" onsubmit="return false;" enctype="multipart/form-data">
+                  method="post" onsubmit="return false;" enctype="multipart/form-data" style="padding-bottom: 1px;">
                 <div class="row">
                     <!-- CheckBox: force https -->
                     <div class="col switch s12 m12 l12" style="padding-top:12px;">
@@ -64,6 +64,17 @@
                         <label for="textBoxProxyInfo_password">Proxy password(optional)</label>
                     </div>
                 </div>
+                <div class="row center-align">
+                    <ul id="ulXmlDownloadUrlSelection">
+                        <c:forEach var="lStrUrl" items="${listXmlDownloadUrls}" varStatus="varStatus">
+                            <li>
+                                <input id="checkBoxXmlDownloadUrlSelection_${varStatus.index}" type="checkbox"
+                                       name="xmlDownloadUrlSelection" class="filled-in" value="${varStatus.index}"/>
+                                <label for="checkBoxXmlDownloadUrlSelection_${varStatus.index}">${lStrUrl}</label>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </div>
                 <div class="row">
                     <!-- Button: Start task -->
                     <div class="col s12 m12 l12 center-align">
@@ -93,7 +104,7 @@
     </div>
 </div>
 <script id="templateToastError" type="text/x-handlebars-template">
-    <i class="material-icons left">error</i>{{text}}
+    <i class="material-icons left">android</i>{{text}}
 </script>
 <script type="text/javascript">
     var mCompiledTemplate_templateToastError;
@@ -113,6 +124,12 @@
                 Materialize.toast(mCompiledTemplate_templateToastError(lJsonObj), 5000, "red darken-4");
                 throw e;
             }
+            // Validate checkBoxXmlDownloadUrlSelection select at least one.
+            if ($("#ulXmlDownloadUrlSelection input[type='checkbox']:checked").length < 1) {
+                Materialize.toast(mCompiledTemplate_templateToastError({"text": "Select at least one url."}), 5000, "red darken-4");
+                return;
+            }
+            // Hide form and show ProgressBar.
             $form.hide();
             $("#divProgressIndicator").show();
             // Send http request

@@ -48,9 +48,14 @@
                                value="${upstreamSpeedLimit}" type="number" step="1" min="-1"/>
                         <label for="textBoxUpstreamSpeedLimit">Server-side upstream speed limit(Bytes/s)</label>
                     </div>
-                    <div class="col s12">
+                    <div class="col s12" style="padding-bottom: 12px;">
                         <button class="btn indigo waves-effect waves-light">
                             <i class="material-icons left">check</i>Deploy
+                        </button>
+                    </div>
+                    <div class="col s12">
+                        <button id="buttonReloadConfiguration" type="button" class="btn waves-effect waves-light">
+                            <i class="material-icons left">refresh</i>Reload configuration
                         </button>
                     </div>
                 </div>
@@ -59,8 +64,32 @@
     </div>
 </div>
 <script type="text/javascript">
+    function buttonReloadConfiguration_onClick(e) {
+        $.ajax({
+            "url": "admin/dashboard/reload_configuration.do",
+            "type": "GET",
+            "beforeSend": function (jqXHR, settings) {
+                $("#buttonReloadConfiguration").prop("disabled", true);
+            },
+            "success": function (data, textStatus, jqXHR) {
+                if (data["success"] == true) {
+                    Materialize.toast("Configuration reloaded.", 3000, "green darken-2");
+                } else{
+                    Materialize.toast("Failed to load configuration: " + data["errorMessage"], 5000, "red darken-2");
+                }
+            },
+            "error": function (jqXHR, textStatus, errorThrown) {
+                Materialize.toast("Unknown error(" + textStatus + "): " + errorThrown, 5000, "red darken-2");
+            },
+            "complete": function (jqXHR, textStatus) {
+                $("#buttonReloadConfiguration").prop("disabled", false);
+            }
+        });
+    }
+
     $(document).ready(function () {
         $('select').material_select();
+        $("#buttonReloadConfiguration").bind("click", buttonReloadConfiguration_onClick);
     });
 </script>
 </body>

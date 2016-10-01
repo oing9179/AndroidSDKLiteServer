@@ -4,6 +4,10 @@ import oing.webapp.android.sdkliteserver.io.LimitedBandwidthInputStream;
 
 public class ApplicationConstants {
 	/**
+	 * Where configuration file stores, in relative path to web application root.
+	 */
+	public static final String FILE_PATH_CONFIG = "/WEB-INF/config.xml";
+	/**
 	 * Session attribute for {@link oing.webapp.android.sdkliteserver.controller.interceptor.AdminAuthHandlerInterceptorAdapter}
 	 * In Unix-Timestamp.
 	 */

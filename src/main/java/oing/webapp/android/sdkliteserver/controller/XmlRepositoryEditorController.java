@@ -11,6 +11,7 @@ import oing.webapp.android.sdkliteserver.service.AutomaticAdditionEventListener;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryEditorService;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryListService;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.RepoSite;
+import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +59,7 @@ public class XmlRepositoryEditorController {
 	public String automatic_addition_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName) {
 		try {
 			modelMap.put("xmlRepository", xmlRepositoryListService.getByName(repositoryName));
-			/*modelMap.put("url_addons_list_xml", ConfigurationUtil.get("url.repo_sites_v3"));
-			modelMap.put("url_repository_xml", ConfigurationUtil.get("url.repo_common_v2"));*/
+			modelMap.put("listXmlDownloadUrls", ConfigurationUtil.getList("url.initial_repo_update"));
 		} catch (Exception e) {
 			mLogger.info(e.toString(), e);
 			modelMap.put("objException", e);
@@ -87,7 +87,8 @@ public class XmlRepositoryEditorController {
 	                               @RequestParam(value = "proxyInfo.address", required = false) String proxyInfo_address,
 	                               @RequestParam(value = "proxyInfo.port", required = false, defaultValue = "0") int proxyInfo_port,
 	                               @RequestParam(value = "proxyInfo.userName", required = false) String proxyInfo_userName,
-	                               @RequestParam(value = "proxyInfo.password", required = false) String proxyInfo_password)
+	                               @RequestParam(value = "proxyInfo.password", required = false) String proxyInfo_password,
+	                               @RequestParam("xmlDownloadUrlSelection") Integer[] xmlDownloadUrlSelections)
 			throws Exception {
 		AutomaticAdditionEventListener listener = null;
 		try {
@@ -148,8 +149,15 @@ public class XmlRepositoryEditorController {
 				}
 				lProxyInfo = new ProxyInfo(proxyType, proxyInfo_address, proxyInfo_port, proxyInfo_userName, proxyInfo_password);
 			}
-			xmlRepositoryEditorService
-					.automaticAddition(repositoryName, isPreferHttpsConnection, lProxyInfo, listener);
+			String[] lStrArrXmlDownloadUrls = new String[xmlDownloadUrlSelections.length];
+			{
+				List<String> lListStrUrls = ConfigurationUtil.getList("url.initial_repo_update");
+				for (int i = 0; i < lStrArrXmlDownloadUrls.length; i++) {
+					// noinspection ConstantConditions
+					lStrArrXmlDownloadUrls[i] = lListStrUrls.get(xmlDownloadUrlSelections[i]);
+				}
+			}
+			xmlRepositoryEditorService.automaticAddition(repositoryName, isPreferHttpsConnection, lProxyInfo, lStrArrXmlDownloadUrls, listener);
 			listener.onPublish(1, "Everything is complete.");
 		} catch (Exception e) {
 			mLogger.error(e.toString(), e);

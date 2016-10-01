@@ -31,8 +31,7 @@ public class WebappStartupListener {
 	}
 
 	private void loadConfiguration() throws IOException, DocumentException {
-		// ConfigurationUtil.load(new File(servletContext.getRealPath("/WEB-INF/config.properties")));
-		ConfigurationUtil.load(new File(servletContext.getRealPath("/WEB-INF/config.xml")));
+		ConfigurationUtil.load(new File(servletContext.getRealPath(ApplicationConstants.FILE_PATH_CONFIG)));
 	}
 
 	private void createDatabaseIfNotExist() throws IOException, SQLException {
@@ -40,7 +39,9 @@ public class WebappStartupListener {
 		if (lFileDb.exists()) return;
 
 		mLogger.info("The SQLite database does not exist, create it. (location: " + lFileDb + ")");
-		lFileDb.getParentFile().mkdirs();
+		if (!lFileDb.getParentFile().mkdirs()) {
+			throw new IOException("Failed to create directories: " + lFileDb.getAbsolutePath());
+		}
 		File lFileSqlScript = new File(servletContext.getRealPath("/WEB-INF/init_sqlite3_database.sql"));
 		ScriptRunner lScriptRunner = new ScriptRunner(sqlSessionFactory.openSession().getConnection());
 		InputStreamReader lInputStreamReader = new InputStreamReader(new FileInputStream(lFileSqlScript), "UTF8");
