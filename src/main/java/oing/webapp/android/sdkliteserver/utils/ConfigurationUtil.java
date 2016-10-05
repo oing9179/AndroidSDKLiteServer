@@ -90,6 +90,10 @@ public class ConfigurationUtil implements ServletContextAware {
 		return new File(mServletContext.getRealPath("/"));
 	}
 
+	public static File getClassesRootDir() {
+		return new File(getWebappRootDir(), "WEB-INF/classes/");
+	}
+
 	private static final String TEXT_ABSOLUTE_COLON = "absolute:";
 
 	public static File getDataRepositoryDir() {

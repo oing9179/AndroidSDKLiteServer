@@ -39,10 +39,10 @@ public class WebappStartupListener {
 		if (lFileDb.exists()) return;
 
 		mLogger.info("The SQLite database does not exist, create it. (location: " + lFileDb + ")");
-		if (!lFileDb.getParentFile().mkdirs()) {
-			throw new IOException("Failed to create directories: " + lFileDb.getAbsolutePath());
+		if (!lFileDb.getParentFile().exists() && !lFileDb.getParentFile().mkdirs()) {
+			throw new IOException("Failed to create directories: " + lFileDb.getParentFile().getAbsolutePath());
 		}
-		File lFileSqlScript = new File(servletContext.getRealPath("/WEB-INF/init_sqlite3_database.sql"));
+		File lFileSqlScript = new File(ConfigurationUtil.getClassesRootDir(), "sqlite3_database.init.sql");
 		ScriptRunner lScriptRunner = new ScriptRunner(sqlSessionFactory.openSession().getConnection());
 		InputStreamReader lInputStreamReader = new InputStreamReader(new FileInputStream(lFileSqlScript), "UTF8");
 

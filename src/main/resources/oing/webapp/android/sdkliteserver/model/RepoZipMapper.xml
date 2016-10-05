@@ -31,9 +31,6 @@
     </select>
 
     <select id="selectByName" resultMap="resultMap_RepoZip_all">
-        <!-- SELECT
-        <include refid="RepoZip_columns_full"/>
-        FROM repo_zip WHERE name=#{name} -->
         SELECT
         repo_zip.id,
         repo_zip.id_repo_xml,
@@ -44,7 +41,7 @@
         FROM repo_zip
         LEFT JOIN repo_xml
         ON repo_zip.id_repo_xml = repo_xml.id
-        WHERE repo_zip.name = "zip_test0"
+        WHERE repo_zip.name = #{name}
     </select>
 
     <select id="selectByRepoXmlId" resultMap="resultMap_RepoZip_all">

@@ -1,7 +1,17 @@
 <config>
+    <!-- Password hashed by sha256, lowercase. -->
     <property key="admin.password_sha256">aaffebecec560fec66e75f24062224ffa4e07696d2ae9a1fee3707c3f8fd9373</property>
+    <!--
+        Where you stores all xml and zip file.
+        Put "absolute:" before actual path indicates it is an absolute path.
+    -->
     <property key="data_repository.location">DataRepository/</property>
+    <!--
+        To set database location to another location, take look at "config.database.properties".
+        Please sync value with "config.database.properties".
+    -->
     <property key="database.location">main.sqlite3</property>
+    <!-- Predefine URLs where XML files download from. -->
     <property key="url.initial_repo_update">
         <list>
             <value>https://dl.google.com/android/repository/addons_list-3.xml</value>
@@ -10,4 +20,6 @@
             <value>https://dl.google.com/android/repository/repository-11.xml</value>
         </list>
     </property>
+    <!-- How long to keep a Http Session before invalidate, in minutes. -->
+    <property key="http.session.timeout">5</property>
 </config>

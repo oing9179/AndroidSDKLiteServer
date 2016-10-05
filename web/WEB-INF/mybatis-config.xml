@@ -5,7 +5,6 @@
         <typeAlias alias="RepoXml" type="oing.webapp.android.sdkliteserver.model.RepoXml"/>
         <typeAlias alias="RepoXmlFile" type="oing.webapp.android.sdkliteserver.model.RepoXmlFile"/>
         <typeAlias alias="RepoZip" type="oing.webapp.android.sdkliteserver.model.RepoZip"/>
-        <typeAlias alias="SdkArchive" type="oing.webapp.android.sdkliteserver.model.SdkArchive"/>
     </typeAliases>
     <environments default="development">
         <environment id="development">
@@ -19,6 +18,5 @@
         <mapper resource="oing/webapp/android/sdkliteserver/model/RepoXmlMapper.xml"/>
         <mapper resource="oing/webapp/android/sdkliteserver/model/RepoXmlFileMapper.xml"/>
         <mapper resource="oing/webapp/android/sdkliteserver/model/RepoZipMapper.xml"/>
-        <mapper resource="oing/webapp/android/sdkliteserver/model/SdkArchiveMapper.xml"/>
     </mappers>
 </configuration>

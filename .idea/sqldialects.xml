@@ -4,7 +4,6 @@
     <file url="file://$PROJECT_DIR$/src/main/resources/oing/webapp/android/sdkliteserver/model/RepoXmlFileMapper.xml" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/src/main/resources/oing/webapp/android/sdkliteserver/model/RepoXmlMapper.xml" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/src/main/resources/oing/webapp/android/sdkliteserver/model/RepoZipMapper.xml" dialect="SQLite" />
-    <file url="file://$PROJECT_DIR$/src/main/resources/oing/webapp/android/sdkliteserver/model/SdkArchiveMapper.xml" dialect="SQLite" />
-    <file url="file://$PROJECT_DIR$/web/WEB-INF/init_sqlite3_database.sql" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/sqlite3_database.init.sql" dialect="SQLite" />
   </component>
 </project>

@@ -1,6 +1,7 @@
 package oing.webapp.android.sdkliteserver.controller.interceptor;
 
 import oing.webapp.android.sdkliteserver.misc.ApplicationConstants;
+import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -25,8 +26,10 @@ public class AdminAuthHandlerInterceptorAdapter extends HandlerInterceptorAdapte
 		if (lLongExpiresOn != null && lLongExpiresOn > ljCurrentTimeMillis) {
 			Calendar lCalendar = Calendar.getInstance();
 			lCalendar.setTimeInMillis(ljCurrentTimeMillis);
-			// Add 3 minutes from now, so session will expired after 3 minutes.
-			lCalendar.add(Calendar.MINUTE, 3);
+			// Add lnTimeout minutes from now, so session will expired after lnTimeout minutes.
+			//noinspection ConstantConditions
+			int lnTimeout = Integer.parseInt(ConfigurationUtil.get("http.session.timeout"));
+			lCalendar.add(Calendar.MINUTE, lnTimeout);
 			session.setAttribute(ApplicationConstants.KEY_SESSION_EXPIRES_ON, lCalendar.getTimeInMillis());
 			return true;
 		}
