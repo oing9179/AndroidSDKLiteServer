@@ -31,13 +31,6 @@ public interface IRepoCommonEditor {
 	 */
 	List<RemotePackage> extractAll();
 
-	/*
-	 * Extract all {@link RemotePackage}s from given xml document.
-	 *
-	 * @param zipRepoDir Refer to an existing zip repository, gives ability to check zip file exists or not.
-	 */
-	// List<RemotePackage> extractAll(File zipRepoDir);
-
 	/**
 	 * Update URLs into xml document.<br/>
 	 * For repo-common-v1.x: Under <code>sdk:archives/sdk:archive/sdk:url</code>.<br/>
