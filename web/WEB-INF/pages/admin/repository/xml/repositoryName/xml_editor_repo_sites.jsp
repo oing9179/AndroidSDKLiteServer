@@ -32,10 +32,6 @@
                                 title="Edit all form fields automatically, if you don't know how to do.">
                             File name only
                         </button>
-                        <button type="button" data-form="#formXmlEditor" data-action="addPrefixToUrl"
-                                class="btn btn-less-padding deep-purple waves-effect waves-light">
-                            Add prefix...
-                        </button>
                     </div>
                     <div class="col s12 m12 l6 right-align">
                         <button class="btn btn-less-padding indigo waves-effect waves-light"
@@ -43,10 +39,10 @@
                                 title="Reset all form fields back to initial value, which is values they are shown after page loaded.">
                             <i class="material-icons left">backspace</i>Reset
                         </button>
-                        <button title="Commit all changes back to file."
+                        <button title="Commit all changes back to file." type="submit"
                                 data-form="#formXmlEditor" data-action="submit"
                                 class="btn btn-less-padding green darken-2 waves-effect waves-light">
-                            <i class="material-icons left">check</i>Submit
+                            <i class="material-icons left">check</i>Save
                         </button>
                     </div>
                 </div>
@@ -145,22 +141,6 @@
         });
     }
 
-    function formXmlEditor_buttonAddPrefixToUrl_onClick(e) {
-        var lStrPrefix = window.prompt("The prefix that you want prepend to file names.\n" +
-                "NOTE: PREFIX will prepend to file name only, not some url like starts with \"http://\".");
-        if (lStrPrefix == null || lStrPrefix.length == 0) return;
-        $(JQUERY_SELECTOR_TEXT_BOXES_URL).each(function (index, element) {
-            element = $(element);
-            var lStrFileName = element.val();
-            if (lStrFileName.indexOf("http://") != -1 || lStrFileName.indexOf("https://") != -1) {
-                // It's a URL, so we skip iteration this time,
-                return true;// Just like java "continue;".
-            }
-            lStrFileName = lStrPrefix + lStrFileName;
-            element.val(lStrFileName);
-        });
-    }
-
     function formXmlEditor_buttonReset_onClick(e) {
         $(JQUERY_SELECTOR_TEXT_BOXES_URL).each(function (index, element) {
             element = $(element);
@@ -192,10 +172,8 @@
     function document_onReady() {
         mTemplate_templateTableRow = Handlebars.compile($("#templateTableRow").html());
         $("#formXmlEditor button[data-action='urlToFileNameOnly']").bind("click", formXmlEditor_buttonUrlToFileNameOnly_onClick);
-        $("#formXmlEditor button[data-action='addPrefixToUrl']").bind("click", formXmlEditor_buttonAddPrefixToUrl_onClick);
         $("#formXmlEditor button[data-action='reset']").bind("click", formXmlEditor_buttonReset_onClick);
         $("#formXmlEditor button[data-action='addRepoSite']").bind("click", formXmlEditor_buttonAddRepoSite_onClick);
-        // $("#formXmlEditor").bind("submit", formXmlEditor_onSubmit);
         $("#tableEditor").bind("updateOrdinal", tableEditor_onUpdateOrdinal);
         $("#tableEditor").trigger("updateOrdinal");
     }

@@ -5,6 +5,7 @@ public class RepoXmlFile {
 	private Long idRepoXml;
 	private String fileName;
 	private String url;
+	private String zipSubDirectory;
 
 	public RepoXmlFile() {
 	}
@@ -14,6 +15,7 @@ public class RepoXmlFile {
 		this.idRepoXml = builder.idRepoXml;
 		this.fileName = builder.fileName;
 		this.url = builder.url;
+		this.zipSubDirectory = builder.zipSubDirectory;
 	}
 
 	public Long getId() {
@@ -48,11 +50,20 @@ public class RepoXmlFile {
 		this.url = url;
 	}
 
+	public String getZipSubDirectory() {
+		return zipSubDirectory;
+	}
+
+	public void setZipSubDirectory(String zipSubDirectory) {
+		this.zipSubDirectory = zipSubDirectory;
+	}
+
 	public static class Builder {
 		private Long id;
 		private Long idRepoXml;
 		private String fileName;
 		private String url;
+		private String zipSubDirectory;
 
 		public RepoXmlFile build() {
 			return new RepoXmlFile(this);
@@ -75,6 +86,11 @@ public class RepoXmlFile {
 
 		public Builder url(String value) {
 			this.url = value;
+			return this;
+		}
+
+		public Builder zipSubDirectory(String value) {
+			this.zipSubDirectory = value;
 			return this;
 		}
 	}

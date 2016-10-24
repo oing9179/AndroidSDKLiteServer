@@ -1,7 +1,5 @@
 package oing.webapp.android.sdkliteserver.utils;
 
-import org.apache.commons.lang3.Validate;
-
 public class UrlTextUtil {
 	public static String http2https(String url) {
 		if (url.startsWith("http://")) {
@@ -19,8 +17,10 @@ public class UrlTextUtil {
 
 	public static String concat(String... patterns) {
 		if (patterns.length < 2) throw new IllegalArgumentException("At least 2 patterns.");
-		for (String pattern : patterns) {
-			Validate.notNull(pattern);
+		for (int i = 0; i < patterns.length; i++) {
+			if (patterns[i] == null) {
+				patterns[i] = "";
+			}
 		}
 
 		if (!patterns[0].endsWith("/")) patterns[0] += "/";

@@ -51,9 +51,10 @@ public class ZipRepositoryEditorServiceImpl implements ZipRepositoryEditorServic
 	@Override
 	public List<RemotePackage> getAllRemotePackages(String repositoryName, boolean isIncludeSysLinux,
 	                                                boolean isIncludeSysOSX, boolean isIncludeSysWin,
-	                                                boolean isIncludeObsoleted, boolean isIncludeExisted) throws IOException, DocumentException {
+	                                                boolean isIncludeObsoleted, boolean isIncludeExisted)
+			throws IOException, DocumentException {
 		RepoZip lRepoZip = zipRepositoryListService.getByNameOrThrow(repositoryName);
-		List<RemotePackage> lListRemotePackages = getAllRemotePackages(lRepoZip.getRepoXml_name(), lRepoZip.getName());
+		List<RemotePackage> lListRemotePackages = getAllRemotePackages(lRepoZip.getRepoXml_name(), lRepoZip);
 
 		// filter RemotePackages
 		for (int index = 0; index < lListRemotePackages.size(); index++) {
@@ -83,7 +84,7 @@ public class ZipRepositoryEditorServiceImpl implements ZipRepositoryEditorServic
 	public List<Archive> getNoLongerNeededArchives(String repositoryName, boolean isIncludeObsoleted,
 	                                               boolean isIncludeNotInRepo) throws IOException, DocumentException {
 		RepoZip lRepoZip = zipRepositoryListService.getByNameOrThrow(repositoryName);
-		List<RemotePackage> lListRemotePackages = getAllRemotePackages(lRepoZip.getRepoXml_name(), lRepoZip.getName());
+		List<RemotePackage> lListRemotePackages = getAllRemotePackages(lRepoZip.getRepoXml_name(), lRepoZip);
 		List<Archive> lListArchivesUnwanted = new LinkedList<>();
 
 		// Find out obsoleted and existed file, then add it into lListArchivesUnwanted.
@@ -151,12 +152,11 @@ public class ZipRepositoryEditorServiceImpl implements ZipRepositoryEditorServic
 	 *
 	 * @param repoNameXml XML repository name.
 	 */
-	private List<RemotePackage> getAllRemotePackages(String repoNameXml, String repoNameZip) throws IOException, DocumentException {
+	private List<RemotePackage> getAllRemotePackages(String repoNameXml, RepoZip repoZip) throws IOException, DocumentException {
 		RepoXml lRepoXml = repoXmlDao.selectByName(repoNameXml);
 		Validate.notNull(lRepoXml, "XML repository not found: " + repoNameXml);
 		List<RepoXmlFile> lListRepoXmlFiles = repoXmlFileDao.selectDependsRepoXmlId(lRepoXml.getId());
 		List<RemotePackage> lListRemotePackages = new LinkedList<>();
-		File lFileZipRepo = ConfigurationUtil.getZipRepositoryDir(repoNameZip);
 		for (RepoXmlFile repoXmlFile : lListRepoXmlFiles) {
 			if (repoXmlFile.getFileName().startsWith("addons_list")) {
 				continue;
@@ -167,7 +167,9 @@ public class ZipRepositoryEditorServiceImpl implements ZipRepositoryEditorServic
 			)));
 			IRepoCommonEditor lEditor = RepoXmlEditorFactory.createRepoCommonEditor(repoXmlFile.getUrl(), lInputStream);
 			IOUtils.closeQuietly(lInputStream);
-			lListRemotePackages.addAll(lEditor.extractAll(lFileZipRepo));
+			lEditor.setRepoXmlFile(repoXmlFile);
+			lEditor.setRepoZip(repoZip);
+			lListRemotePackages.addAll(lEditor.extractAll());
 		}
 		return lListRemotePackages;
 	}

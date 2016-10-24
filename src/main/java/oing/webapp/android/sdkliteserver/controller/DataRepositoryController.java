@@ -5,11 +5,20 @@ import oing.webapp.android.sdkliteserver.io.LimitedBandwidthInputStream;
 import oing.webapp.android.sdkliteserver.io.RangeFileInputStream;
 import oing.webapp.android.sdkliteserver.misc.ApplicationConstants;
 import oing.webapp.android.sdkliteserver.model.RepoXml;
+import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
 import oing.webapp.android.sdkliteserver.model.RepoZip;
+import oing.webapp.android.sdkliteserver.service.XmlRepositoryEditorService;
 import oing.webapp.android.sdkliteserver.service.XmlRepositoryListService;
 import oing.webapp.android.sdkliteserver.service.ZipRepositoryListService;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.Archive;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.RemotePackage;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.editor.IRepoCommonEditor;
+import oing.webapp.android.sdkliteserver.tools.xmleditor.editor.RepoXmlEditorFactory;
 import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
+import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
+import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +31,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -41,11 +48,13 @@ public class DataRepositoryController {
 	@Autowired
 	private XmlRepositoryListService xmlRepositoryListService;
 	@Autowired
+	private XmlRepositoryEditorService xmlRepositoryEditorService;
+	@Autowired
 	private ZipRepositoryListService zipRepositoryListService;
 
 	@RequestMapping("**")
 	public ResponseEntity _index(HttpServletRequest request, HttpServletResponse response)
-			throws IOException, HttpSessionRequiredException {
+			throws IOException, HttpSessionRequiredException, DocumentException {
 		{
 			JSONObject lJsonObjLog = new JSONObject();
 			lJsonObjLog.put("sessionId", request.getSession().getId());
@@ -66,7 +75,8 @@ public class DataRepositoryController {
 	 *
 	 * @return XML file content or 404.
 	 */
-	private ResponseEntity acceptXmlDownload(HttpServletRequest request, HttpServletResponse response) throws FileNotFoundException {
+	private ResponseEntity acceptXmlDownload(HttpServletRequest request, HttpServletResponse response) throws IOException, DocumentException {
+		RepoXmlFile lRepoXmlFile;
 		File lFileXml;
 		{
 			RepoXml lRepoXml = getRepoXml(request.getServletContext());
@@ -74,14 +84,38 @@ public class DataRepositoryController {
 			String lStrFileName = request.getRequestURI();
 			lStrFileName = lStrFileName.substring(lStrFileName.indexOf(REQUEST_MAPPING_URI) + REQUEST_MAPPING_URI.length());
 			lFileXml = new File(lFileXml, lStrFileName);
+			lRepoXmlFile = xmlRepositoryEditorService.getByName(lFileXml.getName(), lRepoXml.getId());
 		}
 		if (!lFileXml.exists()) {
 			return new ResponseEntity(HttpStatus.NOT_FOUND);
 		}
+		ByteArrayInputStream lInputStreamProcessedXml;
+		{
+			// Prepend "zipSubDirectory"
+			String lStrZipSubDirectory = lRepoXmlFile.getZipSubDirectory();
+			// if (!lStrZipSubDirectory.endsWith("/")) lStrZipSubDirectory += "/";
+			InputStream lInputStreamXml = new BufferedInputStream(new FileInputStream(lFileXml));
+			IRepoCommonEditor lRepoCommonEditor = RepoXmlEditorFactory.createRepoCommonEditor(lRepoXmlFile.getUrl(), lInputStreamXml);
+			IOUtils.closeQuietly(lInputStreamXml);
+			List<String> lListStrNewArchiveUrls = new LinkedList<>();
+			{
+				List<RemotePackage> lListRemotePackages = lRepoCommonEditor.extractAll();
+				for (RemotePackage remotePackage : lListRemotePackages) {
+					List<Archive> lListArchives = remotePackage.getArchives();
+					for (Archive archive : lListArchives) {
+						lListStrNewArchiveUrls.add(UrlTextUtil.concat(lStrZipSubDirectory, archive.getUrl()));
+					}
+				}
+			}
+			lRepoCommonEditor.updateArchivesUrl(lListStrNewArchiveUrls);
+			ByteArrayOutputStream lOutputStreamProcessedXml = new ByteArrayOutputStream();
+			lRepoCommonEditor.write(lOutputStreamProcessedXml);
+			lInputStreamProcessedXml = new ByteArrayInputStream(lOutputStreamProcessedXml.toByteArray());
+		}
 		HttpHeaders lHttpHeaders = new HttpHeaders();
 		lHttpHeaders.setContentType(new MediaType("text", "xml"));
-		lHttpHeaders.setContentLength(lFileXml.length());
-		InputStreamResource inputStreamResource = new InputStreamResource(new FileInputStream(lFileXml));
+		lHttpHeaders.setContentLength(lInputStreamProcessedXml.available());
+		InputStreamResource inputStreamResource = new InputStreamResource(lInputStreamProcessedXml);
 		return new ResponseEntity<>(inputStreamResource, lHttpHeaders, HttpStatus.OK);
 	}
 

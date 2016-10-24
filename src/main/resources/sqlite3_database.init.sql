@@ -11,10 +11,11 @@ CREATE TABLE "repo_xml" (
 
 -- xml files who in xml repository.
 CREATE TABLE "repo_xml_file" (
-  "id"          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  "id_repo_xml" INTEGER                           NOT NULL,
-  "file_name"   TEXT                              NOT NULL UNIQUE,
-  "url"         TEXT                              NOT NULL,
+  "id"                INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  "id_repo_xml"       INTEGER                           NOT NULL,
+  "file_name"         TEXT                              NOT NULL,
+  "url"               TEXT                              NOT NULL,
+  "zip_sub_directory" TEXT                              NOT NULL,
   CONSTRAINT "fk_repo_xml_file__to__repo_xml_0" FOREIGN KEY ("id_repo_xml") REFERENCES "repo_xml" ("id")
 );
 

@@ -12,7 +12,9 @@ public abstract class Archive {
 	protected String url;
 	protected HostOsType hostOs;
 	protected HostBitsType hostBits;
+	// Properties that does not exists in original xml file.
 	protected Boolean isFileExisted;
+	protected String fileNameWithPrefix;
 
 	public Archive() {
 	}
@@ -25,6 +27,7 @@ public abstract class Archive {
 		this.hostOs = builder.hostOs;
 		this.hostBits = builder.hostBits;
 		this.isFileExisted = builder.isFileExisted;
+		this.fileNameWithPrefix = builder.fileNameWithPrefix;
 	}
 
 	public RemotePackage getRemotePackageRef() {
@@ -92,6 +95,14 @@ public abstract class Archive {
 		isFileExisted = existed;
 	}
 
+	public String getFileNameWithPrefix() {
+		return fileNameWithPrefix;
+	}
+
+	public void setFileNameWithPrefix(String fileNameWithPrefix) {
+		this.fileNameWithPrefix = fileNameWithPrefix;
+	}
+
 	protected abstract static class Builder {
 		private RemotePackage remotePackageRef;
 		private Long size;
@@ -100,6 +111,7 @@ public abstract class Archive {
 		private HostOsType hostOs;
 		private HostBitsType hostBits;
 		private Boolean isFileExisted;
+		private String fileNameWithPrefix;
 
 		public Builder(RemotePackage remotePackage) {
 			this.remotePackageRef = remotePackage;
@@ -134,6 +146,11 @@ public abstract class Archive {
 
 		public Builder isFileExisted(Boolean value) {
 			this.isFileExisted = value;
+			return this;
+		}
+
+		public Builder fileNameWithPrefix(String value) {
+			this.fileNameWithPrefix = value;
 			return this;
 		}
 	}

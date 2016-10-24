@@ -44,7 +44,7 @@ public class XmlRepositoryEditorController {
 		try {
 			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
 			modelMap.put("xmlRepository", lRepoXml);
-			List<RepoXmlFile> lListRepoXmlFiles = xmlRepositoryEditorService.getFilesByRepoXmlId(lRepoXml.getId());
+			List<RepoXmlFile> lListRepoXmlFiles = xmlRepositoryEditorService.getByRepoXmlId(lRepoXml.getId());
 			modelMap.put("xmlFiles", lListRepoXmlFiles);
 		} catch (IllegalArgumentException e) {
 			modelMap.put("objException", e);
@@ -221,7 +221,7 @@ public class XmlRepositoryEditorController {
 		try {
 			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
 			modelMap.put("xmlRepository", lRepoXml);
-			modelMap.put("xmlFile", xmlRepositoryEditorService.getByIdDependsRepoXmlIdOrThrow(id, lRepoXml.getId()));
+			modelMap.put("xmlFile", xmlRepositoryEditorService.getById(id, lRepoXml.getId()));
 		} catch (Exception e) {
 			mLogger.warn(e.toString(), e);
 			modelMap.put("objException", e);
@@ -250,7 +250,7 @@ public class XmlRepositoryEditorController {
 		try {
 			RepoXml lRepoXml = xmlRepositoryListService.getByName(repositoryName);
 			modelMap.put("xmlRepository", lRepoXml);
-			RepoXmlFile lRepoXmlFile = xmlRepositoryEditorService.getByIdDependsRepoXmlIdOrThrow(id, lRepoXml.getId());
+			RepoXmlFile lRepoXmlFile = xmlRepositoryEditorService.getById(id, lRepoXml.getId());
 			modelMap.put("xmlFile", lRepoXmlFile);
 			if (lRepoXmlFile.getFileName().startsWith("addons_list")) {
 				lStrViewPath = xml_editor_for_repo_sites_view(modelMap, repositoryName, id);
@@ -265,8 +265,8 @@ public class XmlRepositoryEditorController {
 	}
 
 	// @RequestMapping(value = "/xml_editor_for_repo_sites.do", method = RequestMethod.GET)
-	public String xml_editor_for_repo_sites_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-	                                             @RequestParam("id") Long id) {
+	private String xml_editor_for_repo_sites_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                                              @RequestParam("id") Long id) {
 		try {
 			modelMap.put("repoSites", xmlRepositoryEditorService.getRepoSitesById(repositoryName, id));
 		} catch (Exception e) {
@@ -283,6 +283,9 @@ public class XmlRepositoryEditorController {
 		try {
 			for (RepoSite repoSite : repoSites) {
 				Validate.isTrue(repoSite.getUrl().endsWith(".xml"), "Invalid XML file name: " + repoSite.getUrl());
+				if (repoSite.getUrl().contains("..")) {
+					throw new IllegalArgumentException("Invalid url: " + repoSite.getUrl());
+				}
 			}
 			xmlRepositoryEditorService.updateRepoSite(repositoryName, id, repoSites);
 		} catch (Exception e) {
@@ -295,8 +298,8 @@ public class XmlRepositoryEditorController {
 	}
 
 	// @RequestMapping(value = "/xml_editor_for_repo_common.do", method = RequestMethod.GET)
-	public String xml_editor_for_repo_common_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-	                                              @RequestParam("id") Long id) {
+	private String xml_editor_for_repo_common_view(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
+	                                               @RequestParam("id") Long id) {
 		try {
 			modelMap.put("remotePackages", xmlRepositoryEditorService.getRemotePackagesById(repositoryName, id));
 		} catch (Exception e) {
@@ -308,9 +311,18 @@ public class XmlRepositoryEditorController {
 
 	@RequestMapping(value = "/xml_editor_for_repo_common.do", method = RequestMethod.POST)
 	public String xml_editor_for_repo_common(ModelMap modelMap, @PathVariable("repositoryName") String repositoryName,
-	                                         @RequestParam("id") Long id, @RequestParam("url") String[] urls) {
+	                                         @RequestParam("id") Long id, @RequestParam("zipSubDirectory") String zipSubDirectory,
+	                                         @RequestParam("url") String[] urls) {
 		try {
-			xmlRepositoryEditorService.updateArchiveURLs(repositoryName, id, urls);
+			if (zipSubDirectory.contains("..")) {
+				throw new IllegalArgumentException("Invalid url: " + zipSubDirectory);
+			}
+			for (String lStrUrl : urls) {
+				if (lStrUrl.contains("..")) {
+					throw new IllegalArgumentException("Invalid url: " + lStrUrl);
+				}
+			}
+			xmlRepositoryEditorService.updateRepoCommon(repositoryName, id, zipSubDirectory, urls);
 		} catch (Exception e) {
 			mLogger.warn(e.toString(), e);
 			String lStrViewPath = xml_editor_redirector(modelMap, repositoryName, id);

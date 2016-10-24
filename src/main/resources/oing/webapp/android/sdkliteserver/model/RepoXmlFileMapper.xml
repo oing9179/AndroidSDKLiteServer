@@ -8,9 +8,10 @@
         <result property="idRepoXml" column="id_repo_xml"/>
         <result property="fileName" column="file_name"/>
         <result property="url" column="url"/>
+        <result property="zipSubDirectory" column="zip_sub_directory"/>
     </resultMap>
 
-    <sql id="RepoXmlFile_columns_full">`id`, `id_repo_xml`, `file_name`, `url`</sql>
+    <sql id="RepoXmlFile_columns_full">`id`, `id_repo_xml`, `file_name`, `url`, `zip_sub_directory`</sql>
 
     <select id="selectByIdDependsRepoXmlId" parameterType="map" resultMap="resultMap_RepoXmlFile_all">
         SELECT
@@ -33,17 +34,19 @@
     </select>
 
     <insert id="insert" parameterType="RepoXmlFile">
-        INSERT INTO repo_xml_file(id_repo_xml, file_name, url) VALUES (#{idRepoXml}, #{fileName}, #{url})
+        INSERT INTO repo_xml_file(id_repo_xml, file_name, url, zip_sub_directory)
+        VALUES (#{idRepoXml}, #{fileName}, #{url}, #{zipSubDirectory})
     </insert>
 
     <insert id="copyExistingXmlFilesIntoNewXmlRepo">
-        INSERT INTO repo_xml_file(id_repo_xml, file_name, url)
-        SELECT #{toId} as `id_repo_xml`,`file_name`,`url` FROM repo_xml_file WHERE `id_repo_xml`=#{fromId}
+        INSERT INTO repo_xml_file(id_repo_xml, file_name, url, zip_sub_directory)
+        SELECT #{toId} as `id_repo_xml`,`file_name`,`url`, `zip_sub_directory` FROM repo_xml_file
+        WHERE `id_repo_xml`=#{fromId}
     </insert>
 
     <update id="updateById" parameterType="RepoXmlFile">
         UPDATE repo_xml_file SET
-        id_repo_xml=#{idRepoXml}, file_name=#{fileName}, url=#{url}
+        id_repo_xml=#{idRepoXml}, file_name=#{fileName}, url=#{url}, zip_sub_directory=#{zipSubDirectory}
         WHERE id=#{id}
     </update>
 

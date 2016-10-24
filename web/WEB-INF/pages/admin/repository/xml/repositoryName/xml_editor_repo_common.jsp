@@ -22,16 +22,10 @@
                       action="admin/repository/xml/${xmlRepository.name}/xml_editor_for_repo_common.do">
                     <input type="hidden" name="id" value="${xmlFile.id}"/>
                     <div class="row" style="padding-top:6px;">
-                        <div class="col s12 m12 l6">
-                            <button type="button" data-form="#formXmlEditor" data-action="urlToFileNameOnly"
-                                    class="btn btn-less-padding deep-purple waves-effect waves-light"
-                                    title="Edit all form fields automatically, if you don't know how to do.">
-                                File name only
-                            </button>
-                            <button type="button" data-form="#formXmlEditor" data-action="addPrefixToUrl"
-                                    class="btn btn-less-padding deep-purple waves-effect waves-light">
-                                Add prefix...
-                            </button>
+                        <div class="col s12 m12 l6 input-field" style="margin-top: 8px;">
+                            <input id="textBoxZipSubDirectory" type="text" name="zipSubDirectory"
+                                   value="${xmlFile.zipSubDirectory}" style="margin-bottom: 0; height: 2rem;"/>
+                            <label for="textBoxZipSubDirectory" style="top:.4rem;">ZIP sub directory</label>
                         </div>
                         <div class="col s12 m12 l6 right-align">
                             <button class="btn btn-less-padding indigo waves-effect waves-light"
@@ -39,10 +33,19 @@
                                     title="Reset all form fields back to initial value, which is values they are shown after page loaded.">
                                 <i class="material-icons left">backspace</i>Reset
                             </button>
-                            <button title="Commit all changes back to file."
+                            <button title="Commit all changes back to file." type="submit"
                                     data-form="#formXmlEditor" data-action="submit"
                                     class="btn btn-less-padding green darken-2 waves-effect waves-light">
-                                <i class="material-icons left">check</i>Submit
+                                <i class="material-icons left">check</i>Save
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 0;">
+                        <div class="col s12 m12 l6">
+                            <button type="button" data-form="#formXmlEditor" data-action="urlToFileNameOnly"
+                                    class="btn btn-less-padding deep-purple waves-effect waves-light"
+                                    title="Edit all form fields automatically, if you don't know how to do.">
+                                File name only
                             </button>
                         </div>
                     </div>
@@ -104,22 +107,6 @@
         });
     }
 
-    function formXmlEditor_buttonAddPrefixToUrl_onClick(e) {
-        var lStrPrefix = window.prompt("The prefix that you want prepend to file names.\n" +
-                "NOTE: PREFIX will prepend to file name only, not some url like starts with \"http://\".");
-        if (lStrPrefix == null || lStrPrefix.length == 0) return;
-        $(JQUERY_SELECTOR_TEXT_BOXES_URL).each(function (index, element) {
-            element = $(element);
-            var lStrFileName = element.val();
-            if (lStrFileName.indexOf("http://") != -1 || lStrFileName.indexOf("https://") != -1) {
-                // It's a URL, so we skip iteration this time,
-                return true;// Just like java "continue;".
-            }
-            lStrFileName = lStrPrefix + lStrFileName;
-            element.val(lStrFileName);
-        });
-    }
-
     function formXmlEditor_buttonReset_onClick(e) {
         $(JQUERY_SELECTOR_TEXT_BOXES_URL).each(function (index, element) {
             element = $(element);
@@ -129,7 +116,6 @@
 
     function document_onReady() {
         $("#formXmlEditor button[data-action='urlToFileNameOnly']").bind("click", formXmlEditor_buttonUrlToFileNameOnly_onClick);
-        $("#formXmlEditor button[data-action='addPrefixToUrl']").bind("click", formXmlEditor_buttonAddPrefixToUrl_onClick);
         $("#formXmlEditor button[data-action='reset']").bind("click", formXmlEditor_buttonReset_onClick);
     }
 

@@ -2,7 +2,10 @@ package oing.webapp.android.sdkliteserver.tools.xmleditor.editor;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
+import oing.webapp.android.sdkliteserver.model.RepoZip;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.*;
+import oing.webapp.android.sdkliteserver.utils.ConfigurationUtil;
 import oing.webapp.android.sdkliteserver.utils.UrlTextUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
@@ -22,6 +25,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RepoCommonEditorV1_12 implements IRepoCommonEditor {
+	private RepoXmlFile mRepoXmlFile;
+	private RepoZip mRepoZip;
 	/**
 	 * Where stores this xml file on internet.
 	 */
@@ -31,6 +36,7 @@ public class RepoCommonEditorV1_12 implements IRepoCommonEditor {
 	private static final RemotePackageType DEFAULT_REMOTE_PACKAGE_TYPE = RemotePackageType.GENERIC_TYPE;
 	private static final String DEFAULT_REMOTE_PACKAGE_TYPE_STRING = "unknown-to-generic-type";
 	private static final BiMap<RemotePackageType, String> mBiMapRemotePackageType2XmlText;
+	private File mFileRepoZipDir;
 
 	static {
 		mBiMapRemotePackageType2XmlText = HashBiMap.create();
@@ -52,12 +58,20 @@ public class RepoCommonEditorV1_12 implements IRepoCommonEditor {
 	}
 
 	@Override
-	public List<RemotePackage> extractAll() {
-		return extractAll(null);
+	public void setRepoXmlFile(RepoXmlFile repoXmlFile) {
+		this.mRepoXmlFile = repoXmlFile;
 	}
 
 	@Override
-	public List<RemotePackage> extractAll(File zipRepoDir) {
+	public void setRepoZip(RepoZip repoZip) {
+		this.mRepoZip = repoZip;
+		if (repoZip.getName() != null) {
+			mFileRepoZipDir = ConfigurationUtil.getZipRepositoryDir(repoZip.getName());
+		}
+	}
+
+	@Override
+	public List<RemotePackage> extractAll() {
 		List<Node> lListNode;
 		{
 			XPath lXPath = DocumentHelper.createXPath("/*/sdk:*/sdk:archives");
@@ -66,13 +80,13 @@ public class RepoCommonEditorV1_12 implements IRepoCommonEditor {
 		}
 		List<RemotePackage> lListRemotePackages = new LinkedList<>();
 		lListRemotePackages.addAll(lListNode.stream().map(
-				node -> element2RemotePackage(zipRepoDir, node.getParent())
+				node -> element2RemotePackage(node.getParent())
 		).collect(Collectors.toList()));
 		return lListRemotePackages;
 	}
 
 
-	private RemotePackage element2RemotePackage(File zipRepoDir, Element element) {
+	private RemotePackage element2RemotePackage(Element element) {
 		/* We use Validate.isTrue instead of Validate.notNull, because we want a element that have a child element
 		 * named "archives". Validate.notNull throws "NullPointerException" which is doesn't make sense. */
 		Validate.isTrue(element.element("archives") != null, "Undesired element, given: " + element.getName());
@@ -133,31 +147,40 @@ public class RepoCommonEditorV1_12 implements IRepoCommonEditor {
 				.sourceUrl(mStrXmlDirUrl).displayName(lStrDisplayName).revision(lStrRevision).channel(lStrChannel)
 				.apiLevel(lnApiLevel).isObsoleted(lzIsObsoleted).build();
 		// Convert element "archives" to List<Archive>.
-		lRemotePackage.setArchives(element2Archives(zipRepoDir, element.element("archives"), lRemotePackage));
+		lRemotePackage.setArchives(element2Archives(element.element("archives"), lRemotePackage));
 		return lRemotePackage;
 	}
 
-	private List<Archive> element2Archives(File zipRepoDir, Element element, RemotePackage remotePackageRef) {
+	private List<Archive> element2Archives(Element element, RemotePackage remotePackageRef) {
 		Validate.isTrue("archives".equals(element.getName()),
 				"Undesired element, desired: archives, given: " + element.getName());
+
 		List<Archive> lListArchives = new LinkedList<>();
 		// Parse "sdk:archives"
 		List<Element> lListElementArchives = element.elements("archive");
 		for (Element lElementArchive : lListElementArchives) {
 			String lStrUrl = lElementArchive.elementText("url");
-			File lFileZip = null;
-			if (zipRepoDir != null) {
-				lFileZip = new File(zipRepoDir, lStrUrl);
+			String lStrFileNameWithPrefix = null;
+			if (mRepoXmlFile != null && mRepoXmlFile.getZipSubDirectory() != null) {
+				lStrFileNameWithPrefix = UrlTextUtil.concat(mRepoXmlFile.getZipSubDirectory(), UrlTextUtil.getFileName(lStrUrl));
 			}
-			CompleteArchive archive = new CompleteArchive.Builder(remotePackageRef)
+			File lFileZip = null;
+			if (mFileRepoZipDir != null) {
+				if (lStrFileNameWithPrefix != null) {
+					lFileZip = new File(mFileRepoZipDir, lStrFileNameWithPrefix);
+				} else {
+					lFileZip = new File(mFileRepoZipDir, lStrUrl);
+				}
+			}
+			CompleteArchive.Builder builder = new CompleteArchive.Builder(remotePackageRef)
 					.size(Long.parseLong(lElementArchive.elementText("size")))
 					.checksum(lElementArchive.elementText("checksum"))
 					.url(lStrUrl)
 					.hostOs(HostOsType.forString(lElementArchive.elementText("host-os")))
 					.hostBits(HostBitsType.forString(lElementArchive.elementText("host-bits")))
 					.isFileExisted(lFileZip != null && lFileZip.exists())
-					.build();
-			lListArchives.add(archive);
+					.fileNameWithPrefix(lStrFileNameWithPrefix);
+			lListArchives.add(builder.build());
 		}
 		return lListArchives;
 	}

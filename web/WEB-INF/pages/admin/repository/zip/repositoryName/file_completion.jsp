@@ -60,9 +60,9 @@
                                 class="btn btn-less-padding waves-effect waves-light indigo">
                             <i class="material-icons left">filter_list</i>Filter
                         </button>
-                        <button id="buttonExportURLs" type="button"
+                        <button id="buttonShowExportToMetalink4Dialog" type="button"
                                 class="btn btn-less-padding waves-effect waves-light green">
-                            <i class="material-icons left">check</i>Export URLs
+                            <i class="material-icons left">check</i>Export...
                         </button>
                     </form>
                 </div>
@@ -75,13 +75,14 @@
         </div>
     </div>
 </div>
-<div id="modalExportURLs" class="modal">
+<div id="modalExportToMetalink4" class="modal">
     <div class="modal-content">
-        <h4>Export URLs</h4>
-        Total size: <span class="my-badge green white-text spanTotalFileSize"></span>
-        <pre class="preUrls"></pre>
-        <h5>SHA1 Checksums</h5>
-        <pre class="preChecksums"></pre>
+        <h4>Export to Metalink4</h4>
+        <h6 style="margin-bottom: 6px;">Total size: <span class="my-badge blue white-text spanTotalFileSize"></span></h6>
+        <a id="aExportToMetalink4" type="button" download="AndroidSDKDownloads.meta4"
+           class="btn btn-less-padding waves-effect waves-light green" target="_blank">
+            <i class="material-icons left">file_download</i>Export to Metalink4
+        </a>
     </div>
     <div class="modal-footer">
         <a href="javascript:" class="btn-flat modal-action modal-close waves-effect waves-green">Dismiss</a>
@@ -108,7 +109,6 @@
                     <input id="checkBoxArchive_ordinal-{{data._ordinal}}" type="checkbox" class="filled-in" data-json="{{data.asJson}}"/>
                     <label for="checkBoxArchive_ordinal-{{data._ordinal}}">{{data.fileName}}</label>
                     <span class="my-badge blue white-text">{{#humanReadableFileSize data.size}}{{/humanReadableFileSize}}</span>
-                    <span class="my-badge green white-text">SHA1: {{data.checksum}}</span>
                 </div>
                 {{/forEach}}
             </li>
@@ -173,30 +173,55 @@
         $ul.html(mTemplate_templateRemotePackages({"remotePackages": lJsonObjRemotePackages}));
         // Bind events
         $("input[type='checkbox'][id^='checkBoxRemotePackageGroup_API']").bind("change", function (e) {
-            //$("input[type='checkbox'][id^='checkBoxArchive_ordinal-'][data-url]").prop("checked", $(e.target).prop("checked"));
-            // console.log(e.target);
             $target = $(e.target);
             $($target).parent().parent().find("ul > li > div > input[type='checkbox']")
                     .prop("checked", $(e.target).prop("checked"));
         });
     }
 
-    function buttonExportURLs_onClick(e){
+    function buttonShowExportToMetalink4Dialog_onClick(e) {
         $checkBoxies = $("#ulRemotePackageList input[type='checkbox'][id^='checkBoxArchive_ordinal-']:checked");
-        lStrUrls = "";
+        if ($checkBoxies.length < 1) {
+            return false;
+        }
+        // Generate Metalink4 XML.
+        lDocumentMetalink4 = $.parseXML("<metalink xmlns=\"urn:ietf:params:xml:ns:metalink\"/>");
+        lDocumentMetalink4.xmlStandalone = true;
+        lDocumentMetalink4.xmlEncoding = "utf-8";
+        lElementRoot = lDocumentMetalink4.documentElement;
         lnTotalFileSize = 0;
-        lStrChecksums = "";
         $checkBoxies.each(function (index, element) {
-            lJsonObj = JSON.parse($(element).attr("data-json"));
-            lStrUrls += lJsonObj["absoluteUrl"] + "\n";
+            element = $(element);
+            lJsonObj = JSON.parse(element.attr("data-json"));
             lnTotalFileSize += parseInt(lJsonObj["size"]);
-            lStrChecksums += lJsonObj["checksum"] + " *" + lJsonObj["url"] + "\n";
+            // Create element <file/>
+            lElementFile = lDocumentMetalink4.createElement("file");
+            lStrFileName = lJsonObj["fileNameWithPrefix"];
+            if (lStrFileName == null) lStrFileName = lJsonObj["fileName"];
+            lElementFile.setAttribute("name", lStrFileName);
+            // Element <file>/<hash>
+            lElementTemp = lDocumentMetalink4.createElement("hash");
+            lElementTemp.setAttribute("type", "sha-1");
+            lElementTemp.textContent = lJsonObj["checksum"];
+            lElementFile.appendChild(lElementTemp);
+            // Element <file>/<size>
+            lElementTemp = lDocumentMetalink4.createElement("size");
+            lElementTemp.textContent = lJsonObj["size"];
+            lElementFile.appendChild(lElementTemp);
+            // Element <file>/<url>
+            lElementTemp = lDocumentMetalink4.createElement("url");
+            lElementTemp.textContent = lJsonObj["absoluteUrl"];
+            lElementFile.appendChild(lElementTemp);
+            // Append element <file> into document.
+            lElementRoot.appendChild(lElementFile);
         });
-        console.log(lStrChecksums);
-        $modal = $("#modalExportURLs");
+        $("#aExportToMetalink4").attr("href",
+                "data:text/plain;charset=utf-8," +
+                encodeURIComponent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + lElementRoot.outerHTML)
+        );
+        // Prepare for modal dialog.
+        $modal = $("#modalExportToMetalink4");
         $modal.find("span.spanTotalFileSize").text($.format.fileSize(lnTotalFileSize));
-        $modal.find("div.modal-content>pre.preUrls").text(lStrUrls);
-        $modal.find("div.modal-content>pre.preChecksums").text(lStrChecksums);
         $modal.openModal();
     }
 
@@ -232,7 +257,7 @@
         Handlebars.registerHelper("humanReadableFileSize", handlebarsHelper_humanReadableFileSize);
         mTemplate_templateRemotePackages = Handlebars.compile($("#templateRemotePackages").html());
         $("#buttonPerformFilter").bind("click", buttonPerformFilter_onClick);
-        $("#buttonExportURLs").bind("click", buttonExportURLs_onClick);
+        $("#buttonShowExportToMetalink4Dialog").bind("click", buttonShowExportToMetalink4Dialog_onClick);
         $("#ulRemotePackageList").bind("updateContent", ulRemotePackageList_onUpdateContent);
     }
 

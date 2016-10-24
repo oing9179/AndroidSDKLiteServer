@@ -7,6 +7,7 @@ import oing.webapp.android.sdkliteserver.tools.xmleditor.RepoSite;
 import org.dom4j.DocumentException;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -14,17 +15,24 @@ public interface XmlRepositoryEditorService {
 	/**
 	 * Get RepoXmlFile by id depends repo_xml.id.
 	 *
-	 * @param id        ID for repo_xml_file
-	 * @param repoXmlId ID for repo_xml
+	 * @param id        ID of repo_xml_file
+	 * @param repoXmlId ID of repo_xml
 	 */
-	RepoXmlFile getByIdDependsRepoXmlIdOrThrow(Long id, Long repoXmlId);
+	RepoXmlFile getById(Long id, Long repoXmlId);
+
+	/**
+	 * Find RepoXmlFile by its file name depends repo_xml.id.
+	 * @param fileName Its file name.
+	 * @param repoXmlId ID of RepoXml.
+	 */
+	RepoXmlFile getByName(String fileName, Long repoXmlId) throws FileNotFoundException;
 
 	/**
 	 * Get all files from specific repository
 	 *
 	 * @param id The id of repository
 	 */
-	List<RepoXmlFile> getFilesByRepoXmlId(Long id);
+	List<RepoXmlFile> getByRepoXmlId(Long id);
 
 	/**
 	 * Fill a xml repository automatically.
@@ -89,5 +97,5 @@ public interface XmlRepositoryEditorService {
 	 * @param id             XML file id in database from given {@code repositoryName}.
 	 * @param urls           URLs that will update into xml file.
 	 */
-	void updateArchiveURLs(String repositoryName, Long id, String[] urls) throws IOException, DocumentException;
+	void updateRepoCommon(String repositoryName, Long id, String zipSubDirectory, String[] urls) throws IOException, DocumentException;
 }

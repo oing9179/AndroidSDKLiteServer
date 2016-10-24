@@ -67,6 +67,12 @@ public class PatchArchive extends Archive {
 			return this;
 		}
 
+		@Override
+		public Builder fileNameWithPrefix(String value) {
+			super.fileNameWithPrefix(value);
+			return this;
+		}
+
 		public Builder basedOn(String value) {
 			this.basedOn = value;
 			return this;

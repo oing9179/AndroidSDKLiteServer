@@ -1,8 +1,9 @@
 package oing.webapp.android.sdkliteserver.tools.xmleditor.editor;
 
+import oing.webapp.android.sdkliteserver.model.RepoXmlFile;
+import oing.webapp.android.sdkliteserver.model.RepoZip;
 import oing.webapp.android.sdkliteserver.tools.xmleditor.RemotePackage;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -12,21 +13,36 @@ import java.util.List;
  */
 public interface IRepoCommonEditor {
 	/**
+	 * Let editor knows more information about xml file, such as "zipSubDirectory".
+	 *
+	 * @param repoXmlFile A {@link RepoXmlFile} instance.
+	 */
+	void setRepoXmlFile(RepoXmlFile repoXmlFile);
+
+	/**
+	 * To detect an zip file exists or not, we need this property.
+	 *
+	 * @param repoZip A {@link RepoZip} instance.
+	 */
+	void setRepoZip(RepoZip repoZip);
+
+	/**
 	 * Extract all {@link RemotePackage}s from given xml document.
 	 */
 	List<RemotePackage> extractAll();
 
-	/**
+	/*
 	 * Extract all {@link RemotePackage}s from given xml document.
 	 *
 	 * @param zipRepoDir Refer to an existing zip repository, gives ability to check zip file exists or not.
 	 */
-	List<RemotePackage> extractAll(File zipRepoDir);
+	// List<RemotePackage> extractAll(File zipRepoDir);
 
 	/**
 	 * Update URLs into xml document.<br/>
 	 * For repo-common-v1.x: Under <code>sdk:archives/sdk:archive/sdk:url</code>.<br/>
 	 * For repo-common-v2.x: Under <code>remotePackage/archives/*&#47;url</code>.<br/>
+	 *
 	 * @param listUrls URLs will update into xml document.
 	 */
 	void updateArchivesUrl(List<String> listUrls);

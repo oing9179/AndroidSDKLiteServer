@@ -53,5 +53,11 @@ public class CompleteArchive extends Archive {
 			super.isFileExisted(value);
 			return this;
 		}
+
+		@Override
+		public Builder fileNameWithPrefix(String value) {
+			super.fileNameWithPrefix(value);
+			return this;
+		}
 	}
 }
