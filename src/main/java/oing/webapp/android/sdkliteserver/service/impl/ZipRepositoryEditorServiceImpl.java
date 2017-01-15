@@ -117,7 +117,11 @@ public class ZipRepositoryEditorServiceImpl implements ZipRepositoryEditorServic
 			* Remove all files which can be found in local zip files list.
 			*/
 			lListArchivesExisted.forEach(archive -> {
-				File lFileZip = new File(lFileZipRepo, archive.getUrl());
+				String lStrFileName = archive.getFileNameWithPrefix();
+				if (lStrFileName == null) {
+					lStrFileName = archive.getFileName();
+				}
+				File lFileZip = new File(lFileZipRepo, lStrFileName);
 				lListFilesZip.remove(lFileZip);
 			});
 			RemotePackage lRemotePackageFake = new RemotePackage.Builder()

@@ -103,7 +103,7 @@ public class DataRepositoryController {
 				for (RemotePackage remotePackage : lListRemotePackages) {
 					List<Archive> lListArchives = remotePackage.getArchives();
 					for (Archive archive : lListArchives) {
-						lListStrNewArchiveUrls.add(UrlTextUtil.concat(lStrZipSubDirectory, archive.getUrl()));
+						lListStrNewArchiveUrls.add(UrlTextUtil.concat(lStrZipSubDirectory, archive.getFileName()));
 					}
 				}
 			}
