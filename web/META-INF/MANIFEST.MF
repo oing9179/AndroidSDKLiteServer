@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
-Implementation-Version: 1.0.0.0
+Specification-Title: Android SDK Lite Server
+Implementation-Version: 1.0.1
 
