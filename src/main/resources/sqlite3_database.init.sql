@@ -15,7 +15,7 @@ CREATE TABLE "repo_xml_file" (
   "id_repo_xml"       INTEGER                           NOT NULL,
   "file_name"         TEXT                              NOT NULL,
   "url"               TEXT                              NOT NULL,
-  "zip_sub_directory" TEXT                              NOT NULL,
+  "zip_sub_directory" TEXT,
   CONSTRAINT "fk_repo_xml_file__to__repo_xml_0" FOREIGN KEY ("id_repo_xml") REFERENCES "repo_xml" ("id")
 );
 
