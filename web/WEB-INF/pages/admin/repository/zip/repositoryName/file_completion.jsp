@@ -18,7 +18,7 @@
             margin-bottom: 16px;
         }
 
-        ul#ulRemotePackageList ul > li > div{
+        ul#ulRemotePackageList ul > li > div {
             padding-left: 16px;
         }
 
@@ -56,12 +56,10 @@
                         <label for="checkBoxIncludeObsoleteArchives" title="Include obsoleted archives.">Obsoleted</label>
                         <input id="checkBoxIncludeExistedArchives" name="isIncludeExisted" type="checkbox" class="filled-in" checked/>
                         <label for="checkBoxIncludeExistedArchives" title="Include existed archives.">Existed</label>
-                        <button id="buttonPerformFilter" type="button"
-                                class="btn btn-less-padding waves-effect waves-light indigo">
+                        <button id="buttonPerformFilter" type="button" class="btn btn-less-padding waves-effect waves-light indigo">
                             <i class="material-icons left">filter_list</i>Filter
                         </button>
-                        <button id="buttonShowExportToMetalink4Dialog" type="button"
-                                class="btn btn-less-padding waves-effect waves-light green">
+                        <button id="buttonShowExportToMetalink4Dialog" type="button" class="btn btn-less-padding waves-effect waves-light green">
                             <i class="material-icons left">check</i>Export...
                         </button>
                     </form>
@@ -79,8 +77,7 @@
     <div class="modal-content">
         <h4>Export to Metalink4</h4>
         <h6 style="margin-bottom: 6px;">Total size: <span class="my-badge blue white-text spanTotalFileSize"></span></h6>
-        <a id="aExportToMetalink4" type="button" download="AndroidSDKDownloads.meta4"
-           class="btn btn-less-padding waves-effect waves-light green" target="_blank">
+        <a id="aExportToMetalink4" type="button" download="AndroidSDKDownloads.meta4" class="btn btn-less-padding waves-effect waves-light green" target="_blank">
             <i class="material-icons left">file_download</i>Export to Metalink4
         </a>
     </div>
@@ -119,7 +116,7 @@
 {{/forEach}}
 </script>
 <script type="text/javascript">
-    var mTemplate_templateRemotePackages = null;
+    let mTemplate_templateRemotePackages = null;
 
     function buttonPerformFilter_onClick(e) {
         $form = $("#formGetAllArchives");
@@ -148,7 +145,7 @@
             if (lStrApiLevel == null) {
                 lStrApiLevel = "others";
             }
-            if(!lJsonObjRemotePackages[lStrApiLevel]) {
+            if (!lJsonObjRemotePackages[lStrApiLevel]) {
                 lJsonObjRemotePackages[lStrApiLevel] = [];
             }
             lnIndex = lJsonObjRemotePackages[lStrApiLevel].length;
@@ -175,17 +172,19 @@
         $("input[type='checkbox'][id^='checkBoxRemotePackageGroup_API']").bind("change", function (e) {
             $target = $(e.target);
             $($target).parent().parent().find("ul > li > div > input[type='checkbox']")
-                    .prop("checked", $(e.target).prop("checked"));
+                .prop("checked", $(e.target).prop("checked"));
         });
     }
 
     function buttonShowExportToMetalink4Dialog_onClick(e) {
+        let NAMESPACE_URI = "urn:ietf:params:xml:ns:metalink";
+
         $checkBoxies = $("#ulRemotePackageList input[type='checkbox'][id^='checkBoxArchive_ordinal-']:checked");
         if ($checkBoxies.length < 1) {
             return false;
         }
         // Generate Metalink4 XML.
-        lDocumentMetalink4 = $.parseXML("<metalink xmlns=\"urn:ietf:params:xml:ns:metalink\"/>");
+        let lDocumentMetalink4 = $.parseXML("<metalink xmlns=\"" + NAMESPACE_URI + "\"/>");
         lDocumentMetalink4.xmlStandalone = true;
         lDocumentMetalink4.xmlEncoding = "utf-8";
         lElementRoot = lDocumentMetalink4.documentElement;
@@ -195,29 +194,29 @@
             lJsonObj = JSON.parse(element.attr("data-json"));
             lnTotalFileSize += parseInt(lJsonObj["size"]);
             // Create element <file/>
-            lElementFile = lDocumentMetalink4.createElement("file");
+            lElementFile = lDocumentMetalink4.createElementNS(NAMESPACE_URI, "file");
             lStrFileName = lJsonObj["fileNameWithPrefix"];
             if (lStrFileName == null) lStrFileName = lJsonObj["fileName"];
             lElementFile.setAttribute("name", lStrFileName);
             // Element <file>/<hash>
-            lElementTemp = lDocumentMetalink4.createElement("hash");
+            lElementTemp = lDocumentMetalink4.createElementNS(NAMESPACE_URI, "hash");
             lElementTemp.setAttribute("type", "sha-1");
             lElementTemp.textContent = lJsonObj["checksum"];
             lElementFile.appendChild(lElementTemp);
             // Element <file>/<size>
-            lElementTemp = lDocumentMetalink4.createElement("size");
+            lElementTemp = lDocumentMetalink4.createElementNS(NAMESPACE_URI, "size");
             lElementTemp.textContent = lJsonObj["size"];
             lElementFile.appendChild(lElementTemp);
             // Element <file>/<url>
-            lElementTemp = lDocumentMetalink4.createElement("url");
+            lElementTemp = lDocumentMetalink4.createElementNS(NAMESPACE_URI, "url");
             lElementTemp.textContent = lJsonObj["absoluteUrl"];
             lElementFile.appendChild(lElementTemp);
             // Append element <file> into document.
             lElementRoot.appendChild(lElementFile);
         });
         $("#aExportToMetalink4").attr("href",
-                "data:text/plain;charset=utf-8," +
-                encodeURIComponent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + lElementRoot.outerHTML)
+            "data:text/plain;charset=utf-8," +
+            encodeURIComponent("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + lElementRoot.outerHTML)
         );
         // Prepare for modal dialog.
         $modal = $("#modalExportToMetalink4");
@@ -250,7 +249,7 @@
 
     function document_onReady() {
         Handlebars.registerHelper("ifExists", function (items, options) {
-            if (items != "undefined" && items != null) return options.fn(this);
+            if (items !== "undefined" && items !== null) return options.fn(this);
             return options.inverse(this);
         });
         Handlebars.registerHelper("forEach", handlebarsHelper_forEach);
